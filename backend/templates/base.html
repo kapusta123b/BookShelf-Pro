@@ -1,0 +1,194 @@
+{% load sass_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BookShelf Pro{% endblock %}</title>
+
+    <meta name="description" content="{% block meta_description %}Your personal book library. Search, discover, and track books you love.{% endblock %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% sass_src 'deps/css/base.scss' %}">
+
+    {% block extra_css %}{% endblock %}
+  </head>
+
+  <body>
+
+    <nav class="nav">
+      <div class="nav__container">
+
+        <a href="{% url 'main:index' %}" class="nav__logo">
+          <img src="{% static 'deps/svg/logo.svg' %}" alt="BookShelf Pro logo">
+          <span>BookShelf Pro</span>
+        </a>
+
+        <div class="nav__links">
+          <a href="{% url 'main:index' %}" class="nav__link">Home</a>
+          <a href="{% url 'books:index' %}" class="nav__link">Catalog</a>
+          <a href="{% url 'library:index' %}" class="nav__link">My Library</a>
+        </div>
+
+        <div class="nav__actions">
+          <button class="nav__search-btn" aria-label="Search">
+            <img src="{% static 'deps/svg/search.svg' %}" alt="Search">
+          </button>
+
+          {% if user.is_authenticated %}
+            <div class="nav__user-menu">
+              <button class="nav__user-menu-trigger">
+                <img src="{% static 'deps/svg/user.svg' %}" alt="User">
+                <span>{{ user.username }}</span>
+                <img class="chevron" src="{% static 'deps/svg/chevron-down.svg' %}" alt="">
+              </button>
+              <div class="nav__user-menu-dropdown">
+                <a href="{% url 'users:profile' %}" class="nav__user-menu-item">
+                  <img src="{% static 'deps/svg/user.svg' %}" alt="">
+                  Profile
+                </a>
+                <a href="{% url 'library:index' %}" class="nav__user-menu-item">
+                  <img src="{% static 'deps/svg/library.svg' %}" alt="">
+                  My Library
+                </a>
+                <a href="{% url 'users:profile' %}" class="nav__user-menu-item">
+                  <img src="{% static 'deps/svg/settings.svg' %}" alt="">
+                  Settings
+                </a>
+                <button class="nav__user-menu-item nav__user-menu-item--danger">
+                  <img src="{% static 'deps/svg/logout.svg' %}" alt="">
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          {% else %}
+            <a href="{% url 'users:login' %}" class="nav__btn nav__btn--outline">Sign In</a>
+            <a href="{% url 'users:register' %}" class="nav__btn nav__btn--primary">Get Started</a>
+          {% endif %}
+        </div>
+
+        <button class="nav__mobile-toggle" aria-label="Menu">
+          <img src="{% static 'deps/svg/menu.svg' %}" alt="Menu">
+        </button>
+
+      </div>
+    </nav>
+
+    <div class="nav-mobile">
+
+      <a href="{% url 'main:index' %}" class="nav-mobile__link">
+        <img src="{% static 'deps/svg/home.svg' %}" alt="">
+        Home
+      </a>
+
+      <a href="{% url 'books:index' %}" class="nav-mobile__link">
+        <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+        Catalog
+      </a>
+
+      <a href="{% url 'library:index' %}" class="nav-mobile__link">
+        <img src="{% static 'deps/svg/library.svg' %}" alt="">
+        My Library
+      </a>
+
+      <div class="nav-mobile__divider"></div>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'users:profile' %}" class="nav-mobile__link">
+          <img src="{% static 'deps/svg/user.svg' %}" alt="">
+          Profile
+        </a>
+        <a href="{% url 'users:profile' %}" class="nav-mobile__link">
+          <img src="{% static 'deps/svg/settings.svg' %}" alt="">
+          Settings
+        </a>
+      {% endif %}
+
+      <div class="nav-mobile__actions">
+        {% if user.is_authenticated %}
+          <button class="nav-mobile__btn nav-mobile__btn--outline">
+            <img src="{% static 'deps/svg/logout.svg' %}" alt=""> Sign Out
+          </button>
+        {% else %}
+          <a href="{% url 'users:login' %}" class="nav-mobile__btn nav-mobile__btn--outline">Sign In</a>
+          <a href="{% url 'users:register' %}" class="nav-mobile__btn nav-mobile__btn--primary">Get Started</a>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <div class="search-overlay">
+      <div class="search-overlay__box">
+        <div class="search-overlay__input-row">
+          <img src="{% static 'deps/svg/search.svg' %}" alt="Search">
+          <input type="text" placeholder="Search for books, authors, genres…" autocomplete="off">
+          <button class="search-overlay__close">
+            <img src="{% static 'deps/svg/close.svg' %}" alt="Close">
+          </button>
+        </div>
+        <p class="search-overlay__hint">Press <kbd>Esc</kbd> to close &nbsp;·&nbsp; <kbd>Enter</kbd> to search</p>
+      </div>
+    </div>
+
+    <main class="main-content">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+      <div class="footer__grid">
+
+        <div class="footer__brand">
+          <img src="{% static 'deps/svg/logo.svg' %}" alt="BookShelf Pro">
+          <h3>BookShelf Pro</h3>
+          <p>Your personal book library. Search millions of titles, track your reading journey, and discover your next favourite book.</p>
+        </div>
+
+        <div class="footer__col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="{% url 'main:index' %}">Home</a></li>
+            <li><a href="{% url 'books:index' %}">Catalog</a></li>
+            <li><a href="{% url 'library:index' %}">My Library</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4>Account</h4>
+          <ul>
+            <li><a href="{% url 'users:login' %}">Sign In</a></li>
+            <li><a href="{% url 'users:register' %}">Register</a></li>
+            <li><a href="{% url 'users:profile' %}">Profile</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4>About</h4>
+          <ul>
+            <li><a href="#">Open Library API</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer__bottom">
+        <p>&copy; 2025 BookShelf Pro. Powered by Open Library.</p>
+        <div class="footer__bottom-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="{% static 'deps/js/base.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+
+  </body>
+
+</html>

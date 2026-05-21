@@ -1,0 +1,372 @@
+{% extends 'base.html' %}
+{% load sass_tags %}
+{% load static %}
+
+{% block title %}Book Catalog — BookShelf Pro{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/books.scss' %}">
+{% endblock %}
+
+{% block content %}
+
+  <div class="catalog__header">
+    <div class="catalog__header-inner">
+      <h1>Book Catalog</h1>
+      <p>Discover and explore millions of books from the Open Library database</p>
+    </div>
+  </div>
+
+  <div class="catalog__toolbar">
+    <div class="catalog__toolbar-inner">
+
+      <form class="catalog__search" method="get" action={% url "books:index" %}>
+
+        <div class="catalog__search-types">
+          <button type="button" class="catalog__search-type is-active" data-type="title" data-placeholder="Search by title…">Title</button>
+          <button type="button" class="catalog__search-type" data-type="author" data-placeholder="Search by author…">Author</button>
+          <button type="button" class="catalog__search-type" data-type="isbn" data-placeholder="Enter ISBN…">ISBN</button>
+        </div>
+
+        <span class="catalog__search-sep"></span>
+        <img src="{% static 'deps/svg/search.svg' %}" alt="">
+
+        <input type="hidden" name="search_by" value="title">
+        <input type="text" name="search" placeholder="Search by title…" autocomplete="off">
+
+        <button class="catalog__search-submit" type="submit" aria-label="Search">Go</button>
+
+      </form>
+
+      <div class="catalog__controls">
+
+        <span class="catalog__results-count">
+          Showing <strong>12</strong> of 50M+ books
+        </span>
+
+        <button class="catalog__filter-toggle">
+          <img src="{% static 'deps/svg/filter.svg' %}" alt="">
+          Filters
+        </button>
+
+        <div class="catalog__sort">
+          <img src="{% static 'deps/svg/sort.svg' %}" alt="">
+          <select>
+            <option value="relevance">Relevance</option>
+            <option value="rating">Top Rated</option>
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="title">Title A–Z</option>
+          </select>
+        </div>
+
+        <div class="catalog__view-toggle">
+          <button class="active" data-view="grid" aria-label="Grid view">
+            <img src="{% static 'deps/svg/grid.svg' %}" alt="Grid">
+          </button>
+          <button data-view="list" aria-label="List view">
+            <img src="{% static 'deps/svg/list.svg' %}" alt="List">
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="filters-overlay"></div>
+
+  <div class="catalog__layout">
+
+    <aside class="filters">
+
+      <div class="filters__header">
+        <h3>Filters</h3>
+        <div class="filters__header-actions">
+          <button class="filters__clear">Clear all</button>
+          <button class="filters__close">
+            <img src="{% static 'deps/svg/close.svg' %}" alt="Close">
+          </button>
+        </div>
+      </div>
+
+      <div class="filters__group">
+        <div class="filters__group-header">
+          <span>Genre</span>
+          <img src="{% static 'deps/svg/chevron-down.svg' %}" alt="">
+        </div>
+        <div class="filters__group-body">
+          <div class="filters__checkboxes">
+
+            <label class="filters__checkbox">
+              <input type="checkbox" value="fiction">
+              <span>Fiction</span>
+              <span class="filters__checkbox-count">2.4M</span>
+            </label>
+
+            <label class="filters__checkbox">
+              <input type="checkbox" value="science-fiction">
+              <span>Science Fiction</span>
+              <span class="filters__checkbox-count">890K</span>
+            </label>
+
+            <label class="filters__checkbox">
+              <input type="checkbox" value="fantasy">
+              <span>Fantasy</span>
+              <span class="filters__checkbox-count">1.1M</span>
+            </label>
+
+            <label class="filters__checkbox">
+              <input type="checkbox" value="mystery">
+              <span>Mystery</span>
+              <span class="filters__checkbox-count">950K</span>
+            </label>
+
+            <label class="filters__checkbox">
+              <input type="checkbox" value="biography">
+              <span>Biography</span>
+              <span class="filters__checkbox-count">720K</span>
+            </label>
+
+            <label class="filters__checkbox">
+              <input type="checkbox" value="history">
+              <span>History</span>
+              <span class="filters__checkbox-count">1.3M</span>
+            </label>
+
+            <label class="filters__checkbox">
+              <input type="checkbox" value="science">
+              <span>Science</span>
+              <span class="filters__checkbox-count">640K</span>
+            </label>
+
+            <label class="filters__checkbox">
+              <input type="checkbox" value="self-help">
+              <span>Self-Help</span>
+              <span class="filters__checkbox-count">480K</span>
+            </label>
+
+            <label class="filters__checkbox">
+              <input type="checkbox" value="romance">
+              <span>Romance</span>
+              <span class="filters__checkbox-count">1.6M</span>
+            </label>
+
+            <label class="filters__checkbox">
+              <input type="checkbox" value="children">
+              <span>Children's</span>
+              <span class="filters__checkbox-count">2.1M</span>
+            </label>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="filters__group">
+        <div class="filters__group-header">
+          <span>Minimum Rating</span>
+          <img src="{% static 'deps/svg/chevron-down.svg' %}" alt="">
+        </div>
+        <div class="filters__group-body">
+          <div class="filters__stars">
+
+            <label class="filters__star-row">
+              <input type="radio" name="rating" value="all" checked>
+              <span>Any rating</span>
+            </label>
+
+            <label class="filters__star-row">
+              <input type="radio" name="rating" value="4">
+              <div class="filters__star-row-stars">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+              </div>
+              <span>&amp; up</span>
+            </label>
+
+            <label class="filters__star-row">
+              <input type="radio" name="rating" value="3">
+              <div class="filters__star-row-stars">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+              </div>
+              <span>&amp; up</span>
+            </label>
+
+            <label class="filters__star-row">
+              <input type="radio" name="rating" value="2">
+              <div class="filters__star-row-stars">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+              </div>
+              <span>&amp; up</span>
+            </label>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="filters__group">
+        <div class="filters__group-header">
+          <span>Publication Year</span>
+          <img src="{% static 'deps/svg/chevron-down.svg' %}" alt="">
+        </div>
+        <div class="filters__group-body">
+          <div class="filters__year">
+            <input type="number" placeholder="From" min="1800" max="2025">
+            <input type="number" placeholder="To" min="1800" max="2025">
+          </div>
+        </div>
+      </div>
+
+      <div class="filters__group">
+        <div class="filters__group-header">
+          <span>Language</span>
+          <img src="{% static 'deps/svg/chevron-down.svg' %}" alt="">
+        </div>
+        <div class="filters__group-body">
+          <select class="filters__select">
+            <option value="">All languages</option>
+            <option value="eng">English</option>
+            <option value="rus">Russian</option>
+            <option value="ger">German</option>
+            <option value="fre">French</option>
+            <option value="spa">Spanish</option>
+            <option value="ita">Italian</option>
+            <option value="jpn">Japanese</option>
+            <option value="chi">Chinese</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filters__group">
+        <div class="filters__group-header">
+          <span>Reading Status</span>
+          <img src="{% static 'deps/svg/chevron-down.svg' %}" alt="">
+        </div>
+        <div class="filters__group-body">
+          <div class="filters__status">
+
+            <label class="filters__radio">
+              <input type="radio" name="status" value="all" checked>
+              <span>All books</span>
+            </label>
+
+            <label class="filters__radio">
+              <input type="radio" name="status" value="want">
+              <span>Want to Read</span>
+            </label>
+
+            <label class="filters__radio">
+              <input type="radio" name="status" value="reading">
+              <span>Currently Reading</span>
+            </label>
+
+            <label class="filters__radio">
+              <input type="radio" name="status" value="read">
+              <span>Already Read</span>
+            </label>
+
+            <label class="filters__radio">
+              <input type="radio" name="status" value="none">
+              <span>Not in Library</span>
+            </label>
+
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <div class="books-results">
+
+
+      <div class="books-grid-catalog">
+
+        {% for book in books %}
+        <div class="book-card-catalog">
+
+          <div class="book-card-catalog__cover book-cover">
+            <img class="book-card-catalog__cover-img" src="https://covers.openlibrary.org/b/id/{{ book.cover_i }}-M.jpg" alt="{{ book.title }}">
+            <div class="book-card-catalog__cover-placeholder">
+              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+            </div>
+            <div class="book-card-catalog__cover-quick-add">
+              <button class="book-card-catalog__cover-btn">
+                <img src="{% static 'deps/svg/plus.svg' %}" alt="">
+                Add
+              </button>
+            </div>
+          </div>
+
+          <div class="book-card-catalog__body">
+
+            <div class="book-card-catalog__genre">
+              <span class="badge badge--primary">{{ book.subjects.first }}</span>
+            </div>
+
+            <p class="book-card-catalog__title">{{ book.title }}</p>
+            <p class="book-card-catalog__author">{{ book.author.all }}</p>
+
+            <div class="book-card-catalog__meta">
+              <div class="book-card-catalog__rating">
+
+                <img class="star" src="{% static 'deps/svg/star.svg' %}" alt="">
+                <span>{{ book.rating }}</span>
+              
+              </div>
+              <span class="book-card-catalog__year">{{ book.first_publish_year }}</span>
+            </div>
+
+            <div class="book-card-catalog__actions">
+              <button class="book-card-catalog__btn book-card-catalog__btn--primary">
+                <img src="{% static 'deps/svg/plus.svg' %}" alt="">
+                Add to Library
+              </button>
+              <button class="book-card-catalog__btn book-card-catalog__btn--outline">
+                <img src="{% static 'deps/svg/bookmark.svg' %}" alt="">
+                Want to Read
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+        {% empty %}
+        <p>No books found.</p>
+        {% endfor %}
+
+      </div>
+
+      <div class="pagination">
+        <button class="pagination__btn pagination__btn--nav" disabled>
+          <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Previous" style="transform: rotate(180deg)">
+        </button>
+        <a href="#" class="pagination__btn active">1</a>
+        <a href="#" class="pagination__btn">2</a>
+        <a href="#" class="pagination__btn">3</a>
+        <span class="pagination__btn pagination__btn--ellipsis">…</span>
+        <a href="#" class="pagination__btn">48</a>
+        <button class="pagination__btn pagination__btn--nav">
+          <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Next">
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'deps/js/books.js' %}"></script>
+{% endblock %}

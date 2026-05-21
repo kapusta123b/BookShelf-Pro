@@ -1,0 +1,389 @@
+{% extends 'base.html' %}
+{% load sass_tags %}
+{% load static %}
+
+{% block title %}BookShelf Pro — Your Personal Reading Library{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/main.scss' %}">
+{% endblock %}
+
+{% block content %}
+
+  <section class="hero">
+    <div class="hero__container">
+
+      <div class="hero__content">
+        <span class="hero__tag">Powered by Open Library</span>
+
+        <h1 class="hero__title">
+          Your personal<br>
+          <span>reading universe</span>
+        </h1>
+
+        <p class="hero__desc">
+          Search over 50 million books, build your personal library, track your reading progress, and discover your next favourite read.
+        </p>
+
+        <div class="hero__search">
+          <div class="hero__search-tabs">
+            <span class="hero__search-label">Search by:</span>
+            <button type="button" class="hero__search-tab is-active" data-type="title" data-placeholder="Search by book title…">Title</button>
+            <button type="button" class="hero__search-tab" data-type="author" data-placeholder="Search by author name…">Author</button>
+            <button type="button" class="hero__search-tab" data-type="isbn" data-placeholder="Enter ISBN, e.g. 978-0-7432-7356-5…">ISBN</button>
+          </div>
+          <form class="hero__search-bar" method="get" action="{% url 'books:index' %}">
+            <input type="hidden" name="type" value="title">
+            <input type="text" name="q" placeholder="Search by book title…" autocomplete="off">
+            <button type="submit">
+              <img src="{% static 'deps/svg/search.svg' %}" alt="">
+              Search
+            </button>
+          </form>
+        </div>
+
+        <div class="hero__actions">
+          <a href="{% url 'users:register' %}" class="hero__btn hero__btn--primary">
+            Start for free
+          </a>
+          <a href="{% url 'books:index' %}" class="hero__btn hero__btn--ghost">
+            Browse catalog
+          </a>
+        </div>
+      </div>
+
+      <div class="hero__visual">
+        <div class="hero__books">
+          <div class="hero__book"></div>
+          <div class="hero__book"></div>
+          <div class="hero__book"></div>
+          <div class="hero__book"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="stats-strip">
+    <div class="stats-strip__grid">
+
+      <div class="stats-strip__item">
+        <strong>50M+</strong>
+        <span>Books available</span>
+      </div>
+
+      <div class="stats-strip__item">
+        <strong>Free</strong>
+        <span>Always & forever</span>
+      </div>
+
+      <div class="stats-strip__item">
+        <strong>Open Library</strong>
+        <span>Trusted data source</span>
+      </div>
+
+      <div class="stats-strip__item">
+        <strong>100%</strong>
+        <span>Your personal data</span>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__inner">
+
+      <div class="section-header">
+        <div>
+          <p class="section__label">Discover</p>
+          <h2 class="section__title">Popular right now</h2>
+        </div>
+        <a href="{% url 'books:index' %}" class="section-header__link">
+          View all
+          <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="">
+        </a>
+      </div>
+
+      <div class="books-grid">
+
+        <a href="#" class="book-card">
+          <div class="book-card__cover book-cover-2">
+            <div class="book-card__cover-placeholder">
+              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+            </div>
+          </div>
+          <div class="book-card__info">
+            <p class="book-card__title">1984</p>
+            <p class="book-card__author">George Orwell</p>
+            <div class="book-card__rating">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <span>4.9</span>
+            </div>
+            <div class="book-card__genre">
+              <span class="badge badge--primary">Fiction</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" class="book-card">
+          <div class="book-card__cover book-cover-4">
+            <div class="book-card__cover-placeholder">
+              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+            </div>
+          </div>
+          <div class="book-card__info">
+            <p class="book-card__title">The Great Gatsby</p>
+            <p class="book-card__author">F. Scott Fitzgerald</p>
+            <div class="book-card__rating">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star.svg' %}" alt="">
+              <span>4.4</span>
+            </div>
+            <div class="book-card__genre">
+              <span class="badge badge--primary">Classic</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" class="book-card">
+          <div class="book-card__cover book-cover-3">
+            <div class="book-card__cover-placeholder">
+              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+            </div>
+          </div>
+          <div class="book-card__info">
+            <p class="book-card__title">Dune</p>
+            <p class="book-card__author">Frank Herbert</p>
+            <div class="book-card__rating">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <span>4.8</span>
+            </div>
+            <div class="book-card__genre">
+              <span class="badge badge--primary">Sci-Fi</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" class="book-card">
+          <div class="book-card__cover book-cover-1">
+            <div class="book-card__cover-placeholder">
+              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+            </div>
+          </div>
+          <div class="book-card__info">
+            <p class="book-card__title">The Hobbit</p>
+            <p class="book-card__author">J.R.R. Tolkien</p>
+            <div class="book-card__rating">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <span>4.7</span>
+            </div>
+            <div class="book-card__genre">
+              <span class="badge badge--primary">Fantasy</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" class="book-card">
+          <div class="book-card__cover book-cover-5">
+            <div class="book-card__cover-placeholder">
+              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+            </div>
+          </div>
+          <div class="book-card__info">
+            <p class="book-card__title">Sapiens</p>
+            <p class="book-card__author">Yuval Noah Harari</p>
+            <div class="book-card__rating">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star.svg' %}" alt="">
+              <span>4.5</span>
+            </div>
+            <div class="book-card__genre">
+              <span class="badge badge--primary">Non-Fiction</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" class="book-card">
+          <div class="book-card__cover book-cover-6">
+            <div class="book-card__cover-placeholder">
+              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+            </div>
+          </div>
+          <div class="book-card__info">
+            <p class="book-card__title">Atomic Habits</p>
+            <p class="book-card__author">James Clear</p>
+            <div class="book-card__rating">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+              <span>4.8</span>
+            </div>
+            <div class="book-card__genre">
+              <span class="badge badge--primary">Self-Help</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section section--muted">
+    <div class="section__inner">
+
+      <p class="section__label">How it works</p>
+      <h2 class="section__title">Simple as reading a book</h2>
+      <p class="section__desc">Three steps to build your personal reading universe.</p>
+
+      <div class="how-it-works__steps">
+
+        <div class="how-it-works__step">
+          <div class="how-it-works__step-number">1</div>
+          <div class="how-it-works__step-icon">
+            <img src="{% static 'deps/svg/search.svg' %}" alt="">
+          </div>
+          <h3>Search & Discover</h3>
+          <p>Search over 50 million books via Open Library. Find anything by title, author, ISBN, or subject.</p>
+        </div>
+
+        <div class="how-it-works__step">
+          <div class="how-it-works__step-number">2</div>
+          <div class="how-it-works__step-icon">
+            <img src="{% static 'deps/svg/bookmark.svg' %}" alt="">
+          </div>
+          <h3>Add to Library</h3>
+          <p>Add books to your personal collection. Mark them as "Want to Read", "Reading", or "Finished".</p>
+        </div>
+
+        <div class="how-it-works__step">
+          <div class="how-it-works__step-number">3</div>
+          <div class="how-it-works__step-icon">
+            <img src="{% static 'deps/svg/star.svg' %}" alt="">
+          </div>
+          <h3>Rate & Track</h3>
+          <p>Rate books, write notes, and track your reading history. Build a rich record of your literary journey.</p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__inner">
+
+      <p class="section__label">Browse by Genre</p>
+      <h2 class="section__title">Explore categories</h2>
+
+      <div class="categories__grid">
+
+        <a href="{% url 'books:index' %}" class="categories__card">
+          <span class="categories__card-emoji">📚</span>
+          <div class="categories__card-info">
+            <h4>Fiction</h4>
+            <span>2.4M books</span>
+          </div>
+        </a>
+
+        <a href="{% url 'books:index' %}" class="categories__card">
+          <span class="categories__card-emoji">🚀</span>
+          <div class="categories__card-info">
+            <h4>Science Fiction</h4>
+            <span>890K books</span>
+          </div>
+        </a>
+
+        <a href="{% url 'books:index' %}" class="categories__card">
+          <span class="categories__card-emoji">🐉</span>
+          <div class="categories__card-info">
+            <h4>Fantasy</h4>
+            <span>1.1M books</span>
+          </div>
+        </a>
+
+        <a href="{% url 'books:index' %}" class="categories__card">
+          <span class="categories__card-emoji">🔬</span>
+          <div class="categories__card-info">
+            <h4>Science</h4>
+            <span>640K books</span>
+          </div>
+        </a>
+
+        <a href="{% url 'books:index' %}" class="categories__card">
+          <span class="categories__card-emoji">📖</span>
+          <div class="categories__card-info">
+            <h4>Biography</h4>
+            <span>720K books</span>
+          </div>
+        </a>
+
+        <a href="{% url 'books:index' %}" class="categories__card">
+          <span class="categories__card-emoji">🕵️</span>
+          <div class="categories__card-info">
+            <h4>Mystery</h4>
+            <span>950K books</span>
+          </div>
+        </a>
+
+        <a href="{% url 'books:index' %}" class="categories__card">
+          <span class="categories__card-emoji">🌍</span>
+          <div class="categories__card-info">
+            <h4>History</h4>
+            <span>1.3M books</span>
+          </div>
+        </a>
+
+        <a href="{% url 'books:index' %}" class="categories__card">
+          <span class="categories__card-emoji">💡</span>
+          <div class="categories__card-info">
+            <h4>Self-Help</h4>
+            <span>480K books</span>
+          </div>
+        </a>
+
+      </div>
+
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-section__inner">
+      <h2>Start your reading journey today</h2>
+      <p>Join thousands of readers who track their reading, discover new books, and build their personal libraries with BookShelf Pro.</p>
+      <div class="cta-section__actions">
+        <a href="{% url 'users:register' %}" class="cta-section__btn cta-section__btn--primary">
+          Create free account
+        </a>
+        <a href="{% url 'books:index' %}" class="cta-section__btn cta-section__btn--ghost">
+          Browse catalog
+        </a>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'deps/js/main.js' %}"></script>
+{% endblock %}

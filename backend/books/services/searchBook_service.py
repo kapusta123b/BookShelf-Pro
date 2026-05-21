@@ -1,0 +1,24 @@
+import requests
+
+
+class BookSearchClient:
+    BASE_URL = 'https://openlibrary.org/'
+
+    def search_books_by_argument(self, query: str, argument: str, page: str) -> dict:
+
+        url = f'{self.BASE_URL}search.json/'
+
+        response = requests.get(
+            url=url,                    
+            params={
+                argument: query,
+                'fields': 'cover_i,title,author_name,first_publish_year,subject',
+                'page': page,
+                'limit': 8
+            }
+        )
+
+        response.raise_for_status()
+        data = response.json()
+
+        return data.get('docs', [])

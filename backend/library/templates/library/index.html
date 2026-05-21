@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+{% load sass_tags %}
+{% load static %}
+
+{% block title %}My Library — BookShelf Pro{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/library.scss' %}">
+{% endblock %}
+
+{% block content %}
+
+  <div class="library-page">
+
+    <div class="library-header">
+      <div class="library-header__left">
+        <h1>My Library</h1>
+        <p>Your personal book collection</p>
+      </div>
+      <div class="library-header__actions">
+        <a href="{% url 'books:index' %}" class="library-header__btn">
+          <img src="{% static 'deps/svg/search.svg' %}" alt="">
+          Find Books
+        </a>
+        <a href="{% url 'books:index' %}" class="library-header__btn library-header__btn--primary">
+          <img src="{% static 'deps/svg/plus.svg' %}" alt="">
+          Add Book
+        </a>
+      </div>
+    </div>
+
+    <div class="library-stats">
+      <div class="library-stats__card">
+        <div class="library-stats__card-value">24</div>
+        <div class="library-stats__card-label">Books Read</div>
+      </div>
+      <div class="library-stats__card">
+        <div class="library-stats__card-value">3</div>
+        <div class="library-stats__card-label">Reading Now</div>
+      </div>
+      <div class="library-stats__card">
+        <div class="library-stats__card-value">12</div>
+        <div class="library-stats__card-label">Want to Read</div>
+      </div>
+      <div class="library-stats__card">
+        <div class="library-stats__card-value">39</div>
+        <div class="library-stats__card-label">Total Books</div>
+      </div>
+    </div>
+
+    <div class="library-tabs">
+      <button class="library-tabs__tab active">
+        All
+        <span class="library-tabs__tab-count">39</span>
+      </button>
+      <button class="library-tabs__tab">
+        Reading
+        <span class="library-tabs__tab-count">3</span>
+      </button>
+      <button class="library-tabs__tab">
+        Want to Read
+        <span class="library-tabs__tab-count">12</span>
+      </button>
+      <button class="library-tabs__tab">
+        Finished
+        <span class="library-tabs__tab-count">24</span>
+      </button>
+    </div>
+
+    <div class="library-toolbar">
+
+      <div class="library-toolbar__search">
+        <img src="{% static 'deps/svg/search.svg' %}" alt="">
+        <input type="text" placeholder="Search in your library…">
+      </div>
+
+      <div class="library-toolbar__sort">
+        <img src="{% static 'deps/svg/sort.svg' %}" alt="">
+        <select>
+          <option>Recently Added</option>
+          <option>Title A–Z</option>
+          <option>Author A–Z</option>
+          <option>Rating</option>
+          <option>Year</option>
+        </select>
+      </div>
+
+      <div class="library-toolbar__view">
+        <button class="active" aria-label="Grid view">
+          <img src="{% static 'deps/svg/grid.svg' %}" alt="">
+        </button>
+        <button aria-label="List view">
+          <img src="{% static 'deps/svg/list.svg' %}" alt="">
+        </button>
+      </div>
+
+    </div>
+
+    <div class="library-grid">
+
+      <div class="library-book">
+        <div class="library-book__cover book-cover-3">
+          <div class="book-card-catalog__cover-placeholder">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+          </div>
+          <div class="library-book__cover-status">
+            <span class="badge badge--reading">Reading</span>
+          </div>
+        </div>
+        <div class="library-book__body">
+          <p class="library-book__title">Dune</p>
+          <p class="library-book__author">Frank Herbert</p>
+          <div class="library-book__progress">
+            <div class="library-book__progress-label">
+              <span>Progress</span>
+              <span>62%</span>
+            </div>
+            <div class="library-book__progress-bar">
+              <div class="library-book__progress-bar-fill" style="width: 62%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="library-book__actions">
+          <button class="library-book__action-btn">
+            <img src="{% static 'deps/svg/edit.svg' %}" alt="">
+            Update
+          </button>
+        </div>
+      </div>
+
+      <div class="library-book">
+        <div class="library-book__cover book-cover-2">
+          <div class="book-card-catalog__cover-placeholder">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+          </div>
+          <div class="library-book__cover-status">
+            <span class="badge badge--reading">Reading</span>
+          </div>
+        </div>
+        <div class="library-book__body">
+          <p class="library-book__title">1984</p>
+          <p class="library-book__author">George Orwell</p>
+          <div class="library-book__progress">
+            <div class="library-book__progress-label">
+              <span>Progress</span>
+              <span>34%</span>
+            </div>
+            <div class="library-book__progress-bar">
+              <div class="library-book__progress-bar-fill" style="width: 34%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="library-book__actions">
+          <button class="library-book__action-btn">
+            <img src="{% static 'deps/svg/edit.svg' %}" alt="">
+            Update
+          </button>
+        </div>
+      </div>
+
+      <div class="library-book">
+        <div class="library-book__cover book-cover-4">
+          <div class="book-card-catalog__cover-placeholder">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+          </div>
+          <div class="library-book__cover-status">
+            <span class="badge badge--done">Finished</span>
+          </div>
+        </div>
+        <div class="library-book__body">
+          <p class="library-book__title">The Great Gatsby</p>
+          <p class="library-book__author">F. Scott Fitzgerald</p>
+          <div class="library-book__rating">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star.svg' %}" alt="">
+          </div>
+        </div>
+        <div class="library-book__actions">
+          <button class="library-book__action-btn">
+            <img src="{% static 'deps/svg/star.svg' %}" alt="">
+            Rate
+          </button>
+        </div>
+      </div>
+
+      <div class="library-book">
+        <div class="library-book__cover book-cover-1">
+          <div class="book-card-catalog__cover-placeholder">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+          </div>
+          <div class="library-book__cover-status">
+            <span class="badge badge--done">Finished</span>
+          </div>
+        </div>
+        <div class="library-book__body">
+          <p class="library-book__title">The Hobbit</p>
+          <p class="library-book__author">J.R.R. Tolkien</p>
+          <div class="library-book__rating">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+          </div>
+        </div>
+        <div class="library-book__actions">
+          <button class="library-book__action-btn">
+            <img src="{% static 'deps/svg/star.svg' %}" alt="">
+            Rate
+          </button>
+        </div>
+      </div>
+
+      <div class="library-book">
+        <div class="library-book__cover book-cover-6">
+          <div class="book-card-catalog__cover-placeholder">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+          </div>
+          <div class="library-book__cover-status">
+            <span class="badge badge--want">Want</span>
+          </div>
+        </div>
+        <div class="library-book__body">
+          <p class="library-book__title">Atomic Habits</p>
+          <p class="library-book__author">James Clear</p>
+        </div>
+        <div class="library-book__actions">
+          <button class="library-book__action-btn">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+            Start
+          </button>
+        </div>
+      </div>
+
+      <div class="library-book">
+        <div class="library-book__cover book-cover-5">
+          <div class="book-card-catalog__cover-placeholder">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+          </div>
+          <div class="library-book__cover-status">
+            <span class="badge badge--want">Want</span>
+          </div>
+        </div>
+        <div class="library-book__body">
+          <p class="library-book__title">Sapiens</p>
+          <p class="library-book__author">Yuval Noah Harari</p>
+        </div>
+        <div class="library-book__actions">
+          <button class="library-book__action-btn">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+            Start
+          </button>
+        </div>
+      </div>
+
+      <div class="library-book">
+        <div class="library-book__cover book-cover-3">
+          <div class="book-card-catalog__cover-placeholder">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+          </div>
+          <div class="library-book__cover-status">
+            <span class="badge badge--reading">Reading</span>
+          </div>
+        </div>
+        <div class="library-book__body">
+          <p class="library-book__title">The Alchemist</p>
+          <p class="library-book__author">Paulo Coelho</p>
+          <div class="library-book__progress">
+            <div class="library-book__progress-label">
+              <span>Progress</span>
+              <span>85%</span>
+            </div>
+            <div class="library-book__progress-bar">
+              <div class="library-book__progress-bar-fill" style="width: 85%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="library-book__actions">
+          <button class="library-book__action-btn">
+            <img src="{% static 'deps/svg/edit.svg' %}" alt="">
+            Update
+          </button>
+        </div>
+      </div>
+
+      <div class="library-book">
+        <div class="library-book__cover book-cover-4">
+          <div class="book-card-catalog__cover-placeholder">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+          </div>
+          <div class="library-book__cover-status">
+            <span class="badge badge--done">Finished</span>
+          </div>
+        </div>
+        <div class="library-book__body">
+          <p class="library-book__title">Pride and Prejudice</p>
+          <p class="library-book__author">Jane Austen</p>
+          <div class="library-book__rating">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+          </div>
+        </div>
+        <div class="library-book__actions">
+          <button class="library-book__action-btn">
+            <img src="{% static 'deps/svg/star.svg' %}" alt="">
+            Rate
+          </button>
+        </div>
+      </div>
+
+      <div class="library-book">
+        <div class="library-book__cover book-cover-2">
+          <div class="book-card-catalog__cover-placeholder">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+          </div>
+          <div class="library-book__cover-status">
+            <span class="badge badge--want">Want</span>
+          </div>
+        </div>
+        <div class="library-book__body">
+          <p class="library-book__title">The Name of the Wind</p>
+          <p class="library-book__author">Patrick Rothfuss</p>
+        </div>
+        <div class="library-book__actions">
+          <button class="library-book__action-btn">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+            Start
+          </button>
+        </div>
+      </div>
+
+      <div class="library-book">
+        <div class="library-book__cover book-cover-6">
+          <div class="book-card-catalog__cover-placeholder">
+            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+          </div>
+          <div class="library-book__cover-status">
+            <span class="badge badge--done">Finished</span>
+          </div>
+        </div>
+        <div class="library-book__body">
+          <p class="library-book__title">To Kill a Mockingbird</p>
+          <p class="library-book__author">Harper Lee</p>
+          <div class="library-book__rating">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+            <img class="star" src="{% static 'deps/svg/star.svg' %}" alt="">
+          </div>
+        </div>
+        <div class="library-book__actions">
+          <button class="library-book__action-btn">
+            <img src="{% static 'deps/svg/star.svg' %}" alt="">
+            Rate
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+{% endblock %}
