@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.views.generic import ListView
 
+from books.services.book_import_service import BookImportService
+from books.services.searchBook_service import BookSearchClient
 from books.models import Book
 
 
@@ -14,9 +16,13 @@ class CatalogView(ListView):
         search = self.request.GET.get('search')
         search_by = self.request.GET.get('search_by')
 
-        queryset = self.model.objects.all()
-
         if search and search_by:
-            pass
+            client = BookSearchClient()
+            book_import = BookImportService()
 
-        return queryset
+            
+            if len(self.queryset) == 0:
+            
+                response = client.search_books_by_argument(query=search, argument=search_by)
+            
+

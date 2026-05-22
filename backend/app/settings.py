@@ -114,8 +114,8 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 
 COMPRESS_ROOT = BASE_DIR / 'static'
 
-LOGIN_URL = '/users/login/'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = "user:login"
+LOGIN_REDIRECT_URL = "main:index"
+LOGOUT_REDIRECT_URL = "main:index"
 
 AUTH_USER_MODEL = "users.User"

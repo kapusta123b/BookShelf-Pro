@@ -4,7 +4,7 @@ import requests
 class BookSearchClient:
     BASE_URL = 'https://openlibrary.org/'
 
-    def search_books_by_argument(self, query: str, argument: str, page: str) -> dict:
+    def search_books_by_argument(self, query: str, argument: str, page: str | None) -> dict:
 
         url = f'{self.BASE_URL}search.json/'
 

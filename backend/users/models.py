@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    reviews_count = models.IntegerField()
+    reviews_count = models.IntegerField(default=0)
     registration_date = models.DateTimeField(auto_now_add=True)
 
 

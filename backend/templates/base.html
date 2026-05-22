@@ -60,10 +60,13 @@
                   <img src="{% static 'deps/svg/settings.svg' %}" alt="">
                   Settings
                 </a>
-                <button class="nav__user-menu-item nav__user-menu-item--danger">
-                  <img src="{% static 'deps/svg/logout.svg' %}" alt="">
-                  Sign Out
-                </button>
+                <form method="post" action="{% url 'users:logout' %}" style="margin:0">
+                    {% csrf_token %}
+                    <button type="submit" class="nav__user-menu-item nav__user-menu-item--danger">
+                        <img src="{% static 'deps/svg/logout.svg' %}" alt="">
+                        Sign Out
+                    </button>
+                </form>
               </div>
             </div>
           {% else %}
@@ -111,9 +114,12 @@
 
       <div class="nav-mobile__actions">
         {% if user.is_authenticated %}
-          <button class="nav-mobile__btn nav-mobile__btn--outline">
-            <img src="{% static 'deps/svg/logout.svg' %}" alt=""> Sign Out
-          </button>
+          <form method="post" action="{% url 'users:logout' %}" style="margin:0">
+            {% csrf_token %}
+            <button type="submit" class="nav-mobile__btn nav-mobile__btn--outline">
+              <img src="{% static 'deps/svg/logout.svg' %}" alt=""> Sign Out
+            </button>
+          </form>
         {% else %}
           <a href="{% url 'users:login' %}" class="nav-mobile__btn nav-mobile__btn--outline">Sign In</a>
           <a href="{% url 'users:register' %}" class="nav-mobile__btn nav-mobile__btn--primary">Get Started</a>
