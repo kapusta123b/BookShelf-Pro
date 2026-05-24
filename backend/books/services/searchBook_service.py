@@ -12,7 +12,7 @@ class BookSearchClient:
             url=url,                    
             params={
                 argument: query,
-                'fields': 'cover_i,title,author_name,first_publish_year,subject',
+                'fields': 'cover_i,title,author_name,author_key,first_publish_year,subject',
                 'page': page,
                 'limit': 8
             }

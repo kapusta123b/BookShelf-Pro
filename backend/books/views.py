@@ -20,9 +20,14 @@ class CatalogView(ListView):
             client = BookSearchClient()
             book_import = BookImportService()
 
-            
-            if len(self.queryset) == 0:
-            
-                response = client.search_books_by_argument(query=search, argument=search_by)
-            
+            queryset = self.model.objects.filter(title__icontains=search)
 
+            if not queryset.exists():
+                data = client.search_books_by_argument(query=search, argument=search_by, page='1')
+                book_import.create_books(json=data)
+                queryset = self.model.objects.filter(title__icontains=search)
+
+            return queryset
+
+        
+        return super().get_queryset()

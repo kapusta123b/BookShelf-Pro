@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
 {% load sass_tags %}
+{% load books_tags %}
 {% load static %}
 
 {% block title %}Book Catalog — BookShelf Pro{% endblock %}
 
 {% block extra_css %}
+
   <link rel="stylesheet" href="{% sass_src 'deps/css/books.scss' %}">
+
 {% endblock %}
 
 {% block content %}
@@ -311,11 +314,11 @@
           <div class="book-card-catalog__body">
 
             <div class="book-card-catalog__genre">
-              <span class="badge badge--primary">{{ book.subjects.first }}</span>
+              <span class="badge badge--primary">{{ book.subjects.first.name }}</span>
             </div>
 
             <p class="book-card-catalog__title">{{ book.title }}</p>
-            <p class="book-card-catalog__author">{{ book.author.all }}</p>
+            <p class="book-card-catalog__author">{% for author in book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
 
             <div class="book-card-catalog__meta">
               <div class="book-card-catalog__rating">
@@ -346,20 +349,27 @@
         {% endfor %}
 
       </div>
+      {% if books %}
+        <div class="pagination">
+          <button class="pagination__btn pagination__btn--nav" disabled>
+            <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Previous" style="transform: rotate(180deg)">
+          </button>
 
-      <div class="pagination">
-        <button class="pagination__btn pagination__btn--nav" disabled>
-          <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Previous" style="transform: rotate(180deg)">
-        </button>
-        <a href="#" class="pagination__btn active">1</a>
-        <a href="#" class="pagination__btn">2</a>
-        <a href="#" class="pagination__btn">3</a>
-        <span class="pagination__btn pagination__btn--ellipsis">…</span>
-        <a href="#" class="pagination__btn">48</a>
-        <button class="pagination__btn pagination__btn--nav">
-          <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Next">
-        </button>
-      </div>
+          {% for p in paginator.page_range %}
+
+              {% if p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+
+                <a href="?{% url_replace page=p %}" class="pagination__btn">{{ p }}</a>
+              
+              {% endif %}
+
+          {% endfor %}
+
+          <button class="pagination__btn pagination__btn--nav">
+            <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Next">
+          </button>
+        </div>
+      {% endif %} 
 
     </div>
 

@@ -1,11 +1,10 @@
 from django.db import models
-
+from django.utils.text import slugify
 from app import settings
 
 class Subject(models.Model):
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, null=True, blank=True)
     name = models.CharField(max_length=100)
-
 
     class Meta:
         db_table = "subject"
@@ -22,7 +21,7 @@ class Author(models.Model):
     )
     name = models.CharField(max_length=255)
 
-    birth_date = models.CharField(max_length=100, blank=True)
+    birth_date = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -36,29 +35,30 @@ class Author(models.Model):
 
 class BookQuerySet(models.QuerySet):
 
-    def search_and_save_book(self, query: str, by: str):
-
-        pass
+    pass
 
 
 class Book(models.Model):
     objects = BookQuerySet.as_manager()
 
-    openlibrary_key = models.CharField()
-
     cover_i = models.CharField(null=True)
 
     title = models.CharField('Title', max_length=100)
-    author = models.ManyToManyField('books.Author', verbose_name='authors')
-    first_publish_year = models.IntegerField('First publish year')
+    authors = models.ManyToManyField('books.Author', verbose_name='authors')
+    first_publish_year = models.IntegerField('First publish year', null=True)
     subjects = models.ManyToManyField('books.Subject', related_name='books', blank=True)
 
     avg_rating = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.title} - {self.first_publish_year}"
     
     class Meta:
         db_table = 'book'
         verbose_name = 'Book'
         verbose_name_plural = 'Books'
+
+    
 
 
 
