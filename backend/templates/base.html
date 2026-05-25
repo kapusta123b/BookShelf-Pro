@@ -48,7 +48,7 @@
                 <img class="chevron" src="{% static 'deps/svg/chevron-down.svg' %}" alt="">
               </button>
               <div class="nav__user-menu-dropdown">
-                <a href="{% url 'users:profile' %}" class="nav__user-menu-item">
+                <a href="{% url 'users:profile' user.id %}" class="nav__user-menu-item">
                   <img src="{% static 'deps/svg/user.svg' %}" alt="">
                   Profile
                 </a>
@@ -56,16 +56,16 @@
                   <img src="{% static 'deps/svg/library.svg' %}" alt="">
                   My Library
                 </a>
-                <a href="{% url 'users:profile' %}" class="nav__user-menu-item">
+                <a href="{% url 'users:profile' user.id %}" class="nav__user-menu-item">
                   <img src="{% static 'deps/svg/settings.svg' %}" alt="">
                   Settings
                 </a>
                 <form method="post" action="{% url 'users:logout' %}" style="margin:0">
-                    {% csrf_token %}
-                    <button type="submit" class="nav__user-menu-item nav__user-menu-item--danger">
-                        <img src="{% static 'deps/svg/logout.svg' %}" alt="">
-                        Sign Out
-                    </button>
+                  {% csrf_token %}
+                  <button type="submit" class="nav__user-menu-item nav__user-menu-item--danger">
+                    <img src="{% static 'deps/svg/logout.svg' %}" alt="">
+                    Sign Out
+                  </button>
                 </form>
               </div>
             </div>
@@ -102,11 +102,11 @@
       <div class="nav-mobile__divider"></div>
 
       {% if user.is_authenticated %}
-        <a href="{% url 'users:profile' %}" class="nav-mobile__link">
+        <a href="{% url 'users:profile' user.id %}" class="nav-mobile__link">
           <img src="{% static 'deps/svg/user.svg' %}" alt="">
           Profile
         </a>
-        <a href="{% url 'users:profile' %}" class="nav-mobile__link">
+        <a href="{% url 'users:profile' user.id %}" class="nav-mobile__link">
           <img src="{% static 'deps/svg/settings.svg' %}" alt="">
           Settings
         </a>
@@ -166,9 +166,13 @@
         <div class="footer__col">
           <h4>Account</h4>
           <ul>
-            <li><a href="{% url 'users:login' %}">Sign In</a></li>
-            <li><a href="{% url 'users:register' %}">Register</a></li>
-            <li><a href="{% url 'users:profile' %}">Profile</a></li>
+            {% if user.is_authenticated %}
+
+              <li><a href="{% url 'users:profile' user.id %}">Profile</a></li>
+            {% else %}
+              <li><a href="{% url 'users:login' %}">Sign In</a></li>
+              <li><a href="{% url 'users:register' %}">Register</a></li>
+            {% endif %}
           </ul>
         </div>
 

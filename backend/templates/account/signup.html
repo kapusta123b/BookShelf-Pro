@@ -23,7 +23,7 @@
         <p>Start your reading journey for free — no credit card required</p>
       </div>
 
-      <form method="post" action="{% url 'users:register' %}" novalidate>
+      <form method="post" action="{% url 'account_signup' %}">
         {% csrf_token %}
 
         <div class="form-grid">
@@ -60,6 +60,9 @@
               autocomplete="username"
             >
             <span class="field-hint">This will be your public display name</span>
+            {% for error in form.username.error  %}
+              <span class="field-error">{{ error }}</span>
+            {% endfor %}
           </div>
 
           <div class="form-field span-full">
@@ -71,6 +74,9 @@
               placeholder="you@example.com"
               autocomplete="email"
             >
+            {% for error in form.email.error  %}
+              <span class="field-error">{{ error }}</span>
+            {% endfor %}
           </div>
 
           <div class="form-field">
@@ -87,6 +93,9 @@
                 <img src="{% static 'deps/svg/eye.svg' %}" alt="Show">
               </button>
             </div>
+            {% for error in form.password1.error  %}
+              <span class="field-error">{{ error }}</span>
+            {% endfor %}
           </div>
 
           <div class="form-field">
@@ -103,11 +112,14 @@
                 <img src="{% static 'deps/svg/eye.svg' %}" alt="Show">
               </button>
             </div>
+            {% for error in form.password2.error  %}
+              <span class="field-error">{{ error }}</span>
+            {% endfor %}
           </div>
 
           <div class="form-field span-full" style="margin-bottom: 0;">
             <label style="display: flex; align-items: flex-start; gap: 0.625rem; font-weight: 400; cursor: pointer;">
-              <input type="checkbox" name="agree_terms" style="width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; accent-color: #0d9488; cursor: pointer;">
+              <input required type="checkbox" name="agree_terms" style="width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; accent-color: #0d9488; cursor: pointer;">
               <span style="font-size: 0.875rem; color: #475569; line-height: 1.5;">
                 I agree to the
                 <a href="#" style="color: #0d9488; font-weight: 600; text-decoration: none;">Terms of Service</a>
@@ -118,6 +130,26 @@
           </div>
 
         </div>
+
+        {{ form.captcha }}
+
+        {% if form.non_field_errors %}
+
+          <div class="auth-message auth-message--error">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <ul>
+              {% for error in form.non_field_errors %}
+
+                <li>{{ error }}</li>
+
+              {% endfor %}
+            </ul>
+          </div>
+
+        {% endif %}
+
 
         <button type="submit" class="auth-button">Create Account</button>
 

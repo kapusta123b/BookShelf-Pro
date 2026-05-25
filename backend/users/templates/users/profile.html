@@ -17,21 +17,25 @@
 
         <div class="profile-card">
           <div class="profile-card__avatar">
-            JD
+            {{ profile_user.first_name|first|upper }}
+            {{ profile_user.last_name|first|upper }}
+
             <button class="profile-card__avatar-upload">
               <img src="{% static 'deps/svg/edit.svg' %}" alt="Upload photo">
             </button>
           </div>
 
-          <h2 class="profile-card__name">John Doe</h2>
-          <p class="profile-card__username">@bookworm42</p>
-          <p class="profile-card__bio">Avid reader of science fiction and fantasy. Always looking for the next great adventure between the pages.</p>
-          <p class="profile-card__since">Member since January 2025</p>
-
-          <a href="#" class="profile-card__edit-btn">
-            <img src="{% static 'deps/svg/edit.svg' %}" alt="">
-            Edit Profile
-          </a>
+          <h2 class="profile-card__name">{{ profile_user.get_full_name }}</h2>
+          <p class="profile-card__username">@{{ profile_user.username }}</p>
+          <p class="profile-card__bio">{{ profile_user.description|default:'None description' }}</p>
+          <p class="profile-card__since">Member since {{ profile_user.date_joined }}</p>
+          
+          {% if profile_user.id == user.id %}
+            <a href="#" class="profile-card__edit-btn">
+              <img src="{% static 'deps/svg/edit.svg' %}" alt="">
+              Edit Profile
+            </a>
+          {% endif %}
         </div>
 
         <div class="profile-stats">
@@ -41,7 +45,7 @@
               <img src="{% static 'deps/svg/check.svg' %}" alt="">
               Books Read
             </span>
-            <strong>24</strong>
+            <strong>{{ profile_user.books_read }}</strong>
           </div>
 
           <div class="profile-stats__item">
@@ -49,7 +53,7 @@
               <img src="{% static 'deps/svg/clock.svg' %}" alt="">
               Reading Now
             </span>
-            <strong>3</strong>
+            <strong>{{ profile_user.reading_now }}</strong>
           </div>
 
           <div class="profile-stats__item">
@@ -57,7 +61,7 @@
               <img src="{% static 'deps/svg/bookmark.svg' %}" alt="">
               Want to Read
             </span>
-            <strong>12</strong>
+            <strong>{{ profile_user.want_to_read }}</strong>
           </div>
 
           <div class="profile-stats__item">
@@ -65,7 +69,7 @@
               <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
               Avg Rating
             </span>
-            <strong>4.3</strong>
+            <strong>{{ profile_user.avg_rating }}</strong>
           </div>
 
         </div>

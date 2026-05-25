@@ -1,19 +1,9 @@
-from django.shortcuts import render
-from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DetailView
 
-from users.forms import UserLoginForm
+from users.models import User
 
-
-class UserLoginView(LoginView):
-    template_name = 'users/login.html'
-    form_class = UserLoginForm
-
-
-
-def register_view(request):
-    return render(request, 'users/registration.html')
-
-
-def profile_view(request):
-    return render(request, 'users/profile.html')
+class ProfileView(DetailView):
+    model = User
+    pk_url_kwarg = 'user_id'
+    template_name = 'users/profile.html'
+    context_object_name = 'profile_user'
