@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load sass_tags %}
+{% load static %}
+
+{% block title %}Registration Closed — BookShelf Pro{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/auth/password-done.scss' %}">
+{% endblock %}
+
+{% block content %}
+
+  <main class="auth-main">
+    <div class="auth-container">
+
+      <a href="{% url 'main:index' %}" class="auth-brand">
+        <img src="{% static 'deps/svg/logo.svg' %}" alt="BookShelf Pro">
+        <span>BookShelf Pro</span>
+      </a>
+
+      <div class="auth-success">
+        <div class="auth-success__icon" style="background-color: #fffbeb;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <h1 class="auth-success__title">Registration closed</h1>
+        <p class="auth-success__text">Sign-ups are currently not available. Please check back later.</p>
+      </div>
+
+      <div class="auth-links">
+        <span>Already have an account?</span>
+        <a href="{% url 'account_login' %}">Sign in</a>
+      </div>
+
+    </div>
+  </main>
+
+{% endblock %}

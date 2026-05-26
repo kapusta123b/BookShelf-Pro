@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     #allauth
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
 
@@ -116,7 +117,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [BASE_DIR / 'static', BASE_DIR / 'sass-cache']
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -133,7 +134,7 @@ LOGIN_REDIRECT_URL = "main:index"
 LOGOUT_REDIRECT_URL = "main:index"
 
 #SCSS
-SASS_PROCESSOR_ROOT = BASE_DIR / 'static'
+SASS_PROCESSOR_ROOT = BASE_DIR / 'sass-cache'
 SASS_PROCESSOR_INCLUDE_DIRS = [
     BASE_DIR / 'static' / 'deps' / 'css',
 ]

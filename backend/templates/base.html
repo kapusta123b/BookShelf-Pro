@@ -32,7 +32,7 @@
         <div class="nav__links">
           <a href="{% url 'main:index' %}" class="nav__link">Home</a>
           <a href="{% url 'books:index' %}" class="nav__link">Catalog</a>
-          <a href="{% url 'library:index' %}" class="nav__link">My Library</a>
+          <a href="{% url 'library:index' user.id %}" class="nav__link">My Library</a>
         </div>
 
         <div class="nav__actions">
@@ -52,11 +52,11 @@
                   <img src="{% static 'deps/svg/user.svg' %}" alt="">
                   Profile
                 </a>
-                <a href="{% url 'library:index' %}" class="nav__user-menu-item">
+                <a href="{% url 'library:index' user.id %}" class="nav__user-menu-item">
                   <img src="{% static 'deps/svg/library.svg' %}" alt="">
                   My Library
                 </a>
-                <a href="{% url 'users:profile' user.id %}" class="nav__user-menu-item">
+                <a href="{% url 'users:settings' %}" class="nav__user-menu-item">
                   <img src="{% static 'deps/svg/settings.svg' %}" alt="">
                   Settings
                 </a>
@@ -94,7 +94,7 @@
         Catalog
       </a>
 
-      <a href="{% url 'library:index' %}" class="nav-mobile__link">
+      <a href="{% url 'library:index' user.id %}" class="nav-mobile__link">
         <img src="{% static 'deps/svg/library.svg' %}" alt="">
         My Library
       </a>
@@ -106,7 +106,7 @@
           <img src="{% static 'deps/svg/user.svg' %}" alt="">
           Profile
         </a>
-        <a href="{% url 'users:profile' user.id %}" class="nav-mobile__link">
+        <a href="{% url 'users:settings' %}" class="nav-mobile__link">
           <img src="{% static 'deps/svg/settings.svg' %}" alt="">
           Settings
         </a>
@@ -159,7 +159,7 @@
           <ul>
             <li><a href="{% url 'main:index' %}">Home</a></li>
             <li><a href="{% url 'books:index' %}">Catalog</a></li>
-            <li><a href="{% url 'library:index' %}">My Library</a></li>
+            <li><a href="{% url 'library:index' user.id %}">My Library</a></li>
           </ul>
         </div>
 

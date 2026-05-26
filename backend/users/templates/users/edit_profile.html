@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load sass_tags %}
+{% load static %}
+
+{% block title %}Edit Profile — BookShelf Pro{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/edit-profile.scss' %}">
+{% endblock %}
+
+{% block content %}
+
+  <div class="edit-profile-page">
+
+    <div class="edit-profile-header">
+      <a href="{% url 'users:settings' %}" class="edit-profile-header__back">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Back to settings
+      </a>
+      <h1>Edit profile</h1>
+      <p>Update your public information</p>
+    </div>
+
+    <div class="edit-profile-layout">
+
+      <div class="edit-profile-avatar-card">
+        <div class="edit-profile-avatar-card__avatar">
+          {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+        </div>
+        <p class="edit-profile-avatar-card__name">{{ user.get_full_name|default:user.username }}</p>
+        <p class="edit-profile-avatar-card__username">@{{ user.username }}</p>
+        <p class="edit-profile-avatar-card__hint">Changes to your name and bio will be visible to everyone on BookShelf Pro.</p>
+      </div>
+
+      <form method="post" action="{% url 'users:edit_profile' %}">
+        {% csrf_token %}
+
+        <div class="edit-profile-form-card">
+
+          <div class="edit-profile-section">
+            <p class="edit-profile-section__title">Personal information</p>
+            <p class="edit-profile-section__subtitle">Your name as shown on your public profile</p>
+
+            <div class="edit-profile-grid">
+              <div class="edit-profile-field">
+                <label for="first_name">First name</label>
+                <input
+                  type="text"
+                  id="first_name"
+                  name="first_name"
+                  value="{{ form.first_name.value|default:'' }}"
+                  placeholder="John"
+                  autocomplete="given-name"
+                >
+                {% for error in form.first_name.errors %}
+                  <span class="field-error">{{ error }}</span>
+                {% endfor %}
+              </div>
+
+              <div class="edit-profile-field">
+                <label for="last_name">Last name</label>
+                <input
+                  type="text"
+                  id="last_name"
+                  name="last_name"
+                  value="{{ form.last_name.value|default:'' }}"
+                  placeholder="Doe"
+                  autocomplete="family-name"
+                >
+                {% for error in form.last_name.errors %}
+                  <span class="field-error">{{ error }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <div class="edit-profile-section">
+            <p class="edit-profile-section__title">Username</p>
+            <p class="edit-profile-section__subtitle">Your unique handle — used in your profile URL and @mentions</p>
+
+            <div class="edit-profile-grid">
+              <div class="edit-profile-field span-full">
+                <label for="username">Username</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value="{{ form.username.value|default:'' }}"
+                  placeholder="bookworm42"
+                  autocomplete="username"
+                >
+                {% for error in form.username.errors %}
+                  <span class="field-error">{{ error }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <div class="edit-profile-section">
+            <p class="edit-profile-section__title">Bio</p>
+            <p class="edit-profile-section__subtitle">A short description about yourself — max 150 characters</p>
+
+            <div class="edit-profile-grid">
+              <div class="edit-profile-field span-full">
+                <label for="description">About you</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  placeholder="Tell other readers a bit about yourself…"
+                  maxlength="150"
+                >{{ form.description.value|default:'' }}</textarea>
+                <span class="edit-profile-char-count" id="bio-count">0 / 150</span>
+                {% for error in form.description.errors %}
+                  <span class="field-error">{{ error }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          {% if form.non_field_errors %}
+            <div class="edit-profile-section">
+              {% for error in form.non_field_errors %}
+                <span class="field-error">{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <div class="edit-profile-actions">
+            <a href="{% url 'users:settings' %}" class="edit-profile-actions__cancel">Cancel</a>
+            <button type="submit" class="edit-profile-actions__save">Save changes</button>
+          </div>
+
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    (function () {
+      var textarea = document.getElementById('description');
+      var counter = document.getElementById('bio-count');
+      if (textarea && counter) {
+        function update() {
+          counter.textContent = textarea.value.length + ' / 150';
+        }
+        textarea.addEventListener('input', update);
+        update();
+      }
+    })();
+  </script>
+{% endblock %}

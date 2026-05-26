@@ -1,0 +1,173 @@
+@import 'variables';
+@import 'auth/base';
+
+.auth-container {
+  max-width: 600px;
+}
+
+.email-list {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid $border;
+    border-radius: $radius;
+    background-color: $bg-card;
+    flex-wrap: wrap;
+
+    &--primary {
+      border-color: $primary;
+      background-color: $primary-muted;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  &__address {
+    font-size: $font-size-base;
+    font-weight: 600;
+    color: $text-primary;
+    word-break: break-all;
+  }
+
+  &__badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    padding: 0.2rem 0.625rem;
+    border-radius: $radius-full;
+
+    svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    &--primary {
+      background-color: $primary;
+      color: $text-inverse;
+    }
+
+    &--verified {
+      background-color: $success-bg;
+      color: $success;
+    }
+
+    &--unverified {
+      background-color: $warning-bg;
+      color: $warning;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  &__btn {
+    padding: 0.4rem 0.875rem;
+    border-radius: $radius;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    font-family: $font-family;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: $transition-fast;
+    background: none;
+
+    &--make-primary {
+      border-color: $primary;
+      color: $primary;
+
+      &:hover {
+        background-color: $primary;
+        color: $text-inverse;
+      }
+    }
+
+    &--verify {
+      border-color: $warning;
+      color: $warning;
+
+      &:hover {
+        background-color: $warning;
+        color: $text-inverse;
+      }
+    }
+
+    &--remove {
+      border-color: $error;
+      color: $error;
+
+      &:hover {
+        background-color: $error;
+        color: $text-inverse;
+      }
+    }
+  }
+}
+
+.email-add {
+  border-top: 1px solid $border;
+  padding-top: 1.5rem;
+  margin-top: 0.5rem;
+
+  &__title {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0 0 1rem;
+  }
+
+  &__row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+
+    input {
+      flex: 1;
+    }
+
+    button {
+      flex-shrink: 0;
+      padding: 0.75rem 1.25rem;
+      background-color: $primary;
+      color: $text-inverse;
+      border: none;
+      border-radius: $radius;
+      font-size: $font-size-base;
+      font-weight: 600;
+      font-family: $font-family;
+      cursor: pointer;
+      transition: $transition-fast;
+      white-space: nowrap;
+
+      &:hover {
+        background-color: $primary-dark;
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load sass_tags %}
+{% load static %}
+
+{% block title %}Account Inactive — BookShelf Pro{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/auth/password-done.scss' %}">
+{% endblock %}
+
+{% block content %}
+
+  <main class="auth-main">
+    <div class="auth-container">
+
+      <a href="{% url 'main:index' %}" class="auth-brand">
+        <img src="{% static 'deps/svg/logo.svg' %}" alt="BookShelf Pro">
+        <span>BookShelf Pro</span>
+      </a>
+
+      <div class="auth-success">
+        <div class="auth-success__icon" style="background-color: #fef2f2;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <h1 class="auth-success__title">Account inactive</h1>
+        <p class="auth-success__text">This account has been disabled. Please contact support if you believe this is a mistake.</p>
+      </div>
+
+      <div class="auth-links">
+        <a href="{% url 'main:index' %}">Back to home</a>
+      </div>
+
+    </div>
+  </main>
+
+{% endblock %}

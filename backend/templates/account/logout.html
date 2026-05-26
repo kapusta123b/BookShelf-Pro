@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load sass_tags %}
+{% load static %}
+
+{% block title %}Sign Out — BookShelf Pro{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/auth/logout.scss' %}">
+{% endblock %}
+
+{% block content %}
+
+  <main class="auth-main">
+    <div class="auth-container">
+
+      <a href="{% url 'main:index' %}" class="auth-brand">
+        <img src="{% static 'deps/svg/logo.svg' %}" alt="BookShelf Pro">
+        <span>BookShelf Pro</span>
+      </a>
+
+      <div class="auth-success">
+        <div class="auth-success__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </div>
+        <h1 class="auth-success__title">Sign out?</h1>
+        <p class="auth-success__text">Are you sure you want to sign out of your BookShelf Pro account?</p>
+      </div>
+
+      <div class="logout-actions">
+        <form method="post" action="{% url 'account_logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="auth-button">Yes, sign me out</button>
+        </form>
+        <a href="{% url 'main:index' %}" class="logout-actions__cancel">Cancel</a>
+      </div>
+
+    </div>
+  </main>
+
+{% endblock %}

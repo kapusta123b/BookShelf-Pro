@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load sass_tags %}
+{% load static %}
+
+{% block title %}Email Addresses — BookShelf Pro{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/auth/email-manage.scss' %}">
+{% endblock %}
+
+{% block content %}
+
+  <main class="auth-main">
+    <div class="auth-container">
+
+      <a href="{% url 'main:index' %}" class="auth-brand">
+        <img src="{% static 'deps/svg/logo.svg' %}" alt="BookShelf Pro">
+        <span>BookShelf Pro</span>
+      </a>
+
+      <div class="auth-header">
+        <h1>Email addresses</h1>
+        <p>Manage the email addresses linked to your account</p>
+      </div>
+
+      {% if emailaddresses %}
+        <ul class="email-list">
+          {% for emailaddress in emailaddresses %}
+            <li class="email-list__item {% if emailaddress.primary %}email-list__item--primary{% endif %}">
+              <div class="email-list__info">
+                <span class="email-list__address">{{ emailaddress.email }}</span>
+                <div class="email-list__badges">
+                  {% if emailaddress.primary %}
+                    <span class="email-list__badge email-list__badge--primary">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                      Primary
+                    </span>
+                  {% endif %}
+                  {% if emailaddress.verified %}
+                    <span class="email-list__badge email-list__badge--verified">Verified</span>
+                  {% else %}
+                    <span class="email-list__badge email-list__badge--unverified">Unverified</span>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="email-list__actions">
+                {% if not emailaddress.primary %}
+                  <form method="post" action="{% url 'account_email' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="email" value="{{ emailaddress.email }}">
+                    <button type="submit" name="action_primary" class="email-list__btn email-list__btn--make-primary">Make primary</button>
+                  </form>
+                {% endif %}
+                {% if not emailaddress.verified %}
+                  <form method="post" action="{% url 'account_email' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="email" value="{{ emailaddress.email }}">
+                    <button type="submit" name="action_send" class="email-list__btn email-list__btn--verify">Resend verification</button>
+                  </form>
+                {% endif %}
+                {% if not emailaddress.primary %}
+                  <form method="post" action="{% url 'account_email' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="email" value="{{ emailaddress.email }}">
+                    <button type="submit" name="action_remove" class="email-list__btn email-list__btn--remove">Remove</button>
+                  </form>
+                {% endif %}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="auth-message auth-message--warning">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>No email addresses linked to your account.</p>
+        </div>
+      {% endif %}
+
+      {% if can_add_email %}
+        <div class="email-add">
+          <h2 class="email-add__title">Add email address</h2>
+          <form method="post" action="{% url 'account_email' %}">
+            {% csrf_token %}
+            <div class="email-add__row">
+              <input
+                type="email"
+                name="email"
+                placeholder="new@example.com"
+                autocomplete="email"
+              >
+              <button type="submit" name="action_add">Add</button>
+            </div>
+            {% for error in form.email.errors %}
+              <span class="field-error">{{ error }}</span>
+            {% endfor %}
+          </form>
+        </div>
+      {% endif %}
+
+    </div>
+  </main>
+
+{% endblock %}

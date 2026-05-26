@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load sass_tags %}
+{% load static %}
+
+{% block title %}Confirm Email — BookShelf Pro{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/auth/email-confirm.scss' %}">
+{% endblock %}
+
+{% block content %}
+
+  <main class="auth-main">
+    <div class="auth-container">
+
+      <a href="{% url 'main:index' %}" class="auth-brand">
+        <img src="{% static 'deps/svg/logo.svg' %}" alt="BookShelf Pro">
+        <span>BookShelf Pro</span>
+      </a>
+
+      {% if confirmation %}
+
+        <div class="confirm-card">
+          <div class="confirm-card__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+
+          <div class="auth-header">
+            <h1>Confirm your email</h1>
+            <p>Please confirm that <span class="confirm-card__email">{{ confirmation.email_address.email }}</span> is your email address.</p>
+          </div>
+
+          <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+            {% csrf_token %}
+            <button type="submit" class="auth-button">Confirm Email Address</button>
+          </form>
+        </div>
+
+      {% else %}
+
+        <div class="auth-header">
+          <h1>Invalid confirmation link</h1>
+          <p>This email confirmation link is invalid or has expired.</p>
+        </div>
+
+        <div class="auth-message auth-message--error">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>The link may have expired. Request a new confirmation email from your account settings.</p>
+        </div>
+
+        <div class="auth-links">
+          <a href="{% url 'account_email' %}">Manage email addresses</a>
+        </div>
+
+      {% endif %}
+
+    </div>
+  </main>
+
+{% endblock %}

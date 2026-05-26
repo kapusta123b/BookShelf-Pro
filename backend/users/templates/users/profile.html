@@ -31,7 +31,7 @@
           <p class="profile-card__since">Member since {{ profile_user.date_joined }}</p>
           
           {% if profile_user.id == user.id %}
-            <a href="#" class="profile-card__edit-btn">
+            <a href="{% url 'users:edit_profile' %}" class="profile-card__edit-btn">
               <img src="{% static 'deps/svg/edit.svg' %}" alt="">
               Edit Profile
             </a>
@@ -81,7 +81,7 @@
         <div class="profile-section">
           <div class="profile-section__header">
             <h2>Currently Reading</h2>
-            <a href="{% url 'library:index' %}">View library</a>
+            <a href="{% url 'library:index' user.id %}">View library</a>
           </div>
 
           <div class="currently-reading">
@@ -139,7 +139,7 @@
         <div class="profile-section">
           <div class="profile-section__header">
             <h2>Recently Read</h2>
-            <a href="{% url 'library:index' %}">See all 24</a>
+            <a href="{% url 'library:index' user.id %}">See all 24</a>
           </div>
           <div class="recent-books">
             <a href="#" class="recent-book">

@@ -1,0 +1,56 @@
+@import 'variables';
+@import 'auth/base';
+
+.social-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid $border;
+  border-radius: $radius;
+  background-color: $bg-muted;
+  margin-bottom: 1.5rem;
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-full;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    &--google {
+      background-color: #fce8e6;
+    }
+
+    &--facebook {
+      background-color: #e7f0fd;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  &__provider {
+    font-size: $font-size-xs;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  &__email {
+    font-size: $font-size-base;
+    color: $text-primary;
+    font-weight: 600;
+  }
+}

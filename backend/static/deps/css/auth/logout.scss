@@ -1,0 +1,29 @@
+@import 'variables';
+@import 'auth/base';
+
+.logout-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+
+  &__cancel {
+    display: block;
+    text-align: center;
+    padding: 0.875rem 1.5rem;
+    border: 1px solid $border;
+    border-radius: $radius;
+    font-size: $font-size-base;
+    font-weight: 600;
+    font-family: $font-family;
+    color: $text-secondary;
+    text-decoration: none;
+    transition: $transition-fast;
+
+    &:hover {
+      border-color: darken($border, 8%);
+      background-color: $bg-muted;
+      color: $text-primary;
+    }
+  }
+}

@@ -6,6 +6,15 @@ from users.models import User
 from allauth.account.forms import LoginForm, SignupForm
 
 
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'description']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3, 'maxlength': 150}),
+        }
+
+
 class UserLoginForm(LoginForm):
     captcha = ReCaptchaField(
         widget=widgets.ReCaptchaV2Checkbox(
