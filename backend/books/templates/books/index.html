@@ -304,10 +304,27 @@
                 <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
               </div>
               <div class="book-card-catalog__cover-quick-add">
-                <button class="book-card-catalog__cover-btn">
-                  <img src="{% static 'deps/svg/plus.svg' %}" alt="">
-                  Add
-                </button>
+
+                {% if book.id in user_library_ids %}
+
+                  <button class="book-card-catalog__cover-btn book-card-catalog__cover-btn--in-library" disabled>
+                    <img src="{% static 'deps/svg/check.svg' %}" alt="">
+                    In Library
+                  </button>
+
+                {% else %}
+
+                  <form method="post" action="{% url "library:add_to_library" book.id %}">
+                    {% csrf_token %}
+
+                    <button type="submit" class="book-card-catalog__cover-btn">
+                      <img src="{% static 'deps/svg/plus.svg' %}" alt="">
+                      Add
+                    </button>
+                    
+                  </form>
+
+                {% endif %}
               </div>
             </div>
 
@@ -318,7 +335,7 @@
               </div>
 
               <p class="book-card-catalog__title">{{ book.title }}</p>
-              <p class="book-card-catalog__author">{% for author in book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+              <p class="book-card-catalog__author">{{ book.get_authors }}</p>
 
               <div class="book-card-catalog__meta">
                 <div class="book-card-catalog__rating">
@@ -331,14 +348,20 @@
               </div>
 
               <div class="book-card-catalog__actions">
-                <button class="book-card-catalog__btn book-card-catalog__btn--primary">
-                  <img src="{% static 'deps/svg/plus.svg' %}" alt="">
-                  Add to Library
-                </button>
-                <button class="book-card-catalog__btn book-card-catalog__btn--outline">
-                  <img src="{% static 'deps/svg/bookmark.svg' %}" alt="">
-                  Want to Read
-                </button>
+                {% if book.id in user_library_ids %}
+                  <button class="book-card-catalog__btn book-card-catalog__btn--in-library" disabled>
+                    <img src="{% static 'deps/svg/check.svg' %}" alt="">
+                    In Library
+                  </button>
+                {% else %}
+                  <form method="post" action="{% url "library:add_to_library" book.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="book-card-catalog__btn book-card-catalog__btn--primary">
+                      <img src="{% static 'deps/svg/plus.svg' %}" alt="">
+                      Add to Library
+                    </button>
+                  </form>
+                {% endif %}
               </div>
 
             </div>

@@ -109,22 +109,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  const addBtns = document.querySelectorAll('.book-card-catalog__btn--primary, .book-card-catalog__cover-btn');
-  addBtns.forEach(function (btn) {
-    btn.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
 
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '<img src="' + btn.querySelector('img').src.replace(/[^/]+\.svg/, 'check.svg') + '" alt=""> Added!';
-      btn.style.backgroundColor = '#2e7d32';
-      btn.style.borderColor = '#2e7d32';
-
-      setTimeout(function () {
-        btn.innerHTML = originalText;
-        btn.style.backgroundColor = '';
-        btn.style.borderColor = '';
-      }, 2000);
-    });
-  });
 });

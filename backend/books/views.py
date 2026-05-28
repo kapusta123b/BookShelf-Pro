@@ -31,3 +31,15 @@ class CatalogView(ListView):
 
         
         return super().get_queryset()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.request.user.is_authenticated:
+            context['user_library_ids'] = set(
+                self.request.user.library_books.values_list('book_id', flat=True)
+            )
+        else:
+            context['user_library_ids'] = set()
+
+        return context

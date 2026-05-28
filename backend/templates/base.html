@@ -32,7 +32,12 @@
         <div class="nav__links">
           <a href="{% url 'main:index' %}" class="nav__link">Home</a>
           <a href="{% url 'books:index' %}" class="nav__link">Catalog</a>
-          <a href="{% url 'library:index' user.id %}" class="nav__link">My Library</a>
+
+          {% if user.is_authenticated %}
+
+            <a href="{% url 'library:index' user.id %}" class="nav__link">My Library</a>
+          
+          {% endif %}
         </div>
 
         <div class="nav__actions">
@@ -93,11 +98,14 @@
         <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
         Catalog
       </a>
+      {% if user.is_authenticated %}
 
-      <a href="{% url 'library:index' user.id %}" class="nav-mobile__link">
-        <img src="{% static 'deps/svg/library.svg' %}" alt="">
-        My Library
-      </a>
+        <a href="{% url 'library:index' user.id %}" class="nav-mobile__link">
+          <img src="{% static 'deps/svg/library.svg' %}" alt="">
+          My Library
+        </a>
+
+      {% endif %}
 
       <div class="nav-mobile__divider"></div>
 
@@ -159,7 +167,13 @@
           <ul>
             <li><a href="{% url 'main:index' %}">Home</a></li>
             <li><a href="{% url 'books:index' %}">Catalog</a></li>
-            <li><a href="{% url 'library:index' user.id %}">My Library</a></li>
+
+            {% if user.is_authenticated %}
+            
+              <li><a href="{% url 'library:index' user.id %}">My Library</a></li>
+
+            {% endif %}
+            
           </ul>
         </div>
 

@@ -18,14 +18,12 @@
         <p>Your personal book collection</p>
       </div>
       <div class="library-header__actions">
-        <a href="{% url 'books:index' %}" class="library-header__btn">
-          <img src="{% static 'deps/svg/search.svg' %}" alt="">
-          Find Books
-        </a>
+        
         <a href="{% url 'books:index' %}" class="library-header__btn library-header__btn--primary">
           <img src="{% static 'deps/svg/plus.svg' %}" alt="">
           Add Book
         </a>
+        
       </div>
     </div>
 
@@ -43,7 +41,7 @@
         <div class="library-stats__card-label">Want to Read</div>
       </div>
       <div class="library-stats__card">
-        <div class="library-stats__card-value">{{ library_user. }}</div>
+        <div class="library-stats__card-value">{{ library_user.library_books.all.count }}</div>
         <div class="library-stats__card-label">Total Books</div>
       </div>
     </div>
@@ -51,19 +49,19 @@
     <div class="library-tabs">
       <button class="library-tabs__tab active">
         All
-        <span class="library-tabs__tab-count">39</span>
+        <span class="library-tabs__tab-count">{{ library_user.library_books.all.count }}</span>
       </button>
       <button class="library-tabs__tab">
         Reading
-        <span class="library-tabs__tab-count">3</span>
+        <span class="library-tabs__tab-count">{{ library_user.library_books.total_reading }}</span>
       </button>
       <button class="library-tabs__tab">
         Want to Read
-        <span class="library-tabs__tab-count">12</span>
+        <span class="library-tabs__tab-count">{{ library_user.library_books.total_want_read }}</span>
       </button>
       <button class="library-tabs__tab">
         Finished
-        <span class="library-tabs__tab-count">24</span>
+        <span class="library-tabs__tab-count">{{ library_user.library_books.total_ulready_read }}</span>
       </button>
     </div>
 
@@ -71,7 +69,7 @@
 
       <div class="library-toolbar__search">
         <img src="{% static 'deps/svg/search.svg' %}" alt="">
-        <input type="text" placeholder="Search in your library…">
+        <input type="text" placeholder="Search in library…">
       </div>
 
       <div class="library-toolbar__sort">
@@ -98,35 +96,35 @@
 
     <div class="library-grid">
 
-      <div class="library-book">
-        <div class="library-book__cover book-cover-3">
-          <div class="book-card-catalog__cover-placeholder">
-            <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
-          </div>
-          <div class="library-book__cover-status">
-            <span class="badge badge--reading">Reading</span>
-          </div>
-        </div>
-        <div class="library-book__body">
-          <p class="library-book__title">Dune</p>
-          <p class="library-book__author">Frank Herbert</p>
-          <div class="library-book__progress">
-            <div class="library-book__progress-label">
-              <span>Progress</span>
-              <span>62%</span>
+      {% for lib_book in library_user.library_books.all %}
+        <div class="library-book">
+          <div class="library-book__cover book-cover-3">
+            <div class="book-card-catalog__cover-placeholder">
+              <img src="https://covers.openlibrary.org/b/id/{{ lib_book.book.cover_i }}-M.jpg" alt="">
             </div>
-            <div class="library-book__progress-bar">
-              <div class="library-book__progress-bar-fill" style="width: 62%"></div>
+            <div class="library-book__cover-status">
+              <span class="badge badge--reading">{{ lib_book.get_status_display }}</span>
             </div>
           </div>
+          <div class="library-book__body">
+
+            <p class="library-book__title">{{ lib_book.book.title }}</p>
+
+            <p class="library-book__author">
+              {{ lib_book.book.get_authors }}
+            </p>
+
+            
+          </div>
+          <div class="library-book__actions">
+            <button class="library-book__action-btn">
+              <img src="{% static 'deps/svg/edit.svg' %}" alt="">
+              Update
+            </button>
+          </div>
         </div>
-        <div class="library-book__actions">
-          <button class="library-book__action-btn">
-            <img src="{% static 'deps/svg/edit.svg' %}" alt="">
-            Update
-          </button>
-        </div>
-      </div>
+      {% endfor %}
+
 
     </div>
 

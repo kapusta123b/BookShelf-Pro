@@ -6,6 +6,9 @@ class Subject(models.Model):
     slug = models.SlugField(unique=True, null=True, blank=True)
     name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         db_table = "subject"
         verbose_name = "Subject"
@@ -34,7 +37,6 @@ class Author(models.Model):
 
 
 class BookQuerySet(models.QuerySet):
-
     pass
 
 
@@ -49,6 +51,9 @@ class Book(models.Model):
     subjects = models.ManyToManyField('books.Subject', related_name='books', blank=True)
 
     avg_rating = models.IntegerField(default=0)
+
+    def get_authors(self):
+        return ', '.join(author.name for author in self.authors.all())
 
     def __str__(self):
         return f"{self.title} - {self.first_publish_year}"

@@ -775,6 +775,20 @@
         background-color: $primary;
         color: $text-inverse;
       }
+
+      &--in-library {
+        background-color: $success-bg;
+        color: $success;
+        cursor: default;
+
+        img {
+          filter: invert(27%) sepia(89%) saturate(500%) hue-rotate(95deg) brightness(90%);
+        }
+      }
+    }
+
+    form {
+      display: contents;
     }
   }
 
@@ -853,6 +867,10 @@
     margin-top: auto;
     padding-top: 0.75rem;
     border-top: 1px solid $border-light;
+
+    form {
+      width: 100%;
+    }
   }
 
   &__btn {
@@ -894,6 +912,17 @@
         border-color: $primary;
         color: $primary;
         background-color: $primary-muted;
+      }
+    }
+
+    &--in-library {
+      background-color: $success-bg;
+      border-color: darken($success-bg, 8%);
+      color: $success;
+      cursor: default;
+
+      img {
+        filter: invert(27%) sepia(89%) saturate(500%) hue-rotate(95deg) brightness(90%);
       }
     }
   }
