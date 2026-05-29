@@ -23,7 +23,7 @@
   <div class="catalog__toolbar">
     <div class="catalog__toolbar-inner">
 
-      <form class="catalog__search" method="get" action={% url "books:index" %}>
+      <form class="catalog__search" method="get" action="{{ request.path }}">
 
         <div class="catalog__search-types">
           <button type="button" class="catalog__search-type is-active" data-type="title" data-placeholder="Search by title…">Title</button>
@@ -100,67 +100,13 @@
         </div>
         <div class="filters__group-body">
           <div class="filters__checkboxes">
+              {% tag_subjects as subjects %}
 
-            <label class="filters__checkbox">
-              <input type="checkbox" value="fiction">
-              <span>Fiction</span>
-              <span class="filters__checkbox-count">2.4M</span>
-            </label>
+              <a href="{% url 'books:index' 'all' %}" class="filters__checkbox">All</a>
 
-            <label class="filters__checkbox">
-              <input type="checkbox" value="science-fiction">
-              <span>Science Fiction</span>
-              <span class="filters__checkbox-count">890K</span>
-            </label>
-
-            <label class="filters__checkbox">
-              <input type="checkbox" value="fantasy">
-              <span>Fantasy</span>
-              <span class="filters__checkbox-count">1.1M</span>
-            </label>
-
-            <label class="filters__checkbox">
-              <input type="checkbox" value="mystery">
-              <span>Mystery</span>
-              <span class="filters__checkbox-count">950K</span>
-            </label>
-
-            <label class="filters__checkbox">
-              <input type="checkbox" value="biography">
-              <span>Biography</span>
-              <span class="filters__checkbox-count">720K</span>
-            </label>
-
-            <label class="filters__checkbox">
-              <input type="checkbox" value="history">
-              <span>History</span>
-              <span class="filters__checkbox-count">1.3M</span>
-            </label>
-
-            <label class="filters__checkbox">
-              <input type="checkbox" value="science">
-              <span>Science</span>
-              <span class="filters__checkbox-count">640K</span>
-            </label>
-
-            <label class="filters__checkbox">
-              <input type="checkbox" value="self-help">
-              <span>Self-Help</span>
-              <span class="filters__checkbox-count">480K</span>
-            </label>
-
-            <label class="filters__checkbox">
-              <input type="checkbox" value="romance">
-              <span>Romance</span>
-              <span class="filters__checkbox-count">1.6M</span>
-            </label>
-
-            <label class="filters__checkbox">
-              <input type="checkbox" value="children">
-              <span>Children's</span>
-              <span class="filters__checkbox-count">2.1M</span>
-            </label>
-
+              {% for subject in subjects %}
+                <a href="/books/{{ subject.slug }}/" class="filters__checkbox">{{ subject.name }}</a>
+              {% endfor %}
           </div>
         </div>
       </div>

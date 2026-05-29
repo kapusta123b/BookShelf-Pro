@@ -13,13 +13,15 @@
   <div class="library-page">
 
     <div class="library-header">
+
       <div class="library-header__left">
         <h1>My Library</h1>
         <p>Your personal book collection</p>
       </div>
+
       <div class="library-header__actions">
         
-        <a href="{% url 'books:index' %}" class="library-header__btn library-header__btn--primary">
+        <a href="{% url 'books:index' 'all' %}" class="library-header__btn library-header__btn--primary">
           <img src="{% static 'deps/svg/plus.svg' %}" alt="">
           Add Book
         </a>

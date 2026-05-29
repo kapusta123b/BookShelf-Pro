@@ -1,5 +1,6 @@
 {% load sass_tags %}
 {% load static %}
+{% load books_tags %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -31,7 +32,7 @@
 
         <div class="nav__links">
           <a href="{% url 'main:index' %}" class="nav__link">Home</a>
-          <a href="{% url 'books:index' %}" class="nav__link">Catalog</a>
+          <a href="{% url 'books:index' 'all' %}" class="nav__link">Catalog</a>
 
           {% if user.is_authenticated %}
 
@@ -94,7 +95,7 @@
         Home
       </a>
 
-      <a href="{% url 'books:index' %}" class="nav-mobile__link">
+      <a href="{% url 'books:index' 'all' %}" class="nav-mobile__link">
         <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
         Catalog
       </a>
@@ -166,7 +167,7 @@
           <h4>Explore</h4>
           <ul>
             <li><a href="{% url 'main:index' %}">Home</a></li>
-            <li><a href="{% url 'books:index' %}">Catalog</a></li>
+            <li><a href="{% url 'books:index' 'all' %}">Catalog</a></li>
 
             {% if user.is_authenticated %}
             

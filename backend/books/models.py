@@ -5,6 +5,7 @@ from app import settings
 class Subject(models.Model):
     slug = models.SlugField(unique=True, null=True, blank=True)
     name = models.CharField(max_length=100)
+    emoji = models.CharField(null=True)
 
     def __str__(self):
         return self.name
@@ -37,7 +38,13 @@ class Author(models.Model):
 
 
 class BookQuerySet(models.QuerySet):
-    pass
+
+    def by_category(self, slug):
+    
+        if slug and slug != 'all':
+            return self.filter(subjects__slug=slug)
+        
+        return self
 
 
 class Book(models.Model):

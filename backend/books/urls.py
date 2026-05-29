@@ -4,5 +4,5 @@ from . import views
 app_name = 'books'
 
 urlpatterns = [
-    path('', views.CatalogView.as_view(), name='index'),
+    path('<slug:subject_slug>/', views.CatalogView.as_view(), name='index'),
 ]

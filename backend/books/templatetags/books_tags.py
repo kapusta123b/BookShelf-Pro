@@ -1,5 +1,7 @@
 from django import template
 
+from books.models import Subject
+
 register = template.Library()
 
 
@@ -11,3 +13,7 @@ def url_replace(context, **kwargs):
         query[kwarg] = value
     
     return query.urlencode()
+
+@register.simple_tag()
+def tag_subjects():
+    return Subject.objects.all()

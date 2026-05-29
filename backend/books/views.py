@@ -15,6 +15,7 @@ class CatalogView(ListView):
     def get_queryset(self):
         search = self.request.GET.get('search')
         search_by = self.request.GET.get('search_by')
+        subject = self.kwargs.get('subject_slug')
 
         if search and search_by:
             client = BookSearchClient()
@@ -28,9 +29,11 @@ class CatalogView(ListView):
                 queryset = self.model.objects.filter(title__icontains=search)
 
             return queryset
+    
+        queryset = ( self.model.objects.by_category(subject) )
 
         
-        return super().get_queryset()
+        return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

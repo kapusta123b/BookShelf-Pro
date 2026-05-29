@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load sass_tags %}
+{% load books_tags %}
 {% load static %}
 
 {% block title %}BookShelf Pro — Your Personal Reading Library{% endblock %}
@@ -32,7 +33,7 @@
             <button type="button" class="hero__search-tab" data-type="author" data-placeholder="Search by author name…">Author</button>
             <button type="button" class="hero__search-tab" data-type="isbn" data-placeholder="Enter ISBN, e.g. 978-0-7432-7356-5…">ISBN</button>
           </div>
-          <form class="hero__search-bar" method="get" action="{% url 'books:index' %}">
+          <form class="hero__search-bar" method="get" action="{% url 'books:index' 'all' %}">
             <input type="hidden" name="type" value="title">
             <input type="text" name="q" placeholder="Search by book title…" autocomplete="off">
             <button type="submit">
@@ -46,7 +47,7 @@
           <a href="{% url 'users:register' %}" class="hero__btn hero__btn--primary">
             Start for free
           </a>
-          <a href="{% url 'books:index' %}" class="hero__btn hero__btn--ghost">
+          <a href="{% url 'books:index' 'all' %}" class="hero__btn hero__btn--ghost">
             Browse catalog
           </a>
         </div>
@@ -98,7 +99,7 @@
           <p class="section__label">Discover</p>
           <h2 class="section__title">Popular right now</h2>
         </div>
-        <a href="{% url 'books:index' %}" class="section-header__link">
+        <a href="{% url 'books:index' 'all' %}" class="section-header__link">
           View all
           <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="">
         </a>
@@ -296,73 +297,30 @@
       <p class="section__label">Browse by Genre</p>
       <h2 class="section__title">Explore categories</h2>
 
-      <div class="categories__grid">
+      <div class="categories__grid" id="categories-grid">
 
-        <a href="{% url 'books:index' %}" class="categories__card">
-          <span class="categories__card-emoji">📚</span>
-          <div class="categories__card-info">
-            <h4>Fiction</h4>
-            <span>2.4M books</span>
-          </div>
-        </a>
+        {% tag_subjects as subjects %}
+        {% for subject in subjects %}
 
-        <a href="{% url 'books:index' %}" class="categories__card">
-          <span class="categories__card-emoji">🚀</span>
-          <div class="categories__card-info">
-            <h4>Science Fiction</h4>
-            <span>890K books</span>
-          </div>
-        </a>
-
-        <a href="{% url 'books:index' %}" class="categories__card">
-          <span class="categories__card-emoji">🐉</span>
-          <div class="categories__card-info">
-            <h4>Fantasy</h4>
-            <span>1.1M books</span>
-          </div>
-        </a>
-
-        <a href="{% url 'books:index' %}" class="categories__card">
-          <span class="categories__card-emoji">🔬</span>
-          <div class="categories__card-info">
-            <h4>Science</h4>
-            <span>640K books</span>
-          </div>
-        </a>
-
-        <a href="{% url 'books:index' %}" class="categories__card">
-          <span class="categories__card-emoji">📖</span>
-          <div class="categories__card-info">
-            <h4>Biography</h4>
-            <span>720K books</span>
-          </div>
-        </a>
-
-        <a href="{% url 'books:index' %}" class="categories__card">
-          <span class="categories__card-emoji">🕵️</span>
-          <div class="categories__card-info">
-            <h4>Mystery</h4>
-            <span>950K books</span>
-          </div>
-        </a>
-
-        <a href="{% url 'books:index' %}" class="categories__card">
-          <span class="categories__card-emoji">🌍</span>
-          <div class="categories__card-info">
-            <h4>History</h4>
-            <span>1.3M books</span>
-          </div>
-        </a>
-
-        <a href="{% url 'books:index' %}" class="categories__card">
-          <span class="categories__card-emoji">💡</span>
-          <div class="categories__card-info">
-            <h4>Self-Help</h4>
-            <span>480K books</span>
-          </div>
-        </a>
+          <a href="{% url 'books:index' subject.slug %}" class="categories__card{% if forloop.counter > 8 %} categories__card--hidden{% endif %}">
+            <span class="categories__card-emoji">{{ subject.emoji }}</span>
+            <div class="categories__card-info">
+              <h4>{{ subject.name }}</h4>
+            </div>
+          </a>
+        
+        {% endfor %}
 
       </div>
+
+      {% tag_subjects as subjects %}
+      {% if subjects.count > 8 %}
+        <div class="categories__more">
+          <button type="button" class="categories__more-btn" id="categories-toggle">
+            Show more
+          </button>
+        </div>
+      {% endif %}
 
     </div>
   </section>
@@ -375,7 +333,7 @@
         <a href="{% url 'users:register' %}" class="cta-section__btn cta-section__btn--primary">
           Create free account
         </a>
-        <a href="{% url 'books:index' %}" class="cta-section__btn cta-section__btn--ghost">
+        <a href="{% url 'books:index' 'all' %}" class="cta-section__btn cta-section__btn--ghost">
           Browse catalog
         </a>
       </div>
@@ -386,4 +344,16 @@
 
 {% block extra_js %}
   <script src="{% static 'deps/js/main.js' %}"></script>
+  <script>
+    const toggle = document.getElementById('categories-toggle');
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        const hidden = document.querySelectorAll('.categories__card--hidden');
+        const isExpanded = toggle.dataset.expanded === 'true';
+        hidden.forEach(card => card.style.display = isExpanded ? '' : 'flex');
+        toggle.textContent = isExpanded ? 'Show more' : 'Show less';
+        toggle.dataset.expanded = !isExpanded;
+      });
+    }
+  </script>
 {% endblock %}
