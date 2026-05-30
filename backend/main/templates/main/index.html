@@ -44,9 +44,13 @@
         </div>
 
         <div class="hero__actions">
+          {% if not user.is_authenticated %}
+          
           <a href="{% url 'users:register' %}" class="hero__btn hero__btn--primary">
             Start for free
           </a>
+
+          {% endif %}
           <a href="{% url 'books:index' 'all' %}" class="hero__btn hero__btn--ghost">
             Browse catalog
           </a>

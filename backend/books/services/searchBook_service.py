@@ -8,6 +8,10 @@ class BookSearchClient:
 
         url = f'{self.BASE_URL}search.json/'
 
+        if query == 'all':
+            query = 'fiction'
+            argument = 'q'
+
         response = requests.get(
             url=url,                    
             params={

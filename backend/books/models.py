@@ -95,5 +95,11 @@ class Review(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
+        db_table = 'review'
+        verbose_name = 'Book'
+        verbose_name_plural = 'Books'
+
     def __str__(self):
         return f"Review for {self.user_book.book}"
+    
+    

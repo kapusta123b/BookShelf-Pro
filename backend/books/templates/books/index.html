@@ -44,7 +44,7 @@
       <div class="catalog__controls">
 
         <span class="catalog__results-count">
-          Showing <strong>12</strong> of 50M+ books
+          Showing <strong>{{ books|length }}</strong>
         </span>
 
         <button class="catalog__filter-toggle">
@@ -100,13 +100,17 @@
         </div>
         <div class="filters__group-body">
           <div class="filters__checkboxes">
-              {% tag_subjects as subjects %}
 
-              <a href="{% url 'books:index' 'all' %}" class="filters__checkbox">All</a>
+            {% tag_subjects as subjects %}
 
-              {% for subject in subjects %}
-                <a href="/books/{{ subject.slug }}/" class="filters__checkbox">{{ subject.name }}</a>
-              {% endfor %}
+            <a href="{% url 'books:index' 'all' %}" class="filters__tag">All</a>
+
+            {% for subject in subjects %}
+              <a href="{% url "books:index" subject.slug %}" class="filters__tag">
+                {% if subject.emoji %}<span>{{ subject.emoji }}</span>{% endif %}
+                {{ subject.name }}
+              </a>
+            {% endfor %}
           </div>
         </div>
       </div>
@@ -313,9 +317,44 @@
             </div>
 
           </div>
+          
         {% empty %}
+        
           <p>No books found.</p>
+        
         {% endfor %}
+
+        {% if books|length < 8 or not page_obj.has_next %}
+
+          <div class="load-more">
+            <div class="load-more__inner">
+
+              {% if view.kwargs.subject_slug == 'all' %}
+
+                <span class="load-more__icon">🔍</span>
+                <p class="load-more__title">Looking for something specific?</p>
+                <p class="load-more__desc">Use the search bar to find a book by title or author, or browse a genre to discover more titles.</p>
+
+              {% else %}
+
+                <span class="load-more__icon">📚</span>
+                <p class="load-more__title">Want more books?</p>
+                <p class="load-more__desc">We'll fetch more titles from Open Library and add them to the catalog.</p>
+
+                <form method="get" action="{{ request.path }}">
+                  {% csrf_token %}
+                  <input type="hidden" name="search_by" value="subject">
+                  <input type="hidden" name="search" value="{{ view.kwargs.subject_slug }}">
+                  <input type="hidden" name="page" value="{{ page_obj.number|add:1 }}">
+                  <button type="submit" class="load-more__btn">Load more books</button>
+                </form>
+
+              {% endif %}
+
+            </div>
+          </div>
+
+        {% endif %}
 
       </div>
       {% if books %}
