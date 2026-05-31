@@ -1,4 +1,4 @@
-@import 'variables';
+@import "variables";
 
 .library-page {
   max-width: $max-width;
@@ -116,8 +116,6 @@
 }
 
 .library-tabs {
-  display: flex;
-  gap: 0;
   border-bottom: 2px solid $border;
   margin-bottom: 1.5rem;
   overflow-x: auto;
@@ -126,6 +124,11 @@
 
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  form {
+    display: flex;
+    gap: 0;
   }
 
   &__tab {

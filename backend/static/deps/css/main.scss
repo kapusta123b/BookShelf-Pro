@@ -1,4 +1,4 @@
-@import 'variables';
+@import "variables";
 
 .hero {
   background-color: $bg-dark;
@@ -511,6 +511,8 @@
 .book-cover-4 { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
 .book-cover-5 { background: linear-gradient(135deg, #f59e0b, #d97706); }
 .book-cover-6 { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+.book-cover-7 { background: linear-gradient(135deg, #c4956a, #8b6545); }
+.book-cover-8 { background: linear-gradient(135deg, #9b6b9b, #6b4575); }
 
 .how-it-works {
   &__steps {

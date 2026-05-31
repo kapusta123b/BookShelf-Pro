@@ -1,4 +1,4 @@
-@import 'variables';
+@import "variables";
 
 .edit-profile-page {
   max-width: $max-width;
@@ -196,11 +196,11 @@
 
 .field-error {
   font-size: $font-size-sm;
-  color: #dc2626;
+  color: $error;
   padding: 0.5rem 0.75rem;
-  background-color: #fef2f2;
-  border-left: 3px solid #dc2626;
-  border-radius: 0 4px 4px 0;
+  background-color: $error-bg;
+  border-left: 3px solid $error;
+  border-radius: 0 $radius $radius 0;
 }
 
 .edit-profile-actions {

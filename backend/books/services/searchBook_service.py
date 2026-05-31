@@ -8,17 +8,13 @@ class BookSearchClient:
 
         url = f'{self.BASE_URL}search.json/'
 
-        if query == 'all':
-            query = 'fiction'
-            argument = 'q'
-
         response = requests.get(
             url=url,                    
             params={
                 argument: query,
                 'fields': 'cover_i,title,author_name,author_key,first_publish_year,subject',
                 'page': page,
-                'limit': 8
+                'limit': 12
             }
         )
 
@@ -26,3 +22,6 @@ class BookSearchClient:
         data = response.json()
 
         return data.get('docs', [])
+    
+    def import_subjects_in_map(self,  subject) -> str:
+        pass

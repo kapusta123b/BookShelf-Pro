@@ -2,6 +2,7 @@ from books.services.subject_map import SUBJECT_MAP
 from books.models import Author, Book, Subject
 from django.utils.text import slugify
 
+
 class BookImportService:
 
     def create_books(self, json: dict) -> None | Book:
@@ -12,16 +13,15 @@ class BookImportService:
 
             for data in clean_data:
                 book, _ = Book.objects.update_or_create(
-                    cover_i=data['cover_i'],
-                    title=data['title'],
-                    first_publish_year=data['first_publish_year']
+                    cover_i=data["cover_i"],
+                    title=data["title"],
+                    first_publish_year=data.get("first_publish_year"),
                 )
-                
+
                 authors = self.create_authors(
-                    names=data['author_name'],
-                    keys=data['author_key']
+                    names=data["author_name"], keys=data["author_key"]
                 )
-                subjects = self.create_subjects(data['subject'])
+                subjects = self.create_subjects(data["subject"])
 
                 book.authors.add(*authors)
                 book.subjects.add(*subjects)
@@ -32,20 +32,16 @@ class BookImportService:
 
         else:
             return None
-    
+
     def create_authors(self, names: list, keys: list):
         result = []
         for i, name in enumerate(names):
             author, _ = Author.objects.update_or_create(
-                openlibrary_key=keys[i],
-                defaults={
-                    'name': name
-                }
+                openlibrary_key=keys[i], defaults={"name": name}
             )
             result.append(author)
 
         return result
-    
 
     def create_subjects(self, raw_subjects: list):
         genre_names = self.resolve_subjects(raw_subjects)
@@ -53,16 +49,12 @@ class BookImportService:
         result = []
         for name in genre_names:
             subject, _ = Subject.objects.get_or_create(
-                slug=slugify(name),
-                defaults={
-                    'name': name
-                }
+                slug=slugify(name), defaults={"name": name}
             )
 
             result.append(subject)
 
         return result
-    
 
     def resolve_subjects(self, raw_subjects: list):
         result = set()
@@ -80,7 +72,7 @@ class BookImportService:
         clean = []
 
         for data in docs:
-            if data.get('cover_i') and data.get('subject') and data.get('author_key'):
+            if data.get("cover_i") and data.get("subject") and data.get("author_key"):
                 clean.append(data)
 
         return clean

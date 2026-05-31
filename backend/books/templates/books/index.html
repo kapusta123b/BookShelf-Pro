@@ -44,7 +44,19 @@
       <div class="catalog__controls">
 
         <span class="catalog__results-count">
-          Showing <strong>{{ books|length }}</strong>
+          {% if request.GET.search %}
+
+            Found <strong>{{ queryset_count_current }}</strong> result{% if queryset_count_current != 1 %}s{% endif %} for &ldquo;{{ request.GET.search }}&rdquo;
+
+          {% elif view.kwargs.subject_slug == 'all' %}
+
+            Showing <strong>{{ queryset_count_current }}</strong> books total
+
+          {% else %}
+
+            <strong>{{ queryset_count_current }}</strong> books in this category &mdash; <strong>{{ queryset_count_total }}</strong> in total
+
+          {% endif %}
         </span>
 
         <button class="catalog__filter-toggle">
@@ -271,7 +283,7 @@
                       <img src="{% static 'deps/svg/plus.svg' %}" alt="">
                       Add
                     </button>
-                    
+
                   </form>
 
                 {% endif %}
@@ -317,14 +329,14 @@
             </div>
 
           </div>
-          
+
         {% empty %}
-        
+
           <p>No books found.</p>
-        
+
         {% endfor %}
 
-        {% if books|length < 8 or not page_obj.has_next %}
+        {% if books|length < 12 or not page_obj.has_next %}
 
           <div class="load-more">
             <div class="load-more__inner">
@@ -342,7 +354,6 @@
                 <p class="load-more__desc">We'll fetch more titles from Open Library and add them to the catalog.</p>
 
                 <form method="get" action="{{ request.path }}">
-                  {% csrf_token %}
                   <input type="hidden" name="search_by" value="subject">
                   <input type="hidden" name="search" value="{{ view.kwargs.subject_slug }}">
                   <input type="hidden" name="page" value="{{ page_obj.number|add:1 }}">
@@ -359,23 +370,29 @@
       </div>
       {% if books %}
         <div class="pagination">
-          <button class="pagination__btn pagination__btn--nav" disabled>
+          <a href="{% if page_obj.has_previous %}?{% url_replace page=page_obj.previous_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav">
             <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Previous" style="transform: rotate(180deg)">
-          </button>
+          </a>
 
           {% for p in paginator.page_range %}
 
-            {% if p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+            {% if p >= page_obj.number|add:-3 and p <= page_obj.number|add:3 %}
 
-              <a href="?{% url_replace page=p %}" class="pagination__btn">{{ p }}</a>
+              <a href="?{% url_replace page=p %}" class="pagination__btn {% if p == page_obj.number %}active{% endif %}">{{ p }}</a>
 
             {% endif %}
 
           {% endfor %}
 
-          <button class="pagination__btn pagination__btn--nav">
+          {% if page_obj.paginator.num_pages > page_obj.number|add:3 %}
+
+            <span class="pagination__ellipsis">…</span>
+            <a href="?{% url_replace page=page_obj.paginator.num_pages %}" class="pagination__btn">{{ page_obj.paginator.num_pages }}</a>
+          {% endif %}
+
+          <a href="{% if page_obj.has_next %}?{% url_replace page=page_obj.next_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav">
             <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Next">
-          </button>
+          </a>
         </div>
       {% endif %}
 

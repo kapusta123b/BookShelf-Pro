@@ -37,7 +37,7 @@
           {% if user.is_authenticated %}
 
             <a href="{% url 'library:index' user.id %}" class="nav__link">My Library</a>
-          
+
           {% endif %}
         </div>
 
@@ -170,11 +170,11 @@
             <li><a href="{% url 'books:index' 'all' %}">Catalog</a></li>
 
             {% if user.is_authenticated %}
-            
+
               <li><a href="{% url 'library:index' user.id %}">My Library</a></li>
 
             {% endif %}
-            
+
           </ul>
         </div>
 

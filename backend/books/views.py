@@ -10,7 +10,7 @@ from books.models import Book
 class CatalogView(ListView):
     template_name = 'books/index.html'
     model = Book
-    paginate_by = 8
+    paginate_by = 12
     context_object_name = 'books'
 
     def get(self, request, *args, **kwargs):
@@ -55,6 +55,9 @@ class CatalogView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        queryset_total = super().get_queryset()        
+        queryset_current = self.get_queryset()
+        
 
         if self.request.user.is_authenticated:
             context['user_library_ids'] = set(
@@ -62,5 +65,8 @@ class CatalogView(ListView):
             )
         else:
             context['user_library_ids'] = set()
+
+        context['queryset_count_total'] = queryset_total.count()
+        context['queryset_count_current'] = queryset_current.count()
 
         return context

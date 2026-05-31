@@ -5,6 +5,13 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class UserBookQuerySet(models.QuerySet):
+    def tabs_filter(self, value: str):
+        if value != 'all' and value:
+            return self.filter(status=value)
+
+        else:
+            return self.all()
+
     def total_want_read(self):
         return self.filter(status='want_to_read').count()
     
@@ -13,6 +20,7 @@ class UserBookQuerySet(models.QuerySet):
     
     def total_ulready_read(self):
         return self.filter(status='read').count()
+    
 
 class UserBook(models.Model):
     objects = UserBookQuerySet.as_manager()

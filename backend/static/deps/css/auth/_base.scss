@@ -1,4 +1,4 @@
-@import 'variables';
+@import "variables";
 
 .auth-main {
   width: 100%;
@@ -248,6 +248,14 @@
       width: 28px;
       height: 28px;
       color: $success;
+    }
+
+    &--warning {
+      background-color: $warning-bg;
+    }
+
+    &--error {
+      background-color: $error-bg;
     }
   }
 

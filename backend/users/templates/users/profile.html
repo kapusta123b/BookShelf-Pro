@@ -29,7 +29,7 @@
           <p class="profile-card__username">@{{ profile_user.username }}</p>
           <p class="profile-card__bio">{{ profile_user.description|default:'None description' }}</p>
           <p class="profile-card__since">Member since {{ profile_user.date_joined }}</p>
-          
+
           {% if profile_user.id == user.id %}
             <a href="{% url 'users:edit_profile' %}" class="profile-card__edit-btn">
               <img src="{% static 'deps/svg/edit.svg' %}" alt="">
@@ -119,7 +119,7 @@
           </div>
 
           <div class="currently-reading">
-            <div class="currently-reading__cover book-cover-3" style="background: linear-gradient(135deg, #c4956a, #8b6545);"></div>
+            <div class="currently-reading__cover book-cover-7"></div>
             <div class="currently-reading__info">
               <p class="currently-reading__title">The Alchemist</p>
               <p class="currently-reading__author">Paulo Coelho</p>
@@ -155,7 +155,7 @@
               <p class="recent-book__title">Sapiens</p>
             </a>
             <a href="#" class="recent-book">
-              <div class="recent-book__cover book-cover-4" style="background: linear-gradient(135deg, #9b6b9b, #6b4575);"></div>
+              <div class="recent-book__cover book-cover-8"></div>
               <p class="recent-book__title">Pride and Prejudice</p>
             </a>
             <a href="#" class="recent-book">

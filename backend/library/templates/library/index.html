@@ -15,56 +15,51 @@
     <div class="library-header">
 
       <div class="library-header__left">
-        <h1>My Library</h1>
-        <p>Your personal book collection</p>
+        <h1>Library</h1>
+        <p>Personal book collection</p>
       </div>
 
       <div class="library-header__actions">
+        {% if user.id == library_user.id %}
         
-        <a href="{% url 'books:index' 'all' %}" class="library-header__btn library-header__btn--primary">
-          <img src="{% static 'deps/svg/plus.svg' %}" alt="">
-          Add Book
-        </a>
-        
+          <a href="{% url 'books:index' 'all' %}" class="library-header__btn library-header__btn--primary">
+            <img src="{% static 'deps/svg/plus.svg' %}" alt="">
+            Add Book
+          </a>
+          
+        {% endif %}
+
       </div>
     </div>
 
     <div class="library-stats">
       <div class="library-stats__card">
-        <div class="library-stats__card-value">{{ library_user.books_read }}</div>
+        <div class="library-stats__card-value">{{ count_finished }}</div>
         <div class="library-stats__card-label">Books Read</div>
       </div>
       <div class="library-stats__card">
-        <div class="library-stats__card-value">{{ library_user.reading_now }}</div>
+        <div class="library-stats__card-value">{{ count_reading }}</div>
         <div class="library-stats__card-label">Reading Now</div>
       </div>
       <div class="library-stats__card">
-        <div class="library-stats__card-value">{{ library_user.want_to_read }}</div>
+        <div class="library-stats__card-value">{{ count_want_to_read }}</div>
         <div class="library-stats__card-label">Want to Read</div>
       </div>
       <div class="library-stats__card">
-        <div class="library-stats__card-value">{{ library_user.library_books.all.count }}</div>
+        <div class="library-stats__card-value">{{ count_total }}</div>
         <div class="library-stats__card-label">Total Books</div>
       </div>
     </div>
 
     <div class="library-tabs">
-      <button class="library-tabs__tab active">
-        All
-        <span class="library-tabs__tab-count">{{ library_user.library_books.all.count }}</span>
-      </button>
-      <button class="library-tabs__tab">
-        Reading
-        <span class="library-tabs__tab-count">{{ library_user.library_books.total_reading }}</span>
-      </button>
-      <button class="library-tabs__tab">
-        Want to Read
-        <span class="library-tabs__tab-count">{{ library_user.library_books.total_want_read }}</span>
-      </button>
-      <button class="library-tabs__tab">
-        Finished
-        <span class="library-tabs__tab-count">{{ library_user.library_books.total_ulready_read }}</span>
-      </button>
+      <form action="{% url "library:index" library_user.id %}" method="get">
+
+        <button name="filter" value="all" class="library-tabs__tab {% if active_filter == 'all' %}active{% endif %}">All <span class="library-tabs__tab-count">{{ count_total }}</span></button>
+        <button name="filter" value="reading" class="library-tabs__tab {% if active_filter == 'reading' %}active{% endif %}">Reading <span class="library-tabs__tab-count">{{ count_reading }}</span></button>
+        <button name="filter" value="want_to_read" class="library-tabs__tab {% if active_filter == 'want_to_read' %}active{% endif %}">Want to Read <span class="library-tabs__tab-count">{{ count_want_to_read }}</span></button>
+        <button name="filter" value="read" class="library-tabs__tab {% if active_filter == 'read' %}active{% endif %}">Finished <span class="library-tabs__tab-count">{{ count_finished }}</span></button>
+
+      </form>
     </div>
 
     <div class="library-toolbar">
@@ -98,7 +93,7 @@
 
     <div class="library-grid">
 
-      {% for lib_book in library_user.library_books.all %}
+      {% for lib_book in library_books %}
         <div class="library-book">
           <div class="library-book__cover book-cover-3">
             <div class="book-card-catalog__cover-placeholder">
@@ -116,7 +111,7 @@
               {{ lib_book.book.get_authors }}
             </p>
 
-            
+
           </div>
           <div class="library-book__actions">
             <button class="library-book__action-btn">

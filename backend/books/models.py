@@ -45,6 +45,10 @@ class BookQuerySet(models.QuerySet):
             return self.filter(subjects__slug=slug)
         
         return self
+    
+    def queryset_count(self):
+
+        return self.all().count()
 
 
 class Book(models.Model):
@@ -54,7 +58,7 @@ class Book(models.Model):
 
     title = models.CharField('Title', max_length=100)
     authors = models.ManyToManyField('books.Author', verbose_name='authors')
-    first_publish_year = models.IntegerField('First publish year', null=True)
+    first_publish_year = models.CharField('First publish year', null=True,blank=True)
     subjects = models.ManyToManyField('books.Subject', related_name='books', blank=True)
 
     avg_rating = models.IntegerField(default=0)
@@ -69,8 +73,6 @@ class Book(models.Model):
         db_table = 'book'
         verbose_name = 'Book'
         verbose_name_plural = 'Books'
-
-    
 
 
 

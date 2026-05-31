@@ -1,44 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Password reset — BookShelf Pro</title>
-  <style>
-    body { margin: 0; padding: 0; background-color: #f8fafc; font-family: 'DM Sans', Arial, sans-serif; color: #0f172a; }
-    .wrapper { max-width: 560px; margin: 40px auto; padding: 0 16px; }
-    .card { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,.08); overflow: hidden; }
-    .header { background: linear-gradient(135deg, #0d9488, #0f766e); padding: 36px 40px; text-align: center; }
-    .header h1 { color: #ffffff; margin: 0; font-size: 22px; font-weight: 700; }
-    .body { padding: 40px; }
-    .body h2 { font-size: 20px; font-weight: 700; margin: 0 0 12px; text-align: center; }
-    .body p { font-size: 15px; color: #475569; line-height: 1.7; margin: 0 0 24px; text-align: center; }
-    .btn { display: block; background: #0d9488; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 15px; font-weight: 600; text-align: center; margin: 0 0 24px; }
-    .footer { background: #f1f5f9; padding: 20px 40px; text-align: center; }
-    .footer p { font-size: 12px; color: #94a3b8; margin: 0; line-height: 1.6; }
-  </style>
-</head>
-<body>
-  <div class="wrapper">
-    <div class="card">
-      <div class="header">
-        <h1>BookShelf Pro</h1>
-      </div>
-      <div class="body">
-        <h2>No account found</h2>
-        <p>
-          We received a password reset request for this email address, but no BookShelf Pro account is linked to it.
-          <br><br>
-          If you'd like to create an account, click below.
-        </p>
-        <a href="{{ signup_url }}" class="btn">Create an Account</a>
-      </div>
-      <div class="footer">
-        <p>
-          If you didn't request this, no action is needed. This email was sent from {{ current_site.name }}.
-        </p>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password reset — BookShelf Pro</title>
+    <style>
+      body { margin: 0; padding: 0; background-color: #f8fafc; font-family: 'DM Sans', Arial, sans-serif; color: #0f172a; }
+      .wrapper { max-width: 560px; margin: 40px auto; padding: 0 16px; }
+      .card { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,.08); overflow: hidden; }
+      .header { background: linear-gradient(135deg, #0d9488, #0f766e); padding: 36px 40px; text-align: center; }
+      .header h1 { color: #ffffff; margin: 0; font-size: 22px; font-weight: 700; }
+      .body { padding: 40px; }
+      .body h2 { font-size: 20px; font-weight: 700; margin: 0 0 12px; text-align: center; }
+      .body p { font-size: 15px; color: #475569; line-height: 1.7; margin: 0 0 24px; text-align: center; }
+      .btn { display: block; background: #0d9488; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 15px; font-weight: 600; text-align: center; margin: 0 0 24px; }
+      .footer { background: #f1f5f9; padding: 20px 40px; text-align: center; }
+      .footer p { font-size: 12px; color: #94a3b8; margin: 0; line-height: 1.6; }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="card">
+        <div class="header">
+          <h1>BookShelf Pro</h1>
+        </div>
+        <div class="body">
+          <h2>No account found</h2>
+          <p>
+            We received a password reset request for this email address, but no BookShelf Pro account is linked to it.
+            <br><br>
+            If you'd like to create an account, click below.
+          </p>
+          <a href="{{ signup_url }}" class="btn">Create an Account</a>
+        </div>
+        <div class="footer">
+          <p>
+            If you didn't request this, no action is needed. This email was sent from {{ current_site.name }}.
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>
