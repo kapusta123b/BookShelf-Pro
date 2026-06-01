@@ -50,11 +50,11 @@
 
           {% elif view.kwargs.subject_slug == 'all' %}
 
-            Showing <strong>{{ queryset_count_current }}</strong> books total
+            Showing <strong>{{ queryset_count_current }}</strong> books in local database
 
           {% else %}
 
-            <strong>{{ queryset_count_current }}</strong> books in this category &mdash; <strong>{{ queryset_count_total }}</strong> in total
+            <strong>{{ queryset_count_current }}</strong> books in this category &mdash; <strong>{{ queryset_count_total }}</strong> in local database
 
           {% endif %}
         </span>
@@ -115,13 +115,15 @@
 
             {% tag_subjects as subjects %}
 
-            <a href="{% url 'books:index' 'all' %}" class="filters__tag">All</a>
+            <a href="{% url 'books:index' 'all' %}" class="filters__tag {% if view.kwargs.subject_slug == 'all' %}active{% endif %}">📚 All</a>
 
             {% for subject in subjects %}
-              <a href="{% url "books:index" subject.slug %}" class="filters__tag">
+
+              <a href="{% url "books:index" subject.slug %}" class="filters__tag {% if view.kwargs.subject_slug == subject.slug %}active{% endif %}">
                 {% if subject.emoji %}<span>{{ subject.emoji }}</span>{% endif %}
                 {{ subject.name }}
               </a>
+            
             {% endfor %}
           </div>
         </div>
@@ -212,43 +214,48 @@
           </select>
         </div>
       </div>
+      {% if user.is_authenticated %}
+      
+        <div class="filters__group">
+          <div class="filters__group-header">
+            <span>Reading Status</span>
+            <img src="{% static 'deps/svg/chevron-down.svg' %}" alt="">
+          </div>
+          <div class="filters__group-body">
+            <div class="filters__status">
+              <form action="{{ request.path }}" method='get' onchange="this.submit()">
+  
+                <label class="filters__radio">
+                  <input type="radio" name="status" value="all" {% if not request.GET.status or request.GET.status == 'all' %}checked{% endif %}>
+                  <span>All books</span>
+                </label>
+  
+                <label class="filters__radio">
+                  <input type="radio" name="status" value="want_to_read" {% if request.GET.status == 'want_to_read' %}checked{% endif %}>
+                  <span>Want to Read</span>
+                </label>
+  
+                <label class="filters__radio">
+                  <input type="radio" name="status" value="reading" {% if request.GET.status == 'reading' %}checked{% endif %}>
+                  <span>Currently Reading</span>
+                </label>
+  
+                <label class="filters__radio">
+                  <input type="radio" name="status" value="read" {% if request.GET.status == 'read' %}checked{% endif %}>
+                  <span>Already Read</span>
+                </label>
+  
+                <label class="filters__radio">
+                  <input type="radio" name="status" value="none" {% if request.GET.status == 'none' %}checked{% endif %}>
+                  <span>None</span>
+                </label>
+              </form>
 
-      <div class="filters__group">
-        <div class="filters__group-header">
-          <span>Reading Status</span>
-          <img src="{% static 'deps/svg/chevron-down.svg' %}" alt="">
-        </div>
-        <div class="filters__group-body">
-          <div class="filters__status">
-
-            <label class="filters__radio">
-              <input type="radio" name="status" value="all" checked>
-              <span>All books</span>
-            </label>
-
-            <label class="filters__radio">
-              <input type="radio" name="status" value="want">
-              <span>Want to Read</span>
-            </label>
-
-            <label class="filters__radio">
-              <input type="radio" name="status" value="reading">
-              <span>Currently Reading</span>
-            </label>
-
-            <label class="filters__radio">
-              <input type="radio" name="status" value="read">
-              <span>Already Read</span>
-            </label>
-
-            <label class="filters__radio">
-              <input type="radio" name="status" value="none">
-              <span>Not in Library</span>
-            </label>
-
+            </div>
           </div>
         </div>
-      </div>
+
+      {% endif %}
 
     </aside>
 
@@ -262,9 +269,7 @@
 
             <div class="book-card-catalog__cover book-cover">
               <img class="book-card-catalog__cover-img" src="https://covers.openlibrary.org/b/id/{{ book.cover_i }}-M.jpg" alt="{{ book.title }}">
-              <div class="book-card-catalog__cover-placeholder">
-                <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
-              </div>
+              
               <div class="book-card-catalog__cover-quick-add">
 
                 {% if book.id in user_library_ids %}
@@ -336,7 +341,7 @@
 
         {% endfor %}
 
-        {% if books|length < 12 or not page_obj.has_next %}
+        {% if books|length < 8 or not page_obj.has_next %}
 
           <div class="load-more">
             <div class="load-more__inner">
@@ -349,15 +354,15 @@
 
               {% else %}
 
-                <span class="load-more__icon">📚</span>
-                <p class="load-more__title">Want more books?</p>
+                <span class="load-more__icon">{% if current_subject and current_subject.emoji %}{{ current_subject.emoji }}{% else %}📚{% endif %}</span>
+                <p class="load-more__title">Want more <strong>{% if current_subject %}{{ current_subject.name }}{% else %}books{% endif %}</strong>?</p>
                 <p class="load-more__desc">We'll fetch more titles from Open Library and add them to the catalog.</p>
 
                 <form method="get" action="{{ request.path }}">
                   <input type="hidden" name="search_by" value="subject">
-                  <input type="hidden" name="search" value="{{ view.kwargs.subject_slug }}">
-                  <input type="hidden" name="page" value="{{ page_obj.number|add:1 }}">
-                  <button type="submit" class="load-more__btn">Load more books</button>
+                  <input type="hidden" name="search" value="{{ current_subject.name }}">
+                  <input type="hidden" name="page" value="{{ page_obj.number }}">
+                  <button type="submit" class="load-more__btn">Load more {% if current_subject %}{{ current_subject.name }}{% else %}books{% endif %}</button>
                 </form>
 
               {% endif %}

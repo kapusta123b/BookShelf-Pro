@@ -61,6 +61,8 @@ class Book(models.Model):
     first_publish_year = models.CharField('First publish year', null=True,blank=True)
     subjects = models.ManyToManyField('books.Subject', related_name='books', blank=True)
 
+    date_created = models.DateTimeField(auto_now_add=True, null=True)
+
     avg_rating = models.IntegerField(default=0)
 
     def get_authors(self):

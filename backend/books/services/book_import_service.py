@@ -21,7 +21,7 @@ class BookImportService:
                 authors = self.create_authors(
                     names=data["author_name"], keys=data["author_key"]
                 )
-                subjects = self.create_subjects(data["subject"])
+                subjects = self.get_or_create_subjects(data["subject"])
 
                 book.authors.add(*authors)
                 book.subjects.add(*subjects)
@@ -43,7 +43,7 @@ class BookImportService:
 
         return result
 
-    def create_subjects(self, raw_subjects: list):
+    def get_or_create_subjects(self, raw_subjects: list):
         genre_names = self.resolve_subjects(raw_subjects)
 
         result = []

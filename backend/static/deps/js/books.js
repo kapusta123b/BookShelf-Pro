@@ -48,11 +48,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const filterGroupHeaders = document.querySelectorAll('.filters__group-header');
 
-  filterGroupHeaders.forEach(function (header) {
+  filterGroupHeaders.forEach(function (header, index) {
+    const storageKey = 'filter-group-' + index;
+    const saved = localStorage.getItem(storageKey);
+
+    if (saved === 'collapsed') {
+      header.classList.add('collapsed');
+      const body = header.nextElementSibling;
+      if (body) body.classList.add('collapsed');
+    }
+
     header.addEventListener('click', function () {
       const body = header.nextElementSibling;
       const isCollapsed = header.classList.toggle('collapsed');
       if (body) body.classList.toggle('collapsed', isCollapsed);
+      localStorage.setItem(storageKey, isCollapsed ? 'collapsed' : 'open');
     });
   });
 
@@ -109,5 +119,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  const savedScroll = sessionStorage.getItem('catalog-scroll');
+  if (savedScroll) {
+    window.scrollTo(0, parseInt(savedScroll, 10));
+    sessionStorage.removeItem('catalog-scroll');
+  }
+
+  window.addEventListener('pagehide', function () {
+    sessionStorage.setItem('catalog-scroll', window.scrollY);
+  });
 
 });
