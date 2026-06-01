@@ -3,7 +3,6 @@
 ![Python Version](https://img.shields.io/badge/python-3.13-blue.svg)
 ![Django Version](https://img.shields.io/badge/django-6.0-green.svg)
 ![PostgreSQL](https://img.shields.io/badge/postgresql-16-336791.svg)
-![Open Library](https://img.shields.io/badge/open%20library-API-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 Django-based book catalog and personal library platform powered by the Open Library API.
