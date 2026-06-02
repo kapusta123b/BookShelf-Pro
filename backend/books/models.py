@@ -1,11 +1,9 @@
 from django.db import models
-from django.utils.text import slugify
-from app import settings
 
 class Subject(models.Model):
     slug = models.SlugField(unique=True, null=True, blank=True)
     name = models.CharField(max_length=100)
-    emoji = models.CharField(null=True)
+    emoji = models.CharField(null=True, max_length=1)
 
     def __str__(self):
         return self.name
@@ -46,15 +44,12 @@ class BookQuerySet(models.QuerySet):
         
         return self
     
-    def queryset_count(self):
-
-        return self.all().count()
-
+    
 
 class Book(models.Model):
     objects = BookQuerySet.as_manager()
 
-    cover_i = models.CharField(null=True)
+    cover_i = models.CharField(null=True, max_length=50)
 
     title = models.CharField('Title', max_length=100)
     authors = models.ManyToManyField('books.Author', verbose_name='authors')
@@ -63,7 +58,7 @@ class Book(models.Model):
 
     date_created = models.DateTimeField(auto_now_add=True, null=True)
 
-    avg_rating = models.IntegerField(default=0)
+    avg_rating = models.FloatField(default=0)
 
     def get_authors(self):
         return ', '.join(author.name for author in self.authors.all())
@@ -83,7 +78,6 @@ class Review(models.Model):
         "library.UserBook",
         on_delete=models.CASCADE,
         related_name="review",
-        null=True,
         blank=True
     )
 
@@ -100,8 +94,8 @@ class Review(models.Model):
         ordering = ["-created_at"]
 
         db_table = 'review'
-        verbose_name = 'Book'
-        verbose_name_plural = 'Books'
+        verbose_name = 'Review'
+        verbose_name_plural = 'Reviews'
 
     def __str__(self):
         return f"Review for {self.user_book.book}"

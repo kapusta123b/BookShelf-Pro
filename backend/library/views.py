@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from library.models import UserBook
 from users.models import User
 
-class LibraryView(DetailView):
+class LibraryView(LoginRequiredMixin, DetailView):
     model = User
     pk_url_kwarg = 'user_id'
     template_name = 'library/index.html'
@@ -22,7 +22,7 @@ class LibraryView(DetailView):
         context["count_total"] = all_books.count()
         context["count_reading"] = all_books.total_reading()
         context["count_want_to_read"] = all_books.total_want_read()
-        context["count_finished"] = all_books.total_ulready_read()
+        context["count_finished"] = all_books.total_already_read()
 
         return context
     

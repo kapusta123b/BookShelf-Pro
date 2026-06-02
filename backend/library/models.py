@@ -1,5 +1,5 @@
 from django.db import models
-from app import settings
+from django.conf import settings
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -18,7 +18,7 @@ class UserBookQuerySet(models.QuerySet):
     def total_reading(self):
         return self.filter(status='reading').count()
     
-    def total_ulready_read(self):
+    def total_already_read(self):
         return self.filter(status='read').count()
     
 
@@ -62,6 +62,8 @@ class UserBook(models.Model):
     created_at = models.DateTimeField(null=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, auto_now=True)
     
+    def __str__(self):
+        return f'{self.user.username} -- {self.book.title}'
 
     class Meta:
         constraints = [

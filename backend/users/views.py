@@ -6,7 +6,7 @@ from users.models import User
 from users.forms import EditProfileForm
 
 
-class ProfileView(DetailView):
+class ProfileView(LoginRequiredMixin, DetailView):
     model = User
     pk_url_kwarg = 'user_id'
     template_name = 'users/profile.html'

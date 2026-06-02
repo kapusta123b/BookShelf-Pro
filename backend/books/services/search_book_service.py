@@ -21,7 +21,8 @@ class BookSearchClient:
                 'fields': 'cover_i,title,author_name,author_key,first_publish_year,subject',
                 'page': page,
                 'limit': 10
-            }
+            },
+            timeout=10
         )
 
         response.raise_for_status()

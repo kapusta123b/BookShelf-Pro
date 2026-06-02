@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load sass_tags %}
+{% load static %}
+
+{% block title %}Terms — BookShelf Pro{% endblock %}
+{% block meta_description %}Usage guidelines for BookShelf Pro — a portfolio project built with Django and the Open Library API.{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/legal.scss' %}">
+{% endblock %}
+
+{% block content %}
+
+  <section class="legal-hero">
+    <div class="legal-hero__inner">
+      <span class="legal-hero__label">Portfolio project</span>
+      <h1 class="legal-hero__title">Terms</h1>
+      <p class="legal-hero__meta">BookShelf Pro is a personal portfolio project, not a commercial product.</p>
+    </div>
+  </section>
+
+  <div class="legal-body">
+
+    <nav class="legal-toc" aria-label="Table of contents">
+      <p class="legal-toc__title">On this page</p>
+      <ul class="legal-toc__list">
+        <li><a href="#about" class="legal-toc__link">1. About This Project</a></li>
+        <li><a href="#demo-use" class="legal-toc__link">2. Demo Use</a></li>
+        <li><a href="#content" class="legal-toc__link">3. Content &amp; Data</a></li>
+        <li><a href="#source-code" class="legal-toc__link">4. Source Code</a></li>
+        <li><a href="#no-warranty" class="legal-toc__link">5. No Warranty</a></li>
+      </ul>
+    </nav>
+
+    <div class="legal-content">
+
+      <div class="legal-section">
+        <span id="about" class="legal-section__anchor"></span>
+        <h2 class="legal-section__title"><span>1</span> About This Project</h2>
+        <div class="legal-section__highlight">
+          <p>BookShelf Pro is a portfolio project — built to learn and demonstrate full-stack web development with Django. It is not a real service, has no commercial intent, and carries no legal obligations.</p>
+        </div>
+        <p>The project integrates Django, PostgreSQL, SCSS, JavaScript, and the <a href="https://openlibrary.org" target="_blank" rel="noopener noreferrer">Open Library API</a>. The source code is open on <a href="https://github.com/kapusta123b/BookShelf-Pro" target="_blank" rel="noopener noreferrer">GitHub</a> and is the main thing this page is meant to showcase.</p>
+      </div>
+
+      <div class="legal-section">
+        <span id="demo-use" class="legal-section__anchor"></span>
+        <h2 class="legal-section__title"><span>2</span> Demo Use</h2>
+        <p>Do whatever you want!</p>
+        
+      </div>
+
+      <div class="legal-section">
+        <span id="content" class="legal-section__anchor"></span>
+        <h2 class="legal-section__title"><span>3</span> Content &amp; Data</h2>
+        <p>All book metadata displayed in the catalog — titles, authors, covers, subjects — comes from the <a href="https://openlibrary.org" target="_blank" rel="noopener noreferrer">Open Library API</a>, operated by the Internet Archive. That data is published under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0 licence</a>.</p>
+        <p>This project does not own or claim any rights over book metadata. All credit for that data goes to the Open Library community and contributors.</p>
+      </div>
+
+      <div class="legal-section">
+        <span id="source-code" class="legal-section__anchor"></span>
+        <h2 class="legal-section__title"><span>4</span> Source Code</h2>
+        <p>The BookShelf Pro source code is published under the <strong>MIT licence</strong>. You are free to read it, learn from it, fork it, or adapt it for your own projects.</p>
+        <p>If you find a bug or have a suggestion, feel free to open an issue on GitHub — always appreciated.</p>
+      </div>
+
+      <div class="legal-section">
+        <span id="no-warranty" class="legal-section__anchor"></span>
+        <h2 class="legal-section__title"><span>5</span> No Warranty</h2>
+        <p>This project is provided as-is, with no guarantees of availability, accuracy, or data retention. It is a demo — things may break, data may be wiped, and the service may go offline at any time.</p>
+        <p>Not a product. Not a promise. Just code.</p>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
