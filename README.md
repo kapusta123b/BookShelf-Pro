@@ -11,9 +11,9 @@ Users can browse books by genre, search by title, author or ISBN, add books to t
 
 <table>
   <tr>
-    <td><img width="310" height="150" alt="BookShelf Pro screenshot" src="" /></td>
-    <td><img width="310" height="150" alt="BookShelf Pro screenshot" src="" /></td>
-    <td><img width="310" height="150" alt="BookShelf Pro screenshot" src="" /></td>
+    <td><img width="310" height="150" alt="" src="" /></td>
+    <td><img width="310" height="150" alt="" src="" /></td>
+    <td><img width="310" height="150" alt="" src="" /></td>
   </tr>
 </table>
 
@@ -24,20 +24,16 @@ Users can browse books by genre, search by title, author or ISBN, add books to t
 - Book catalog with pagination and grid / list view toggle
 - Search by title, author, or ISBN
 - On-demand book import from Open Library API (Lucene subject queries)
-- 19 genre categories with emoji tags and slug-based routing
+- 19 genre categories
 - Personal library with reading status tracking (Want to Read / Reading / Already Read)
 - Status-based catalog filtering (shows only user's books by status)
 - Book reviews with spoiler flag and public / private toggle
 - User profiles with reading statistics
-- Sticky toolbar with working z-index layering
-- Filter sidebar with persistent collapse state (localStorage)
-- Scroll position restoration across page navigations
+- Filter sidebar in catalog
 - Social authentication via Google and Facebook (django-allauth)
 - Email verification on registration
 - reCAPTCHA v2 protection on auth forms
-- SCSS compiled on the fly via django-sass-processor
 - Responsive layout
-
 ---
 
 ## Stack
@@ -50,7 +46,7 @@ Users can browse books by genre, search by title, author or ISBN, add books to t
 - django-allauth 65.16
 - django-recaptcha 4.1
 - django-sass-processor 1.4
-- requests (Open Library API)
+- requests
 - psycopg2
 
 ---
@@ -120,12 +116,6 @@ Install dependencies:
 
 ```bash
 pip install -r requirements.txt
-```
-
-Create environment file:
-
-```bash
-cp backend/.env.example backend/.env
 ```
 
 Edit environment variables:
