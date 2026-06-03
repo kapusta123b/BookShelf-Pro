@@ -456,6 +456,15 @@
     }
   }
 
+  &__status-readonly {
+    font-size: $font-size-xs;
+    font-weight: 600;
+    color: $text-muted;
+    padding: 0.4rem 0;
+    display: block;
+    text-align: center;
+  }
+
   &.list-view-item {
     flex-direction: row;
     align-items: stretch;
@@ -484,6 +493,229 @@
       flex-shrink: 0;
       margin-top: 0;
       margin-left: auto;
+    }
+  }
+}
+
+.book-modal {
+  position: fixed;
+  inset: 0;
+  z-index: $z-modal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+
+  &.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(3px);
+  }
+
+  &__panel {
+    position: relative;
+    z-index: 1;
+    background-color: $bg-card;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-xl;
+    width: 100%;
+    max-width: 460px;
+    padding: 1.75rem;
+    margin: 1rem;
+    transform: translateY(16px) scale(0.98);
+    transition: transform 0.22s ease;
+  }
+
+  &.open &__panel {
+    transform: translateY(0) scale(1);
+  }
+
+  &__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: $radius;
+    background: $bg-muted;
+    transition: $transition-fast;
+
+    img {
+      width: 15px;
+      height: 15px;
+    }
+
+    &:hover {
+      background: $border;
+    }
+  }
+
+  &__header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-right: 2.5rem;
+  }
+
+  &__cover {
+    width: 72px;
+    flex-shrink: 0;
+    border-radius: $radius;
+    overflow: hidden;
+    aspect-ratio: 2 / 3;
+    background: $bg-muted;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    justify-content: center;
+  }
+
+  &__title {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: $text-primary;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__author {
+    font-size: $font-size-sm;
+    color: $text-muted;
+  }
+
+  &__section-label {
+    font-size: $font-size-xs;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.75rem;
+  }
+
+  &__status-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  &__status-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: $radius;
+    border: 1.5px solid $border;
+    cursor: pointer;
+    transition: $transition-fast;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $text-secondary;
+
+    input[type="radio"] {
+      display: none;
+    }
+
+    img {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    &:hover {
+      background-color: $bg-muted;
+    }
+
+    &--want {
+      &.is-active {
+        border-color: $want-read;
+        background-color: $want-read-bg;
+        color: $want-read;
+      }
+    }
+
+    &--reading {
+      &.is-active {
+        border-color: $reading-now;
+        background-color: $reading-now-bg;
+        color: $reading-now;
+      }
+    }
+
+    &--read {
+      &.is-active {
+        border-color: $finished;
+        background-color: $finished-bg;
+        color: $finished;
+      }
+    }
+  }
+
+  &__save {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: $primary;
+    color: $text-inverse;
+    border-radius: $radius;
+    font-size: $font-size-base;
+    font-weight: 600;
+    font-family: $font-family;
+    cursor: pointer;
+    transition: $transition-fast;
+    border: none;
+
+    &:hover {
+      background-color: $primary-dark;
+    }
+  }
+
+  &__review-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.625rem;
+    margin-top: 0.75rem;
+    border-radius: $radius;
+    border: 1.5px solid $warning;
+    background-color: $warning-bg;
+    color: $warning;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    text-decoration: none;
+    transition: $transition-fast;
+
+    img {
+      width: 14px;
+      height: 14px;
+    }
+
+    &:hover {
+      filter: brightness(0.95);
     }
   }
 }
