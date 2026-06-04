@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.db import models
 from django.db import transaction
 
+from django.core.paginator import Page, Paginator
+
 from django.conf import settings
 
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -25,6 +27,13 @@ class UserBookQuerySet(models.QuerySet):
             read=models.Count('id', filter=models.Q(status='read'))
         
         )
+    
+    def paginate(self, page_number: str | float | int, per_page: int | str) -> Page:
+
+        paginator = Paginator(self, per_page)
+
+        return paginator.get_page(page_number)
+
     
     def safe_update_status(self, book_id: int, new_status: str, user):
 

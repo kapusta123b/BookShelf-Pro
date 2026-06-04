@@ -15,8 +15,6 @@
     <div class="hero__container">
 
       <div class="hero__content">
-        <span class="hero__tag">Powered by Open Library</span>
-
         <h1 class="hero__title">
           Your personal<br>
           <span>reading universe</span>
@@ -34,8 +32,8 @@
             <button type="button" class="hero__search-tab" data-type="isbn" data-placeholder="Enter ISBN, e.g. 978-0-7432-7356-5…">ISBN</button>
           </div>
           <form class="hero__search-bar" method="get" action="{% url 'books:index' 'all' %}">
-            <input type="hidden" name="type" value="title">
-            <input type="text" name="q" placeholder="Search by book title…" autocomplete="off">
+            <input type="hidden" name="search_by" value="title">
+            <input type="text" name="search" placeholder="Search by book title…" autocomplete="off">
             <button type="submit">
               <img src="{% static 'deps/svg/search.svg' %}" alt="">
               Search
@@ -57,14 +55,6 @@
         </div>
       </div>
 
-      <div class="hero__visual">
-        <div class="hero__books">
-          <div class="hero__book"></div>
-          <div class="hero__book"></div>
-          <div class="hero__book"></div>
-          <div class="hero__book"></div>
-        </div>
-      </div>
 
     </div>
   </section>
@@ -133,122 +123,6 @@
             </div>
           </div>
         </a>
-
-        <a href="#" class="book-card">
-          <div class="book-card__cover book-cover-4">
-            <div class="book-card__cover-placeholder">
-              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
-            </div>
-          </div>
-          <div class="book-card__info">
-            <p class="book-card__title">The Great Gatsby</p>
-            <p class="book-card__author">F. Scott Fitzgerald</p>
-            <div class="book-card__rating">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star.svg' %}" alt="">
-              <span>4.4</span>
-            </div>
-            <div class="book-card__genre">
-              <span class="badge badge--primary">Classic</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="#" class="book-card">
-          <div class="book-card__cover book-cover-3">
-            <div class="book-card__cover-placeholder">
-              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
-            </div>
-          </div>
-          <div class="book-card__info">
-            <p class="book-card__title">Dune</p>
-            <p class="book-card__author">Frank Herbert</p>
-            <div class="book-card__rating">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <span>4.8</span>
-            </div>
-            <div class="book-card__genre">
-              <span class="badge badge--primary">Sci-Fi</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="#" class="book-card">
-          <div class="book-card__cover book-cover-1">
-            <div class="book-card__cover-placeholder">
-              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
-            </div>
-          </div>
-          <div class="book-card__info">
-            <p class="book-card__title">The Hobbit</p>
-            <p class="book-card__author">J.R.R. Tolkien</p>
-            <div class="book-card__rating">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <span>4.7</span>
-            </div>
-            <div class="book-card__genre">
-              <span class="badge badge--primary">Fantasy</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="#" class="book-card">
-          <div class="book-card__cover book-cover-5">
-            <div class="book-card__cover-placeholder">
-              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
-            </div>
-          </div>
-          <div class="book-card__info">
-            <p class="book-card__title">Sapiens</p>
-            <p class="book-card__author">Yuval Noah Harari</p>
-            <div class="book-card__rating">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star.svg' %}" alt="">
-              <span>4.5</span>
-            </div>
-            <div class="book-card__genre">
-              <span class="badge badge--primary">Non-Fiction</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="#" class="book-card">
-          <div class="book-card__cover book-cover-6">
-            <div class="book-card__cover-placeholder">
-              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
-            </div>
-          </div>
-          <div class="book-card__info">
-            <p class="book-card__title">Atomic Habits</p>
-            <p class="book-card__author">James Clear</p>
-            <div class="book-card__rating">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <img class="star" src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              <span>4.8</span>
-            </div>
-            <div class="book-card__genre">
-              <span class="badge badge--primary">Self-Help</span>
-            </div>
-          </div>
-        </a>
-
       </div>
 
     </div>

@@ -22,6 +22,9 @@ class BookSearchClient:
                 'page': page,
                 'limit': 10
             },
+            headers={
+                "User-Agent": "BookShelf Pro (https://github.com/kapusta123b/BookShelf-Pro) (fartuchoknik1@gmail.com)"
+            },
             timeout=10
         )
 

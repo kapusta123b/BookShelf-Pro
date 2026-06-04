@@ -18,24 +18,20 @@
   &__container {
     position: relative;
     z-index: 1;
-    max-width: $max-width;
+    max-width: 860px;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-
-    @media (max-width: 900px) {
-      grid-template-columns: 1fr;
-      gap: 3rem;
-      text-align: center;
-    }
+    text-align: center;
   }
 
   &__content {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1.75rem;
+    width: 100%;
   }
 
   &__tag {
@@ -82,22 +78,15 @@
     font-size: $font-size-lg;
     color: rgba(255, 255, 255, 0.6);
     line-height: 1.7;
-    max-width: 480px;
-
-    @media (max-width: 900px) {
-      margin: 0 auto;
-    }
+    max-width: 640px;
   }
 
   &__search {
     display: flex;
     flex-direction: column;
     gap: 0.625rem;
-    max-width: 520px;
-
-    @media (max-width: 900px) {
-      max-width: 100%;
-    }
+    width: 100%;
+    max-width: 620px;
 
     &-tabs {
       display: flex;
@@ -195,10 +184,7 @@
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
-
-    @media (max-width: 900px) {
-      justify-content: center;
-    }
+    justify-content: center;
   }
 
   &__btn {
@@ -234,62 +220,6 @@
     }
   }
 
-  &__visual {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-
-    @media (max-width: 900px) {
-      display: none;
-    }
-  }
-
-  &__books {
-    display: flex;
-    align-items: flex-end;
-    gap: 1rem;
-    position: relative;
-  }
-
-  &__book {
-    border-radius: 6px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-    transition: transform 0.3s ease;
-
-    &:nth-child(1) {
-      width: 90px;
-      height: 140px;
-      background: linear-gradient(135deg, #5eead4, #0d9488);
-      transform: rotate(-6deg) translateY(10px);
-    }
-
-    &:nth-child(2) {
-      width: 100px;
-      height: 160px;
-      background: linear-gradient(135deg, #6366f1, #4338ca);
-      transform: rotate(-2deg);
-      z-index: 1;
-    }
-
-    &:nth-child(3) {
-      width: 85px;
-      height: 130px;
-      background: linear-gradient(135deg, #22c55e, #15803d);
-      transform: rotate(4deg) translateY(15px);
-    }
-
-    &:nth-child(4) {
-      width: 95px;
-      height: 150px;
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      transform: rotate(8deg) translateY(5px);
-    }
-
-    &:hover {
-      transform: translateY(-8px) rotate(0deg) !important;
-    }
-  }
 }
 
 .stats-strip {

@@ -14,20 +14,21 @@ class LibraryView(LoginRequiredMixin, DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         filter_value = self.request.GET.get('filter', 'all')
-        
-        all_books = self.object.library_books.all()
+        page = self.request.GET.get('page', 1)
 
-        context["library_books"] = all_books.tabs_filter(filter_value)
-        context["active_filter"] = filter_value
-        
-        counts = all_books.get_counts()
-        
-        context["count_total"] = counts['total']
-        context["count_reading"] = counts['reading']
-        context["count_want_to_read"] = counts['want']
-        context["count_finished"] = counts['read']
+        library_data = self.object.get_library_data(filter_value, page)
 
+        context.update({
+            "library_books": library_data["books"],
+            "active_filter": filter_value,
+            "count_total": library_data["counts"]['total'],
+            "count_reading": library_data["counts"]['reading'],
+            "count_want_to_read": library_data["counts"]['want'],
+            "count_finished": library_data["counts"]['read'],
+        })
+    
         return context
     
 

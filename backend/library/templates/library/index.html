@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load sass_tags %}
+{% load books_tags %}
 {% load static %}
 
 {% block title %}My Library — BookShelf Pro{% endblock %}
@@ -101,7 +102,14 @@
               <img src="https://covers.openlibrary.org/b/id/{{ lib_book.book.cover_i }}-M.jpg" alt="">
             </div>
             <div class="library-book__cover-status">
-              <span class="badge {% if lib_book.status == 'reading' %}badge--reading{% elif lib_book.status == 'want_to_read' %}badge--want{% elif lib_book.status == 'read' %}badge--done{% endif %}">{{ lib_book.get_status_display }}</span>
+              <span class="badge 
+              {% if lib_book.status == 'reading' %}
+              badge--reading
+              {% elif lib_book.status == 'want_to_read' %}
+              badge--want
+              {% elif lib_book.status == 'read' %}
+              badge--done
+              {% endif %}">{{ lib_book.get_status_display }}</span>
             </div>
           </div>
           <div class="library-book__body">
@@ -115,12 +123,26 @@
           </div>
           <div class="library-book__actions">
             {% if user.id == library_user.id %}
+              
               <button class="library-book__action-btn" data-open-modal="book-modal-{{ lib_book.id }}">
+                
                 <img src="{% static 'deps/svg/edit.svg' %}" alt="">
                 Update
+              
               </button>
+              {% if lib_book.status == 'read' %}
+
+                <a href="#" class="library-book__action-btn">
+                  <img src="{% static 'deps/svg/star.svg' %}" alt="">
+                  Write a Review
+                </a>
+
+              {% endif %}
+
             {% else %}
+              
               <span class="library-book__status-readonly">{{ lib_book.get_status_display }}</span>
+            
             {% endif %}
           </div>
         </div>
@@ -172,18 +194,50 @@
               <button type="submit" class="book-modal__save">Save Changes</button>
             </form>
 
-            {% if lib_book.status == 'read' %}
-            <a href="#" class="book-modal__review-btn">
-              <img src="{% static 'deps/svg/star.svg' %}" alt="">
-              Write a Review
-            </a>
-            {% endif %}
 
           </div>
         </div>
         {% endif %}
 
       {% endfor %}
+
+      {% if library_books %}
+        <div class="pagination">
+          <a href="{% if library_books.has_previous %}?{% url_replace page=library_books.previous_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav">
+            <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Previous" style="transform: rotate(180deg)">
+          </a>
+          {% if library_books.number > 4 %}
+
+            <a href="?{% url_replace page=1 %}" class="pagination__btn">1</a>
+            
+            {% if library_books.number > 5 %}
+
+              <span class="pagination__ellipsis">…</span>
+
+            {% endif %}
+          {% endif %}
+
+          {% for p in library_books.paginator.page_range %}
+
+            {% if p >= library_books.number|add:-3 and p <= library_books.number|add:3 %}
+
+              <a href="?{% url_replace page=p %}" class="pagination__btn {% if p == library_books.number %}active{% endif %}">{{ p }}</a>
+
+            {% endif %}
+
+          {% endfor %}
+
+          {% if library_books.paginator.num_pages > library_books.number|add:3 %}
+
+            <span class="pagination__ellipsis">…</span>
+            <a href="?{% url_replace page=library_books.paginator.num_pages %}" class="pagination__btn">{{ library_books.paginator.num_pages }}</a>
+          {% endif %}
+
+          <a href="{% if library_books.has_next %}?{% url_replace page=library_books.next_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav">
+            <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Next">
+          </a>
+        </div>
+      {% endif %}
 
     </div>
 

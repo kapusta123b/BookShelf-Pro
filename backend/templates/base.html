@@ -139,14 +139,17 @@
 
     <div class="search-overlay">
       <div class="search-overlay__box">
-        <div class="search-overlay__input-row">
-          <img src="{% static 'deps/svg/search.svg' %}" alt="Search">
-          <input type="text" placeholder="Search for books, authors, genres…" autocomplete="off">
-          <button class="search-overlay__close">
-            <img src="{% static 'deps/svg/close.svg' %}" alt="Close">
-          </button>
-        </div>
-        <p class="search-overlay__hint">Press <kbd>Esc</kbd> to close &nbsp;·&nbsp; <kbd>Enter</kbd> to search</p>
+        <form method="get" action="{% url "books:index" "all" %}">
+          <input type="hidden" name="search_by" value="title">
+          <div class="search-overlay__input-row">
+            <img src="{% static 'deps/svg/search.svg' %}" alt="Search">
+            <input type="text" name="search" placeholder="Search for books, authors, genres…" autocomplete="off">
+            <button class="search-overlay__close" type="button">
+              <img src="{% static 'deps/svg/close.svg' %}" alt="Close">
+            </button>
+          </div>
+          <p class="search-overlay__hint">Press <kbd>Esc</kbd> to close &nbsp;·&nbsp; <kbd>Enter</kbd> to search</p>
+        </form>
       </div>
     </div>
 

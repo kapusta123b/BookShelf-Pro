@@ -1,5 +1,6 @@
 from django import template
 
+from library.models import UserBook
 from books.models import Subject
 
 register = template.Library()

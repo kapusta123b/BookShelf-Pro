@@ -320,6 +320,10 @@
     grid-template-columns: 1fr;
     gap: 0.625rem;
   }
+
+  .pagination {
+    grid-column: 1 / -1;
+  }
 }
 
 .library-book {
@@ -716,6 +720,74 @@
 
     &:hover {
       filter: brightness(0.95);
+    }
+  }
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2.5rem 0;
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 0.5rem;
+    border-radius: $radius;
+    border: 1px solid $border;
+    background-color: $bg-card;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: $transition-fast;
+    font-family: $font-family;
+    text-decoration: none;
+
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+    }
+
+    &.active {
+      background-color: $primary;
+      border-color: $primary;
+      color: $text-inverse;
+      font-weight: 700;
+    }
+
+    &--nav {
+      img {
+        width: 16px;
+        height: 16px;
+      }
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+
+        &:hover {
+          border-color: $border;
+          color: $text-secondary;
+        }
+      }
+    }
+
+    &--ellipsis {
+      border: none;
+      background: none;
+      cursor: default;
+      font-size: $font-size-base;
+      color: $text-muted;
+
+      &:hover {
+        border: none;
+        color: $text-muted;
+      }
     }
   }
 }
