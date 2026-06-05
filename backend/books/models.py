@@ -3,7 +3,6 @@ from django.db import models
 class Subject(models.Model):
     slug = models.SlugField(unique=True, null=True, blank=True)
     name = models.CharField(max_length=100)
-    emoji = models.CharField(null=True, max_length=1)
 
     def __str__(self):
         return self.name
@@ -27,7 +26,6 @@ class Author(models.Model):
 
     def __str__(self):
         return self.name
-    
 
     class Meta:
         db_table = 'author'
@@ -49,12 +47,24 @@ class BookQuerySet(models.QuerySet):
 class Book(models.Model):
     objects = BookQuerySet.as_manager()
 
-    cover_i = models.CharField(null=True, max_length=50)
+    openlibrary_key = models.CharField(
+        max_length=50,
+        unique=True,
+        db_index=True,
+    )
+
+    cover_i = models.PositiveIntegerField(null=True, blank=True)
+
+    cover_ids = models.JSONField(
+        default=list,
+        blank=True,
+    )
 
     title = models.CharField('Title', max_length=100)
     authors = models.ManyToManyField('books.Author', verbose_name='authors')
     first_publish_year = models.CharField('First publish year', null=True,blank=True)
     subjects = models.ManyToManyField('books.Subject', related_name='books', blank=True)
+    description = models.TextField(null=True)
 
     date_created = models.DateTimeField(auto_now_add=True, null=True)
 
@@ -78,6 +88,7 @@ class Review(models.Model):
         "library.UserBook",
         on_delete=models.CASCADE,
         related_name="review",
+        null=True,
         blank=True
     )
 

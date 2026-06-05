@@ -1,9 +1,11 @@
 from django.shortcuts import redirect
+
 from django.urls import reverse
 from django.views.generic import ListView
 
-from books.services.book_import_service import BookImportService
-from books.services.search_book_service import BookSearchClient
+from books.services.client import OpenLibaryClient
+from books.services.importers import AuthorImporter, SubjectImporter, BookImport
+
 from books.models import Book, Subject
 
 
@@ -22,11 +24,15 @@ class CatalogView(ListView):
         page = request.GET.get('page', 1)
 
         if search and search_by == 'subject' and subject != 'all':
-            client = BookSearchClient()
-            book_import = BookImportService()
-            
-            data = client.search_books_by_argument(query=search, argument=search_by, page=str(page))
-            book_import.create_books(json=data)
+            client = OpenLibaryClient()
+            raw_docs = client.search(
+                argument=search_by,
+                query=search,
+                page=str(page)
+            )
+            BookImport().save_from_search(
+                docs=raw_docs
+            )
 
             url = reverse('books:index', kwargs={'subject_slug': subject,})
             return redirect(f'{url}?page={str(page)}')
@@ -48,11 +54,18 @@ class CatalogView(ListView):
             queryset = queryset.filter(title__icontains=search)
 
             if not queryset.exists():
-                client = BookSearchClient()
-                book_import = BookImportService()
+                
+                client = OpenLibaryClient()
 
-                data = client.search_books_by_argument(query=search, argument=search_by, page='1')
-                book_import.create_books(json=data)
+                raw_docs = client.search(
+                    argument=search_by,
+                    query=search,
+                    page='1'
+                )
+
+                BookImport().save_from_search(
+                    docs=raw_docs
+                )
 
                 queryset = queryset.filter(title__icontains=search)
 
@@ -66,6 +79,7 @@ class CatalogView(ListView):
                 else
                 queryset.filter(user_entries__user=self.request.user)
             )
+
             self._cached_queryset = result
             return self._cached_queryset
 

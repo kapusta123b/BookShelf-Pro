@@ -115,15 +115,12 @@
 
             {% tag_subjects as subjects %}
 
-            <a href="{% url 'books:index' 'all' %}" class="filters__tag {% if view.kwargs.subject_slug == 'all' %}active{% endif %}">📚 All</a>
+            <a href="{% url 'books:index' 'all' %}" class="filters__tag {% if view.kwargs.subject_slug == 'all' %}active{% endif %}">All</a>
 
             {% for subject in subjects %}
 
-              <a href="{% url "books:index" subject.slug %}" class="filters__tag {% if view.kwargs.subject_slug == subject.slug %}active{% endif %}">
-                {% if subject.emoji %}<span>{{ subject.emoji }}</span>{% endif %}
-                {{ subject.name }}
-              </a>
-            
+              <a href="{% url "books:index" subject.slug %}" class="filters__tag {% if view.kwargs.subject_slug == subject.slug %}active{% endif %}">{{ subject.name }}</a>
+
             {% endfor %}
           </div>
         </div>
@@ -347,13 +344,11 @@
 
               {% if view.kwargs.subject_slug == 'all' %}
 
-                <span class="load-more__icon">🔍</span>
                 <p class="load-more__title">Looking for something specific?</p>
                 <p class="load-more__desc">Use the search bar to find a book by title or author, or browse a genre to discover more titles.</p>
 
               {% else %}
 
-                <span class="load-more__icon">{% if current_subject and current_subject.emoji %}{{ current_subject.emoji }}{% else %}📚{% endif %}</span>
                 <p class="load-more__title">Want more <strong>{% if current_subject %}{{ current_subject.name }}{% else %}books{% endif %}</strong>?</p>
                 <p class="load-more__desc">We'll fetch more titles from Open Library and add them to the catalog.</p>
 
