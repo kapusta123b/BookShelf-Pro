@@ -862,18 +862,11 @@
   &__rating {
     display: flex;
     align-items: center;
-    gap: 4px;
-
-    .star {
-      width: 13px;
-      height: 13px;
-      color: $warning;
-    }
+    gap: 5px;
 
     span {
       font-size: $font-size-xs;
       color: $text-muted;
-      margin-left: 2px;
     }
   }
 
@@ -1095,5 +1088,25 @@
     &:active {
       transform: scale(0.98);
     }
+  }
+}
+
+.star-track {
+  position: relative;
+  display: inline-block;
+  font-size: 0.8rem;
+  color: $border;
+  line-height: 1;
+  letter-spacing: 1px;
+  user-select: none;
+
+  &__fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    overflow: hidden;
+    color: $warning;
+    white-space: nowrap;
   }
 }

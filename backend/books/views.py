@@ -1,13 +1,14 @@
 
-from django.shortcuts import redirect
-
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from books.services.client import OpenLibaryClient
 from books.services.importers import BookImport
 
 from books.models import Book, Subject
+from library.models import UserBook
 
 
 class CatalogView(ListView):
@@ -131,11 +132,50 @@ class DetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         if self.request.user.is_authenticated:
             context['user_library_ids'] = set(
                 self.request.user.library_books.values_list('book_id', flat=True)
             )
+            user_book = self.request.user.library_books.filter(book=self.object).first()
+            context['user_rating'] = user_book.rating if user_book else None
+            context['user_rating_pct'] = round(((user_book.rating or 0) / 5) * 100) if user_book else 0
+        
         else:
+        
             context['user_library_ids'] = set()
+            context['user_rating'] = None
+            context['user_rating_pct'] = 0
+        
         return context
-    
+
+
+class RateBookView(LoginRequiredMixin, View):
+    def post(self, request, book_id):
+        
+        try:
+            rating = int(request.POST.get('rating', 0))
+
+        except (TypeError, ValueError):
+            
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        if not 1 <= rating <= 5:
+            
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        book = get_object_or_404(Book, id=book_id)
+        user_book, _ = UserBook.objects.get_or_create(user=request.user, book=book)
+
+        old_rating = user_book.rating
+        user_book.rating = rating
+        user_book.save(update_fields=['rating'])
+
+        if old_rating is None:
+            book.update_avg_rating(rating)
+
+        else:
+            
+            book.update_avg_rating(rating, old_rating=old_rating)
+
+        return redirect(request.META.get('HTTP_REFERER', '/'))

@@ -20,15 +20,19 @@ class BookImport:
         else:
             description = raw_description or ''
 
+        defaults = {
+            'cover_ids': [cover for cover in data.get('covers', []) if cover > 0],
+            'description': description,
+            'excerpt': excerpt_text,
+            'was_requested_detail': True,
+        }
+
+        if 'first_publish_date' in data:
+            defaults['first_publish_date'] = data['first_publish_date']
+
         book, _ = Book.objects.update_or_create(
             openlibrary_key=self._clear_key(data['key']),
-            defaults={
-                'cover_ids': [cover for cover in data.get('covers', []) if cover > 0],
-                'description': description,
-                'excerpt': excerpt_text,
-                'first_publish_date': data.get('first_publish_date', ''),
-                'was_requested_detail': True,
-            }
+            defaults=defaults,
         )
 
     def _upsert_book(self, data: dict) -> None:

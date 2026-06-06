@@ -75,6 +75,42 @@ class Book(models.Model):
 
     def get_authors(self) -> list[Author]:
         return [ author for author in self.authors.all()]
+    
+    def update_avg_rating(self, new_rating: int, old_rating: int | None = None) -> None:
+        if old_rating is None:
+            self.avg_rating = (self.avg_rating * self.rating_count + new_rating) / (self.rating_count + 1)
+            
+            self.rating_count += 1
+        else:
+            
+            self.avg_rating = (self.avg_rating * self.rating_count - old_rating + new_rating) / self.rating_count
+        
+        self.avg_rating = round(self.avg_rating, 2)
+        self.save(update_fields=['avg_rating', 'rating_count'])
+
+    def remove_rating(self, old_rating: int) -> None:
+        if self.rating_count <= 1:
+            self.avg_rating = 0
+            self.rating_count = 0
+        
+        else:
+            self.avg_rating = round(
+                (self.avg_rating * self.rating_count - old_rating) / (self.rating_count - 1), 2
+            )
+            self.rating_count -= 1
+        
+        self.save(update_fields=['avg_rating', 'rating_count'])
+
+    @property
+    def rating_fill_percent(self) -> float:
+        return round((self.avg_rating / 5) * 100, 2)
+
+    @property
+    def format_publish_date(self):
+        if not self.first_publish_date.isdigit():
+            return self.first_publish_date.split(',')[-1]
+        
+        return self.first_publish_date
 
     def __str__(self):
         return f"{self.title} - {self.first_publish_date}"

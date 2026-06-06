@@ -3,9 +3,9 @@
 {% load books_tags %}
 {% load static %}
 
-{% block title %}The Great Gatsby — BookShelf Pro{% endblock %}
+{% block title %}{{ book.title }} — BookShelf Pro{% endblock %}
 
-{% block meta_description %}The Great Gatsby by F. Scott Fitzgerald. First published 1925. Discover description, excerpt, ratings and reviews.{% endblock %}
+{% block meta_description %}{{ book.title }}, First published {{ book.first_publish_date }}. Discover description, excerpt, ratings and reviews.{% endblock %}
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% sass_src 'deps/css/book-detail.scss' %}">
@@ -54,15 +54,38 @@
 
           <div class="book-detail__rating">
             <div class="book-detail__rating-stars">
-              <div class="book-detail__rating-stars-track">
+              <div class="star-track">
                 ★★★★★
-                <div class="book-detail__rating-stars-fill" style="width: 72%;">★★★★★</div>
+                <div class="star-track__fill" style="width: {{ book.rating_fill_percent }}%;">★★★★★</div>
               </div>
             </div>
             <div class="book-detail__rating-meta">
               <span class="book-detail__rating-score">{{ book.avg_rating }}</span>
               <span class="book-detail__rating-count">{{ book.rating_count }} ratings</span>
             </div>
+          </div>
+
+          <div class="book-detail__vote">
+            {% if user.is_authenticated %}
+              <p class="book-detail__vote-label">
+                {% if user_rating %}Your rating: <strong>{{ user_rating }}/5</strong>{% else %}Rate this book{% endif %}
+              </p>
+              <form method="post" action="{% url 'books:rate' book.id %}" id="vote-form">
+                {% csrf_token %}
+                <input type="hidden" name="rating" id="vote-input" value="">
+                <div class="star-vote" id="star-vote" data-current="{{ user_rating|default:0 }}">
+                  <button type="button" class="star-vote__btn" data-val="1">★</button>
+                  <button type="button" class="star-vote__btn" data-val="2">★</button>
+                  <button type="button" class="star-vote__btn" data-val="3">★</button>
+                  <button type="button" class="star-vote__btn" data-val="4">★</button>
+                  <button type="button" class="star-vote__btn" data-val="5">★</button>
+                </div>
+              </form>
+            {% else %}
+
+              <a href="{% url 'users:login' %}" class="book-detail__vote-login">Sign in to rate</a>
+            
+            {% endif %}
           </div>
 
           <div class="book-detail__actions">
@@ -103,12 +126,40 @@
             </div>
           </section>
 
+          {% if book.excerpt %}
+
+            <section class="book-detail__section">
+              <h2 class="book-detail__section-title">Excerpt</h2>
+
+              <blockquote class="book-detail__excerpt">
+              
+                <p>{{ book.excerpt }}</p>
+              
+              </blockquote>
+            </section>
+          
+          {% endif %}
+          
+
+          {% if book.cover_ids %}
           <section class="book-detail__section">
-            <h2 class="book-detail__section-title">Excerpt</h2>
-            <blockquote class="book-detail__excerpt">
-              <p>{{ book.excerpt }}</p>
-            </blockquote>
+            <h2 class="book-detail__section-title">
+              Covers
+              <span class="book-detail__section-count">{{ book.cover_ids|length }}</span>
+            </h2>
+            <div class="cover-collage">
+              {% for cover_id in book.cover_ids %}
+                <div class="cover-collage__item {% if forloop.first %}cover-collage__item--featured{% endif %}">
+                  <img
+                    src="https://covers.openlibrary.org/b/id/{{ cover_id }}-M.jpg"
+                    alt="{{ book.title }} cover {{ forloop.counter }}"
+                    loading="lazy"
+                  >
+                </div>
+              {% endfor %}
+            </div>
           </section>
+          {% endif %}
 
           <section class="book-detail__section">
             <h2 class="book-detail__section-title">
@@ -208,4 +259,8 @@
 
   </div>
 
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'deps/js/book-detail.js' %}"></script>
 {% endblock %}

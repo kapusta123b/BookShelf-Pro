@@ -114,10 +114,12 @@
           </div>
           <div class="library-book__body">
 
-            <p class="library-book__title">{{ lib_book.book.title }}</p>
+            <a href="{% url "books:detail" 'all' lib_book.book.id %}" class="library-book__title">{{ lib_book.book.title }}</a>
 
             <p class="library-book__author">
-              {{ lib_book.book.get_authors }}
+              {% for author in lib_book.book.get_authors %}
+                {{ author.name }}
+              {% endfor %}
             </p>
 
           </div>
@@ -161,8 +163,10 @@
                   <img src="https://covers.openlibrary.org/b/id/{{ lib_book.book.cover_i }}-M.jpg" alt="{{ lib_book.book.title }}">
                 </div>
                 <div class="book-modal__info">
-                  <p class="book-modal__title">{{ lib_book.book.title }}</p>
-                  <p class="book-modal__author">{{ lib_book.book.get_authors }}</p>
+                  <a href="{% url "books:detail" 'all' lib_book.book.id %}" class="book-modal__title">{{ lib_book.book.title }}</a>
+                  <p class="book-modal__author">{% for author in lib_book.book.get_authors %}
+                    {{ author.name }}
+                    {% endfor %}</p>
                   <span class="badge {% if lib_book.status == 'reading' %}badge--reading{% elif lib_book.status == 'want_to_read' %}badge--want{% elif lib_book.status == 'read' %}badge--done{% endif %}">{{ lib_book.get_status_display }}</span>
                 </div>
               </div>
