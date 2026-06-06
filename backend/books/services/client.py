@@ -1,5 +1,6 @@
 import requests
 
+from books.utils import import_subjects_from_the_map
 from books.services.importers import SubjectImporter
 
 SEARCH_FIELDS = 'key,cover_i,title,author_name,author_key,first_publish_year,subject'
@@ -21,7 +22,7 @@ class OpenLibaryClient:
 
     def search(self, argument: str, query: str, page: str | None, limit=10) -> dict:
         if argument == 'subject':
-            query = SubjectImporter().import_subjects_from_the_map(subject=query)
+            query = import_subjects_from_the_map(subject=query)
             argument = 'q'
 
         data = self._get(
@@ -39,6 +40,7 @@ class OpenLibaryClient:
     def get_detail(self, book_key: str) -> dict:
         return self._get(
             path=f'/books/{book_key}.json',
+            params=None
         )
 
 

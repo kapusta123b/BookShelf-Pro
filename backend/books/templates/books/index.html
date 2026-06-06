@@ -212,7 +212,7 @@
         </div>
       </div>
       {% if user.is_authenticated %}
-      
+
         <div class="filters__group">
           <div class="filters__group-header">
             <span>Reading Status</span>
@@ -221,27 +221,27 @@
           <div class="filters__group-body">
             <div class="filters__status">
               <form action="{{ request.path }}" method='get' onchange="this.submit()">
-  
+
                 <label class="filters__radio">
                   <input type="radio" name="status" value="all" {% if not request.GET.status or request.GET.status == 'all' %}checked{% endif %}>
                   <span>All books</span>
                 </label>
-  
+
                 <label class="filters__radio">
                   <input type="radio" name="status" value="want_to_read" {% if request.GET.status == 'want_to_read' %}checked{% endif %}>
                   <span>Want to Read</span>
                 </label>
-  
+
                 <label class="filters__radio">
                   <input type="radio" name="status" value="reading" {% if request.GET.status == 'reading' %}checked{% endif %}>
                   <span>Currently Reading</span>
                 </label>
-  
+
                 <label class="filters__radio">
                   <input type="radio" name="status" value="read" {% if request.GET.status == 'read' %}checked{% endif %}>
                   <span>Already Read</span>
                 </label>
-  
+
                 <label class="filters__radio">
                   <input type="radio" name="status" value="none" {% if request.GET.status == 'none' %}checked{% endif %}>
                   <span>None</span>
@@ -297,7 +297,7 @@
                 <span class="badge badge--primary">{{ book.subjects.first.name }}</span>
               </div>
 
-              <p class="book-card-catalog__title">{{ book.title }}</p>
+              <a href="{% url "books:detail" view.kwargs.subject_slug book.id %}" class="book-card-catalog__title">{{ book.title }}</a>
               <p class="book-card-catalog__author">{{ book.get_authors }}</p>
 
               <div class="book-card-catalog__meta">
@@ -307,7 +307,7 @@
                   <span>{{ book.rating }}</span>
 
                 </div>
-                <span class="book-card-catalog__year">{{ book.first_publish_year }}</span>
+                <span class="book-card-catalog__year">{{ book.first_publish_date }}</span>
               </div>
 
               <div class="book-card-catalog__actions">
@@ -375,13 +375,13 @@
           {% if page_obj.number > 4 %}
 
             <a href="?{% url_replace page=1 %}" class="pagination__btn">1</a>
-            
+
             {% if page_obj.number > 5 %}
 
               <span class="pagination__ellipsis">…</span>
 
             {% endif %}
-            
+
           {% endif %}
 
           {% for p in paginator.page_range %}

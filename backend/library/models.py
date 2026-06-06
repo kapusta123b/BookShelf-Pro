@@ -76,6 +76,7 @@ class UserBook(models.Model):
         choices=Status.choices,
         default=Status.WANT_TO_READ,
     )
+    
     rating = models.PositiveSmallIntegerField(
         null=True,
         blank=True,

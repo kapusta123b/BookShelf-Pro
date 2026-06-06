@@ -41,8 +41,7 @@ class BookQuerySet(models.QuerySet):
             return self.filter(subjects__slug=slug)
         
         return self
-    
-    
+
 
 class Book(models.Model):
     objects = BookQuerySet.as_manager()
@@ -62,19 +61,23 @@ class Book(models.Model):
 
     title = models.CharField('Title', max_length=100)
     authors = models.ManyToManyField('books.Author', verbose_name='authors')
-    first_publish_year = models.CharField('First publish year', null=True,blank=True)
+    first_publish_date = models.CharField('First publish year', null=True,blank=True)
     subjects = models.ManyToManyField('books.Subject', related_name='books', blank=True)
     description = models.TextField(null=True)
+    excerpt = models.TextField(null=True)
+
+    was_requested_detail = models.BooleanField(default=False)
 
     date_created = models.DateTimeField(auto_now_add=True, null=True)
 
     avg_rating = models.FloatField(default=0)
+    rating_count = models.PositiveIntegerField(default=0)
 
-    def get_authors(self):
-        return ', '.join(author.name for author in self.authors.all())
+    def get_authors(self) -> list[Author]:
+        return [ author for author in self.authors.all()]
 
     def __str__(self):
-        return f"{self.title} - {self.first_publish_year}"
+        return f"{self.title} - {self.first_publish_date}"
     
     class Meta:
         db_table = 'book'

@@ -1,10 +1,11 @@
+
 from django.shortcuts import redirect
 
 from django.urls import reverse
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 from books.services.client import OpenLibaryClient
-from books.services.importers import AuthorImporter, SubjectImporter, BookImport
+from books.services.importers import BookImport
 
 from books.models import Book, Subject
 
@@ -106,3 +107,35 @@ class CatalogView(ListView):
             context['current_subject'] = None
 
         return context
+    
+
+class DetailView(DetailView):
+    model = Book
+    template_name = 'books/detail.html'
+    context_object_name = 'book'
+    pk_url_kwarg = 'book_id'
+
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+
+        if not obj.was_requested_detail:
+
+            client = OpenLibaryClient()
+            raw_doc = client.get_detail(obj.openlibrary_key)
+            BookImport().save_from_detail(raw_doc)
+            
+            obj.refresh_from_db()
+
+        return obj
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['user_library_ids'] = set(
+                self.request.user.library_books.values_list('book_id', flat=True)
+            )
+        else:
+            context['user_library_ids'] = set()
+        return context
+    

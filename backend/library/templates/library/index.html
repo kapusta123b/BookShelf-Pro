@@ -22,12 +22,12 @@
 
       <div class="library-header__actions">
         {% if user.id == library_user.id %}
-        
+
           <a href="{% url 'books:index' 'all' %}" class="library-header__btn library-header__btn--primary">
             <img src="{% static 'deps/svg/plus.svg' %}" alt="">
             Add Book
           </a>
-          
+
         {% endif %}
 
       </div>
@@ -102,14 +102,14 @@
               <img src="https://covers.openlibrary.org/b/id/{{ lib_book.book.cover_i }}-M.jpg" alt="">
             </div>
             <div class="library-book__cover-status">
-              <span class="badge 
-              {% if lib_book.status == 'reading' %}
-              badge--reading
-              {% elif lib_book.status == 'want_to_read' %}
-              badge--want
-              {% elif lib_book.status == 'read' %}
-              badge--done
-              {% endif %}">{{ lib_book.get_status_display }}</span>
+              <span class="badge
+                           {% if lib_book.status == 'reading' %}
+                             badge--reading
+                           {% elif lib_book.status == 'want_to_read' %}
+                             badge--want
+                           {% elif lib_book.status == 'read' %}
+                             badge--done
+                           {% endif %}">{{ lib_book.get_status_display }}</span>
             </div>
           </div>
           <div class="library-book__body">
@@ -123,12 +123,12 @@
           </div>
           <div class="library-book__actions">
             {% if user.id == library_user.id %}
-              
+
               <button class="library-book__action-btn" data-open-modal="book-modal-{{ lib_book.id }}">
-                
+
                 <img src="{% static 'deps/svg/edit.svg' %}" alt="">
                 Update
-              
+
               </button>
               {% if lib_book.status == 'read' %}
 
@@ -140,63 +140,63 @@
               {% endif %}
 
             {% else %}
-              
+
               <span class="library-book__status-readonly">{{ lib_book.get_status_display }}</span>
-            
+
             {% endif %}
           </div>
         </div>
 
         {% if user.id == library_user.id %}
-        <div class="book-modal" id="book-modal-{{ lib_book.id }}">
-          <div class="book-modal__overlay" data-close-modal></div>
-          <div class="book-modal__panel">
+          <div class="book-modal" id="book-modal-{{ lib_book.id }}">
+            <div class="book-modal__overlay" data-close-modal></div>
+            <div class="book-modal__panel">
 
-            <button class="book-modal__close" data-close-modal>
-              <img src="{% static 'deps/svg/close.svg' %}" alt="">
-            </button>
+              <button class="book-modal__close" data-close-modal>
+                <img src="{% static 'deps/svg/close.svg' %}" alt="">
+              </button>
 
-            <div class="book-modal__header">
-              <div class="book-modal__cover">
-                <img src="https://covers.openlibrary.org/b/id/{{ lib_book.book.cover_i }}-M.jpg" alt="{{ lib_book.book.title }}">
+              <div class="book-modal__header">
+                <div class="book-modal__cover">
+                  <img src="https://covers.openlibrary.org/b/id/{{ lib_book.book.cover_i }}-M.jpg" alt="{{ lib_book.book.title }}">
+                </div>
+                <div class="book-modal__info">
+                  <p class="book-modal__title">{{ lib_book.book.title }}</p>
+                  <p class="book-modal__author">{{ lib_book.book.get_authors }}</p>
+                  <span class="badge {% if lib_book.status == 'reading' %}badge--reading{% elif lib_book.status == 'want_to_read' %}badge--want{% elif lib_book.status == 'read' %}badge--done{% endif %}">{{ lib_book.get_status_display }}</span>
+                </div>
               </div>
-              <div class="book-modal__info">
-                <p class="book-modal__title">{{ lib_book.book.title }}</p>
-                <p class="book-modal__author">{{ lib_book.book.get_authors }}</p>
-                <span class="badge {% if lib_book.status == 'reading' %}badge--reading{% elif lib_book.status == 'want_to_read' %}badge--want{% elif lib_book.status == 'read' %}badge--done{% endif %}">{{ lib_book.get_status_display }}</span>
-              </div>
+
+              <form method="post" action="{% url 'library:change_status' lib_book.id %}" class="book-modal__form">
+                {% csrf_token %}
+                <p class="book-modal__section-label">Reading status</p>
+                <div class="book-modal__status-options">
+
+                  <label class="book-modal__status-option book-modal__status-option--want {% if lib_book.status == 'want_to_read' %}is-active{% endif %}">
+                    <input type="radio" name="status" value="want_to_read" {% if lib_book.status == 'want_to_read' %}checked{% endif %}>
+                    <img src="{% static 'deps/svg/bookmark.svg' %}" alt="">
+                    <span>Want to Read</span>
+                  </label>
+
+                  <label class="book-modal__status-option book-modal__status-option--reading {% if lib_book.status == 'reading' %}is-active{% endif %}">
+                    <input type="radio" name="status" value="reading" {% if lib_book.status == 'reading' %}checked{% endif %}>
+                    <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+                    <span>Reading</span>
+                  </label>
+
+                  <label class="book-modal__status-option book-modal__status-option--read {% if lib_book.status == 'read' %}is-active{% endif %}">
+                    <input type="radio" name="status" value="read" {% if lib_book.status == 'read' %}checked{% endif %}>
+                    <img src="{% static 'deps/svg/check.svg' %}" alt="">
+                    <span>Read</span>
+                  </label>
+
+                </div>
+                <button type="submit" class="book-modal__save">Save Changes</button>
+              </form>
+
+
             </div>
-
-            <form method="post" action="{% url 'library:change_status' lib_book.id %}" class="book-modal__form">
-              {% csrf_token %}
-              <p class="book-modal__section-label">Reading status</p>
-              <div class="book-modal__status-options">
-
-                <label class="book-modal__status-option book-modal__status-option--want {% if lib_book.status == 'want_to_read' %}is-active{% endif %}">
-                  <input type="radio" name="status" value="want_to_read" {% if lib_book.status == 'want_to_read' %}checked{% endif %}>
-                  <img src="{% static 'deps/svg/bookmark.svg' %}" alt="">
-                  <span>Want to Read</span>
-                </label>
-
-                <label class="book-modal__status-option book-modal__status-option--reading {% if lib_book.status == 'reading' %}is-active{% endif %}">
-                  <input type="radio" name="status" value="reading" {% if lib_book.status == 'reading' %}checked{% endif %}>
-                  <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
-                  <span>Reading</span>
-                </label>
-
-                <label class="book-modal__status-option book-modal__status-option--read {% if lib_book.status == 'read' %}is-active{% endif %}">
-                  <input type="radio" name="status" value="read" {% if lib_book.status == 'read' %}checked{% endif %}>
-                  <img src="{% static 'deps/svg/check.svg' %}" alt="">
-                  <span>Read</span>
-                </label>
-
-              </div>
-              <button type="submit" class="book-modal__save">Save Changes</button>
-            </form>
-
-
           </div>
-        </div>
         {% endif %}
 
       {% endfor %}
@@ -209,7 +209,7 @@
           {% if library_books.number > 4 %}
 
             <a href="?{% url_replace page=1 %}" class="pagination__btn">1</a>
-            
+
             {% if library_books.number > 5 %}
 
               <span class="pagination__ellipsis">…</span>

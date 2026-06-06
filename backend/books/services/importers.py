@@ -10,26 +10,34 @@ class BookImport:
     def save_from_search(self, docs: dict[list]) -> list[Book]:
         return [self._upsert_book(doc) for doc in docs if self._is_valid(doc)]
 
-    def save_from_detail(self, data: dict):
-        covers = [cover for cover in data['covers'] if cover > 0]
+    def save_from_detail(self, data: dict) -> None:
+        excerpts = data.get('excerpts', [])
+        excerpt_text = excerpts[0].get('excerpt') if excerpts else None
+
+        raw_description = data.get('description')
+        if isinstance(raw_description, dict):
+            description = raw_description.get('value', '')
+        else:
+            description = raw_description or ''
 
         book, _ = Book.objects.update_or_create(
             openlibrary_key=self._clear_key(data['key']),
             defaults={
-                'cover_ids': [
-                    cover for cover in data.get('covers', [])
-                    if cover > 0],
-                'description': data['description']
+                'cover_ids': [cover for cover in data.get('covers', []) if cover > 0],
+                'description': description,
+                'excerpt': excerpt_text,
+                'first_publish_date': data.get('first_publish_date', ''),
+                'was_requested_detail': True,
             }
         )
 
-    def _upsert_book(self, data: dict):
+    def _upsert_book(self, data: dict) -> None:
         book, _ = Book.objects.update_or_create(
             openlibrary_key=self._clear_key(data['key']),
             defaults={
                 'title': data['title'],
                 'cover_i': data['cover_i'],
-                'first_publish_year': data.get('first_publish_year'),
+                'first_publish_date': data.get('first_publish_year', ''),
             }
         )
 
@@ -40,8 +48,8 @@ class BookImport:
         book.authors.add(*authors)
         book.subjects.add(*subjects)
 
-
-    def _is_valid(self, data: dict):
+    @staticmethod
+    def _is_valid(data: dict) -> bool:
         return bool(
             data.get("cover_i")
             and data.get("subject")
@@ -50,8 +58,9 @@ class BookImport:
             and data.get("key")
         )
     
-    def _clear_key(self, raw_key: str) -> str:
-        return raw_key.strip('works/books')
+    @staticmethod
+    def _clear_key(raw_key: str) -> str:
+        return raw_key.split('/')[-1]
     
 
 
@@ -83,12 +92,6 @@ class SubjectImporter:
         
         return result
     
-    def import_subjects_from_the_map(self, subject: str) -> str:
-        keywords = SUBJECT_MAP.get(subject, [subject])
-
-        parts = [f'subject:"{kw}"' for kw in keywords]
-        return ' OR '.join(parts)
-
     @staticmethod
     def _resolve(raw_subjects: list) -> list[str]:
         result = set()

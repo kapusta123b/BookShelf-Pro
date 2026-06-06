@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load sass_tags %}
+{% load books_tags %}
+{% load static %}
+
+{% block title %}The Great Gatsby — BookShelf Pro{% endblock %}
+
+{% block meta_description %}The Great Gatsby by F. Scott Fitzgerald. First published 1925. Discover description, excerpt, ratings and reviews.{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/book-detail.scss' %}">
+{% endblock %}
+
+{% block content %}
+
+  <div class="book-detail">
+
+    <div class="book-detail__breadcrumb">
+      <div class="book-detail__breadcrumb-inner">
+        <a href="{% url "books:index" view.kwargs.subject_slug %}">Catalog</a>
+        <span>/</span>
+        <span>{{ book.title }}</span>
+      </div>
+    </div>
+
+    <div class="book-detail__hero">
+      <div class="book-detail__hero-inner">
+
+        <div class="book-detail__cover">
+          <img src="https://covers.openlibrary.org/b/id/{{ book.cover_i }}-L.jpg" alt="{{ book.title }}">
+        </div>
+
+        <div class="book-detail__info">
+
+          <div class="book-detail__subjects">
+
+            {% for subject in book.subjects.all %}
+
+              <span class="badge badge--primary">{{ subject.name }}</span>
+
+            {% endfor %}
+          </div>
+
+          <h1 class="book-detail__title">{{ book.title }}</h1>
+
+
+          {% for author in book.get_authors %}
+
+            <p class="book-detail__authors">{{ author.name }}</p>
+
+          {% endfor %}
+
+          <p class="book-detail__year">{{ book.first_publish_date }}</p>
+
+          <div class="book-detail__rating">
+            <div class="book-detail__rating-stars">
+              <div class="book-detail__rating-stars-track">
+                ★★★★★
+                <div class="book-detail__rating-stars-fill" style="width: 72%;">★★★★★</div>
+              </div>
+            </div>
+            <div class="book-detail__rating-meta">
+              <span class="book-detail__rating-score">{{ book.avg_rating }}</span>
+              <span class="book-detail__rating-count">{{ book.rating_count }} ratings</span>
+            </div>
+          </div>
+
+          <div class="book-detail__actions">
+            {% if user.is_authenticated %}
+
+              <form method="post" action="{% url "library:add_to_library" book.id %}">
+                {% csrf_token %}
+
+                <button type='submit' class="book-detail__btn book-detail__btn--primary {% if book.id in user_library_ids %}active{% endif %}" {% if book.id in user_library_ids %}disabled{% endif %}>
+                  <img src="{% static 'deps/svg/plus.svg' %}" alt="">
+                  {% if book.id in user_library_ids %}In Library{% else %}Add to Library{% endif %}
+                </button>
+
+
+              </form>
+
+
+            {% endif %}
+            <a href="https://openlibrary.org/works/{{ book.openlibrary_key }}" class="book-detail__btn book-detail__btn--outline" target="_blank" rel="noopener noreferrer">
+              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+              Open Library
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="book-detail__body">
+      <div class="book-detail__body-inner">
+
+        <div class="book-detail__main">
+
+          <section class="book-detail__section">
+            <h2 class="book-detail__section-title">About this Book</h2>
+            <div class="book-detail__description">
+              {{ book.description|markdown }}
+            </div>
+          </section>
+
+          <section class="book-detail__section">
+            <h2 class="book-detail__section-title">Excerpt</h2>
+            <blockquote class="book-detail__excerpt">
+              <p>{{ book.excerpt }}</p>
+            </blockquote>
+          </section>
+
+          <section class="book-detail__section">
+            <h2 class="book-detail__section-title">
+              Reviews
+              <span class="book-detail__section-count">1</span>
+            </h2>
+
+            <div class="book-detail__reviews">
+
+              <div class="book-detail__review">
+                <div class="book-detail__review-header">
+                  <div class="book-detail__review-user">
+                    <div class="book-detail__review-avatar">J</div>
+                    <div>
+                      <p class="book-detail__review-username">john</p>
+                      <p class="book-detail__review-date">June 2, 2026</p>
+                    </div>
+                  </div>
+                  <div class="book-detail__review-stars">
+                    <span style="color: #d97706;">★★★★</span><span style="color: #cbd5e1;">★</span>
+                  </div>
+                </div>
+
+                <h3 class="book-detail__review-title">Lorem ipsum dolor sit amet.</h3>
+                <p class="book-detail__review-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit molestiae perferendis necessitatibus tempore asperiores, itaque ad quasi voluptas nesciunt hic odio natus omnis ullam pariatur iste aliquam ut at velit sunt? Repellendus repudiandae veritatis commodi incidunt autem! Culpa vitae vero consequuntur nostrum ea magni voluptas architecto velit accusamus cumque, iusto temporibus harum quae iste eos voluptatibus, labore ducimus doloribus quas in similique vel ullam! Consequatur repudiandae dolore distinctio fugiat, eligendi voluptatibus commodi quis porro atque perferendis omnis, nam quia eius delectus excepturi aliquam obcaecati similique veritatis consectetur facere! Veniam et officia illum nam tempora dolorum perferendis id dolores sunt minima!</p>
+                <div class="book-detail__review-footer">
+
+                  <span class="badge badge--neutral">No spoilers</span>
+
+                </div>
+              </div>
+
+
+            </div>
+          </section>
+
+        </div>
+
+        <aside class="book-detail__sidebar">
+
+          <div class="book-detail__sidebar-card">
+            <h3 class="book-detail__sidebar-title">Book Details</h3>
+            <ul class="book-detail__sidebar-list">
+              <li class="book-detail__sidebar-item">
+                <span class="book-detail__sidebar-label">First published</span>
+                <span class="book-detail__sidebar-value">{{ book.first_publish_date }}</span>
+              </li>
+              <li class="book-detail__sidebar-item">
+                <span class="book-detail__sidebar-label">Open Library key</span>
+                <span class="book-detail__sidebar-value">{{ book.openlibrary_key }}</span>
+              </li>
+              <li class="book-detail__sidebar-item">
+                <span class="book-detail__sidebar-label">Avg rating</span>
+                <span class="book-detail__sidebar-value">{{ book.avg_rating }} / 5</span>
+              </li>
+              <li class="book-detail__sidebar-item">
+                <span class="book-detail__sidebar-label">Added</span>
+                <span class="book-detail__sidebar-value">{{ book.date_created }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="book-detail__sidebar-card">
+            <h3 class="book-detail__sidebar-title">Authors</h3>
+            <div class="book-detail__authors-list">
+              {% for author in book.get_authors %}
+
+                <div class="book-detail__author">
+
+                  <div class="book-detail__author-avatar">{{ author.name|first }}</div>
+
+                  <div>
+
+                    <p class="book-detail__author-name">{{ author.name }}</p>
+                    <p class="book-detail__author-birth">{{ author.birth_date }}</p>
+
+                  </div>
+                </div>
+
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="book-detail__sidebar-card">
+            <h3 class="book-detail__sidebar-title">Genres</h3>
+            <div class="book-detail__sidebar-subjects">
+              {% for subject in book.subjects.all %}
+                <span class="badge badge--primary">{{ subject.name }}</span>
+              {% endfor %}
+            </div>
+          </div>
+
+        </aside>
+
+      </div>
+    </div>
+
+  </div>
+
+{% endblock %}
