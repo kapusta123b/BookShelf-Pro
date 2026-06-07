@@ -12,10 +12,10 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
-    def get_library_data(self, filter: str, page_number: int | str) -> dict:
+    def get_library_data(self, status_filter: str, page_number: int | str) -> dict:
 
         all_books = self.library_books.all()
-        paginate_books = all_books.tabs_filter(filter).paginate(page_number, per_page=10)
+        paginate_books = all_books.tabs_filter(status_filter).paginate(page_number, per_page=10)
         counts = all_books.get_counts()
 
         return {

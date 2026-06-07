@@ -7,20 +7,23 @@ SEARCH_FIELDS = 'key,cover_i,title,author_name,author_key,first_publish_year,sub
 
 class OpenLibaryClient:
     BASE_URL = "https://openlibrary.org"
-    HEADERS = {"User-Agent": "BookShelf Pro/1.0"}
+    HEADERS = {"User-Agent": "BookShelf Pro/1.0, https://github.com/kapusta123b/BookShelf-Pro"}
     TIMEOUT = 10
 
-    def _get(self, path: str, params: dict | None) -> dict:
+    def _get(self, path: str, params: dict | None) -> dict | None:
+        try:
+            response = requests.get(
+                url=f"{self.BASE_URL}{path}", params=params, timeout=self.TIMEOUT
+            )
+            response.raise_for_status()
+            
+            return response.json()
+        
+        except Exception:
+            return None
 
-        response = requests.get(
-            url=f"{self.BASE_URL}{path}", params=params, timeout=self.TIMEOUT
-        )
-
-        response.raise_for_status()
-        return response.json()
-
-
-    def search(self, argument: str, query: str, page: str | None, limit=10) -> dict:
+    def search(self, argument: str, query: str, page: str | None, limit: int = 10) -> list[dict] | None:
+        
         if argument == 'subject':
             query = import_subjects_from_the_map(subject=query)
             argument = 'q'
@@ -35,13 +38,10 @@ class OpenLibaryClient:
             },
         )
 
-        return data.get("docs", [])
-    
-    def get_detail(self, book_key: str) -> dict:
+        return data.get("docs", []) if data else None
+
+    def get_detail(self, book_key: str) -> dict | None:
         return self._get(
             path=f'/books/{book_key}.json',
             params=None
         )
-
-
-

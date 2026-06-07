@@ -50,7 +50,7 @@
 
           {% endfor %}
 
-          <p class="book-detail__year">{{ book.first_publish_date }}</p>
+          <p class="book-detail__year">{{ book.publish_year }}</p>
 
           <div class="book-detail__rating">
             <div class="book-detail__rating-stars">
@@ -205,7 +205,7 @@
             <ul class="book-detail__sidebar-list">
               <li class="book-detail__sidebar-item">
                 <span class="book-detail__sidebar-label">First published</span>
-                <span class="book-detail__sidebar-value">{{ book.first_publish_date }}</span>
+                <span class="book-detail__sidebar-value">{{ book.publish_year }}</span>
               </li>
               <li class="book-detail__sidebar-item">
                 <span class="book-detail__sidebar-label">Open Library key</span>
@@ -217,7 +217,7 @@
               </li>
               <li class="book-detail__sidebar-item">
                 <span class="book-detail__sidebar-label">Added</span>
-                <span class="book-detail__sidebar-value">{{ book.date_created }}</span>
+                <span class="book-detail__sidebar-value">{{ book.date_created|date:"F j, Y" }}</span>
               </li>
             </ul>
           </div>

@@ -66,13 +66,21 @@
 
         <div class="catalog__sort">
           <img src="{% static 'deps/svg/sort.svg' %}" alt="">
-          <select>
-            <option value="relevance">Relevance</option>
-            <option value="rating">Top Rated</option>
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="title">Title A–Z</option>
-          </select>
+          <form method="get" action="{{ request.path }}" id="sort-form">
+            <input type="hidden" name="search" value="{{ request.GET.search }}">
+            <input type="hidden" name="search_by" value="{{ request.GET.search_by }}">
+            <input type="hidden" name="status" value="{{ request.GET.status }}">
+            <input type="hidden" name="rating" value="{{ request.GET.rating }}">
+            <input type="hidden" name="year_from" value="{{ request.GET.year_from }}">
+            <input type="hidden" name="year_to" value="{{ request.GET.year_to }}">
+            <select name="sort" onchange="this.form.submit()">
+              <option value="relevance" {% if not request.GET.sort or request.GET.sort == 'relevance' %}selected{% endif %}>Relevance</option>
+              <option value="-avg_rating" {% if request.GET.sort == '-avg_rating' %}selected{% endif %}>Top Rated</option>
+              <option value="-first_publish_date" {% if request.GET.sort == '-first_publish_date' %}selected{% endif %}>Newest First</option>
+              <option value="first_publish_date" {% if request.GET.sort == 'first_publish_date' %}selected{% endif %}>Oldest First</option>
+              <option value="title" {% if request.GET.sort == 'title' %}selected{% endif %}>Title A–Z</option>
+            </select>
+          </form>
         </div>
 
         <div class="catalog__view-toggle">
@@ -98,12 +106,19 @@
       <div class="filters__header">
         <h3>Filters</h3>
         <div class="filters__header-actions">
-          <button class="filters__clear">Clear all</button>
+          <a href="{{ request.path }}" class="filters__clear">Clear all</a>
           <button class="filters__close">
             <img src="{% static 'deps/svg/close.svg' %}" alt="Close">
           </button>
         </div>
       </div>
+
+      <form id="filters-form" method="get" action="{{ request.path }}">
+        <input type="hidden" name="search" value="{{ request.GET.search }}">
+        <input type="hidden" name="search_by" value="{{ request.GET.search_by }}">
+        <input type="hidden" name="status" value="{{ request.GET.status }}">
+        <input type="hidden" name="sort" value="{{ request.GET.sort }}">
+      </form>
 
       <div class="filters__group">
         <div class="filters__group-header">
@@ -135,36 +150,45 @@
           <div class="filters__stars">
 
             <label class="filters__star-row">
-              <input type="radio" name="rating" value="all" checked>
+              <input type="radio" name="rating" value="all" form="filters-form" onchange="document.getElementById('filters-form').submit()" {% if not request.GET.rating or request.GET.rating == 'all' %}checked{% endif %}>
               <span>Any rating</span>
             </label>
 
             <label class="filters__star-row">
-              <input type="radio" name="rating" value="4">
+              <input type="radio" name="rating" value="5" form="filters-form" onchange="document.getElementById('filters-form').submit()" {% if request.GET.rating == '5' %}checked{% endif %}>
               <div class="filters__star-row-stars">
                 <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
                 <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
                 <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
                 <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
               </div>
-              <span>&amp; up</span>
             </label>
 
             <label class="filters__star-row">
-              <input type="radio" name="rating" value="3">
+              <input type="radio" name="rating" value="4" form="filters-form" onchange="document.getElementById('filters-form').submit()" {% if request.GET.rating == '4' %}checked{% endif %}>
               <div class="filters__star-row-stars">
                 <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
                 <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
                 <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
                 <img src="{% static 'deps/svg/star.svg' %}" alt="">
               </div>
-              <span>&amp; up</span>
             </label>
 
             <label class="filters__star-row">
-              <input type="radio" name="rating" value="2">
+              <input type="radio" name="rating" value="3" form="filters-form" onchange="document.getElementById('filters-form').submit()" {% if request.GET.rating == '3' %}checked{% endif %}>
+              <div class="filters__star-row-stars">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+              </div>
+            </label>
+
+            <label class="filters__star-row">
+              <input type="radio" name="rating" value="2" form="filters-form" onchange="document.getElementById('filters-form').submit()" {% if request.GET.rating == '2' %}checked{% endif %}>
               <div class="filters__star-row-stars">
                 <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
                 <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
@@ -172,7 +196,17 @@
                 <img src="{% static 'deps/svg/star.svg' %}" alt="">
                 <img src="{% static 'deps/svg/star.svg' %}" alt="">
               </div>
-              <span>&amp; up</span>
+            </label>
+
+            <label class="filters__star-row">
+              <input type="radio" name="rating" value="1" form="filters-form" onchange="document.getElementById('filters-form').submit()" {% if request.GET.rating == '1' %}checked{% endif %}>
+              <div class="filters__star-row-stars">
+                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+                <img src="{% static 'deps/svg/star.svg' %}" alt="">
+              </div>
             </label>
 
           </div>
@@ -186,8 +220,8 @@
         </div>
         <div class="filters__group-body">
           <div class="filters__year">
-            <input type="number" placeholder="From" min="1800" max="2025">
-            <input type="number" placeholder="To" min="1800" max="2025">
+            <input type="number" name="year_from" placeholder="From" max="2026" form="filters-form" value="{{ request.GET.year_from }}" onchange="document.getElementById('filters-form').submit()">
+            <input type="number" name="year_to" placeholder="To" max="2026" form="filters-form" value="{{ request.GET.year_to }}" onchange="document.getElementById('filters-form').submit()">
           </div>
         </div>
       </div>
@@ -221,6 +255,10 @@
           <div class="filters__group-body">
             <div class="filters__status">
               <form action="{{ request.path }}" method='get' onchange="this.submit()">
+                <input type="hidden" name="rating" value="{{ request.GET.rating }}">
+                <input type="hidden" name="year_from" value="{{ request.GET.year_from }}">
+                <input type="hidden" name="year_to" value="{{ request.GET.year_to }}">
+                <input type="hidden" name="sort" value="{{ request.GET.sort }}">
 
                 <label class="filters__radio">
                   <input type="radio" name="status" value="all" {% if not request.GET.status or request.GET.status == 'all' %}checked{% endif %}>
@@ -310,7 +348,7 @@
                   </div>
                   <span>{{ book.avg_rating }}</span>
                 </div>
-                <span class="book-card-catalog__year">{{ book.format_publish_date }}</span>
+                <span class="book-card-catalog__year">{{ book.publish_year }}</span>
               </div>
 
               <div class="book-card-catalog__actions">
