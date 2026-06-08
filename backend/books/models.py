@@ -90,7 +90,9 @@ class Book(models.Model):
                 self.rating_count + 1
             )
             self.rating_count += 1
+
         else:
+            
             self.avg_rating = (
                 self.avg_rating * self.rating_count - old_rating + new_rating
             ) / self.rating_count
@@ -102,7 +104,9 @@ class Book(models.Model):
         if self.rating_count <= 1:
             self.avg_rating = 0
             self.rating_count = 0
+
         else:
+            
             self.avg_rating = round(
                 (self.avg_rating * self.rating_count - old_rating)
                 / (self.rating_count - 1),

@@ -12,6 +12,24 @@ class ProfileView(LoginRequiredMixin, DetailView):
     template_name = 'users/profile.html'
     context_object_name = 'profile_user'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        data = self.object.get_profile_data()
+
+        context.update({
+            "library_books": data['reading'],
+            "read_books_preview": data['read'],
+            "want_to_read_preview": data['want_to_read'],
+            "count_total": data['counts']['total'],
+            "count_reading": data['counts']['reading'],
+            "count_want_to_read": data['counts']['want'],
+            "count_finished": data['counts']['read'],
+        })
+
+        return context
+    
+
 
 class SettingsView(LoginRequiredMixin, TemplateView):
     template_name = 'users/settings.html'

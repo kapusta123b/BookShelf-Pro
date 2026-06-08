@@ -18,7 +18,7 @@ class UserBookQuerySet(models.QuerySet):
         else:
             return self.all()
 
-    def get_counts(self):
+    def get_counts(self) -> dict:
         return self.aggregate(
 
             total=models.Count('id'),

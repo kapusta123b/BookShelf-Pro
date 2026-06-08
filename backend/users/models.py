@@ -9,10 +9,7 @@ class User(AbstractUser):
     description = models.TextField(blank=True, max_length=150, default='')
     avg_rating = models.FloatField(default=0)
 
-    def __str__(self):
-        return self.username
-
-    def get_library_data(self, status_filter: str, page_number: int | str) -> dict:
+    def get_library_data(self, page_number: int | str, status_filter: str) -> dict:
 
         all_books = self.library_books.all()
         paginate_books = all_books.tabs_filter(status_filter).paginate(page_number, per_page=10)
@@ -23,7 +20,43 @@ class User(AbstractUser):
             'counts': counts
         }
 
+    def get_profile_data(self) -> dict:
+
+        all_books = self.library_books.select_related('book')
+        counts = all_books.get_counts()
+
+        return {
+            'counts': counts,
+            'reading': all_books.filter(status='reading')[:5],
+            'read': all_books.filter(status='read').order_by('-updated_at')[:5],
+            'want_to_read': all_books.filter(status='want_to_read')[:5],
+        }
+    
+    def __str__(self):
+        return self.username
+
     class Meta:
         db_table = "users"
         verbose_name = "User"
         verbose_name_plural = "Users"
+
+class RecentActivity:
+
+    class Action(models.TextChoices):
+        ADDED = 'added', 'Added to library'
+        WANT_TO_READ = 'want_to_read', 'Want to Read'
+        READING = 'reading', 'Started reading'
+        READ = 'read', 'Finished reading'
+        RATED = 'rated', 'Rated'
+        REVIEWED = 'reviewed', 'Reviewed'
+
+
+    user = models.ForeignKey("users.User", verbose_name=("User"), on_delete=models.CASCADE)
+    action = models.CharField(verbose_name='action', choices=Action)
+    book = models.ForeignKey("books.Book", verbose_name='book', null=True, on_delete=models.CASCADE)
+    rating = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'users_activities'
+        ordering = ['-created_at']

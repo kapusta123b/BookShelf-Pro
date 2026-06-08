@@ -27,8 +27,8 @@
 
           <h2 class="profile-card__name">{{ profile_user.get_full_name }}</h2>
           <p class="profile-card__username">@{{ profile_user.username }}</p>
-          <p class="profile-card__bio">{{ profile_user.description|default:'None description' }}</p>
-          <p class="profile-card__since">Member since {{ profile_user.date_joined }}</p>
+          <p class="profile-card__bio">{{ profile_user.description|default:'No description yet.' }}</p>
+          <p class="profile-card__since">Member since {{ profile_user.date_joined|date:"M Y" }}</p>
 
           {% if profile_user.id == user.id %}
             <a href="{% url 'users:edit_profile' %}" class="profile-card__edit-btn">
@@ -45,7 +45,7 @@
               <img src="{% static 'deps/svg/check.svg' %}" alt="">
               Books Read
             </span>
-            <strong>{{ profile_user.books_read }}</strong>
+            <strong>{{ count_finished }}</strong>
           </div>
 
           <div class="profile-stats__item">
@@ -53,7 +53,7 @@
               <img src="{% static 'deps/svg/clock.svg' %}" alt="">
               Reading Now
             </span>
-            <strong>{{ profile_user.reading_now }}</strong>
+            <strong>{{ count_reading }}</strong>
           </div>
 
           <div class="profile-stats__item">
@@ -61,7 +61,7 @@
               <img src="{% static 'deps/svg/bookmark.svg' %}" alt="">
               Want to Read
             </span>
-            <strong>{{ profile_user.want_to_read }}</strong>
+            <strong>{{ count_want_to_read }}</strong>
           </div>
 
           <div class="profile-stats__item">
@@ -69,7 +69,7 @@
               <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
               Avg Rating
             </span>
-            <strong>{{ profile_user.avg_rating }}</strong>
+            <strong>{{ profile_user.avg_rating|default:"—" }}</strong>
           </div>
 
         </div>
@@ -81,88 +81,91 @@
         <div class="profile-section">
           <div class="profile-section__header">
             <h2>Currently Reading</h2>
-            <a href="{% url 'library:index' user.id %}">View library</a>
+            <a href="{% url 'library:index' profile_user.id %}?filter=reading">View all</a>
           </div>
 
-          <div class="currently-reading">
-            <div class="currently-reading__cover book-cover-3"></div>
-            <div class="currently-reading__info">
-              <p class="currently-reading__title">Dune</p>
-              <p class="currently-reading__author">Frank Herbert</p>
-              <div class="currently-reading__progress">
-                <div class="currently-reading__progress-label">
-                  <span>Page 372 of 604</span>
-                  <span>62%</span>
-                </div>
-                <div class="currently-reading__progress-bar">
-                  <div class="currently-reading__progress-bar-fill" style="width: 62%"></div>
+          {% for book in library_books %}
+            <div class="profile-book">
+              <a href="{% url 'books:detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
+                <img src="https://covers.openlibrary.org/b/id/{{ book.book.cover_i }}-M.jpg" alt="{{ book.book.title }}">
+              </a>
+              <div class="profile-book__info">
+                <a href="{% url 'books:detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
+                <p class="profile-book__author">{% for author in book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                <div class="profile-book__meta">
+                  <span class="badge badge--reading">Reading</span>
+                  {% if book.started_at %}<span class="profile-book__date">Since {{ book.started_at|date:"M j, Y" }}</span>{% endif %}
                 </div>
               </div>
             </div>
-          </div>
-
-          <div class="currently-reading">
-            <div class="currently-reading__cover book-cover-2"></div>
-            <div class="currently-reading__info">
-              <p class="currently-reading__title">1984</p>
-              <p class="currently-reading__author">George Orwell</p>
-              <div class="currently-reading__progress">
-                <div class="currently-reading__progress-label">
-                  <span>Page 96 of 283</span>
-                  <span>34%</span>
-                </div>
-                <div class="currently-reading__progress-bar">
-                  <div class="currently-reading__progress-bar-fill" style="width: 34%"></div>
-                </div>
-              </div>
+          {% empty %}
+            <div class="profile-empty-state">
+              <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+              <p>No books currently in progress</p>
+              <a href="{% url 'books:index' 'all' %}" class="profile-empty-state__btn">Browse Catalog</a>
             </div>
-          </div>
+          {% endfor %}
 
-          <div class="currently-reading">
-            <div class="currently-reading__cover book-cover-7"></div>
-            <div class="currently-reading__info">
-              <p class="currently-reading__title">The Alchemist</p>
-              <p class="currently-reading__author">Paulo Coelho</p>
-              <div class="currently-reading__progress">
-                <div class="currently-reading__progress-label">
-                  <span>Page 148 of 174</span>
-                  <span>85%</span>
-                </div>
-                <div class="currently-reading__progress-bar">
-                  <div class="currently-reading__progress-bar-fill" style="width: 85%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div class="profile-section">
           <div class="profile-section__header">
             <h2>Recently Read</h2>
-            <a href="{% url 'library:index' user.id %}">See all 24</a>
+            <a href="{% url 'library:index' profile_user.id %}?filter=read">See all</a>
           </div>
-          <div class="recent-books">
-            <a href="#" class="recent-book">
-              <div class="recent-book__cover book-cover-4"></div>
-              <p class="recent-book__title">The Great Gatsby</p>
-            </a>
-            <a href="#" class="recent-book">
-              <div class="recent-book__cover book-cover-1"></div>
-              <p class="recent-book__title">The Hobbit</p>
-            </a>
-            <a href="#" class="recent-book">
-              <div class="recent-book__cover book-cover-5"></div>
-              <p class="recent-book__title">Sapiens</p>
-            </a>
-            <a href="#" class="recent-book">
-              <div class="recent-book__cover book-cover-8"></div>
-              <p class="recent-book__title">Pride and Prejudice</p>
-            </a>
-            <a href="#" class="recent-book">
-              <div class="recent-book__cover book-cover-6"></div>
-              <p class="recent-book__title">To Kill a Mockingbird</p>
-            </a>
+
+          {% for book in read_books_preview %}
+            <div class="profile-book">
+              <a href="{% url 'books:detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
+                <img src="https://covers.openlibrary.org/b/id/{{ book.book.cover_i }}-M.jpg" alt="{{ book.book.title }}">
+              </a>
+              <div class="profile-book__info">
+                <a href="{% url 'books:detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
+                <p class="profile-book__author">{% for author in book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                <div class="profile-book__meta">
+                  <span class="badge badge--done">Read</span>
+                  {% if book.finished_at %}<span class="profile-book__date">{{ book.finished_at|date:"M j, Y" }}</span>{% endif %}
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="profile-empty-state">
+              <img src="{% static 'deps/svg/check.svg' %}" alt="">
+              <p>No books finished yet</p>
+              <a href="{% url 'books:index' 'all' %}" class="profile-empty-state__btn">Browse Catalog</a>
+            </div>
+          {% endfor %}
+
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-section__header">
+            <h2>Want to Read</h2>
+            <a href="{% url 'library:index' profile_user.id %}?filter=want_to_read">See all</a>
           </div>
+
+          {% for book in want_to_read_preview %}
+            <div class="profile-book">
+              <a href="{% url 'books:detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
+                <img src="https://covers.openlibrary.org/b/id/{{ book.book.cover_i }}-M.jpg" alt="{{ book.book.title }}">
+              </a>
+              <div class="profile-book__info">
+                <a href="{% url 'books:detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
+                <p class="profile-book__author">{% for author in book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                <div class="profile-book__meta">
+                  <span class="badge badge--want">Want to Read</span>
+                  {% if book.created_at %}<span class="profile-book__date">Added {{ book.created_at|date:"M j, Y" }}</span>{% endif %}
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="profile-empty-state">
+              <img src="{% static 'deps/svg/bookmark.svg' %}" alt="">
+              <p>Reading list is empty</p>
+              <a href="{% url 'books:index' 'all' %}" class="profile-empty-state__btn">Browse Catalog</a>
+            </div>
+          {% endfor %}
+
         </div>
 
         <div class="profile-section">
