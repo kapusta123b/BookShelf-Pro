@@ -174,55 +174,33 @@
           </div>
           <div class="activity-list">
 
+            {% for item in activity %}
             <div class="activity-item">
-              <div class="activity-item__icon activity-item__icon--added">
-                <img src="{% static 'deps/svg/plus.svg' %}" alt="">
+              <div class="activity-item__icon activity-item__icon--{{ item.icon_class }}">
+                <img src="{% static 'deps/svg/' %}{{ item.icon }}" alt="">
               </div>
               <div class="activity-item__content">
-                <p class="activity-item__text">Added <a href="#">Dune</a> to your library</p>
-                <p class="activity-item__time">2 hours ago</p>
+                <p class="activity-item__text">
+                  {% if item.action == 'added' %}
+                    Added <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a> to your library
+                  {% elif item.action == 'want_to_read' %}
+                    Added <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a> to Want to Read
+                  {% elif item.action == 'reading' %}
+                    Started reading <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                  {% elif item.action == 'read' %}
+                    Finished reading <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                  {% elif item.action == 'rated' %}
+                    Rated <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                  {% elif item.action == 'reviewed' %}
+                    Reviewed <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                  {% endif %}
+                </p>
+                <p class="activity-item__time">{{ item.created_at|timesince }} ago</p>
               </div>
             </div>
-
-            <div class="activity-item">
-              <div class="activity-item__icon activity-item__icon--rated">
-                <img src="{% static 'deps/svg/star-filled.svg' %}" alt="">
-              </div>
-              <div class="activity-item__content">
-                <p class="activity-item__text">Rated <a href="#">The Hobbit</a> ⭐⭐⭐⭐⭐</p>
-                <p class="activity-item__time">Yesterday</p>
-              </div>
-            </div>
-
-            <div class="activity-item">
-              <div class="activity-item__icon activity-item__icon--read">
-                <img src="{% static 'deps/svg/check.svg' %}" alt="">
-              </div>
-              <div class="activity-item__content">
-                <p class="activity-item__text">Finished reading <a href="#">The Hobbit</a> by J.R.R. Tolkien</p>
-                <p class="activity-item__time">Yesterday</p>
-              </div>
-            </div>
-
-            <div class="activity-item">
-              <div class="activity-item__icon activity-item__icon--added">
-                <img src="{% static 'deps/svg/bookmark.svg' %}" alt="">
-              </div>
-              <div class="activity-item__content">
-                <p class="activity-item__text">Added <a href="#">Atomic Habits</a> to Want to Read</p>
-                <p class="activity-item__time">3 days ago</p>
-              </div>
-            </div>
-
-            <div class="activity-item">
-              <div class="activity-item__icon activity-item__icon--read">
-                <img src="{% static 'deps/svg/check.svg' %}" alt="">
-              </div>
-              <div class="activity-item__content">
-                <p class="activity-item__text">Finished reading <a href="#">The Great Gatsby</a> by F. Scott Fitzgerald</p>
-                <p class="activity-item__time">5 days ago</p>
-              </div>
-            </div>
+            {% empty %}
+            <p class="profile-empty-state__text">No recent activity yet.</p>
+            {% endfor %}
 
           </div>
         </div>

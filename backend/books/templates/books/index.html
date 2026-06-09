@@ -383,7 +383,21 @@
           <div class="load-more">
             <div class="load-more__inner">
 
-              {% if view.kwargs.subject_slug == 'all' %}
+              {% if request.GET.search %}
+
+                <p class="load-more__title">Want more results for <strong>« {{ request.GET.search }} »</strong>?</p>
+                <p class="load-more__desc">We'll fetch more matching titles from Open Library and add them to the catalog.</p>
+
+                <form method="get" action="{{ request.path }}">
+                  <input type="hidden" name="search_by" value="{{ request.GET.search_by }}">
+                  <input type="hidden" name="search" value="{{ request.GET.search }}">
+                  <input type="hidden" name="page" value="{{ page_obj.number }}">
+                  <input type="hidden" name="research">
+
+                  <button type="submit" class="load-more__btn">Load more results</button>
+                </form>
+
+              {% elif view.kwargs.subject_slug == 'all' %}
 
                 <p class="load-more__title">Looking for something specific?</p>
                 <p class="load-more__desc">Use the search bar to find a book by title or author, or browse a genre to discover more titles.</p>

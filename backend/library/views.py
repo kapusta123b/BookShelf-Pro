@@ -3,6 +3,7 @@ from django.views.generic import DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 
+from library.services import add_book_to_library, change_user_book_status
 from library.models import UserBook
 from users.models import User
 
@@ -30,15 +31,13 @@ class LibraryView(LoginRequiredMixin, DetailView):
         })
     
         return context
-    
+ 
 
 
 class AddToLibraryView(LoginRequiredMixin, View):
     def post(self, request, book_id):
-        UserBook.objects.get_or_create(
-            user=request.user,
-            book_id=book_id
-        )
+        if book_id:
+            add_book_to_library(user=request.user, book_id=book_id)
 
         referer = request.META.get('HTTP_REFERER')
 
@@ -52,7 +51,8 @@ class ChangeStatus(LoginRequiredMixin, View):
     def post(self, request, book_id):
         status = self.request.POST.get('status')
 
-        user_book, _ = UserBook.objects.safe_update_status(book_id, status, request.user)
+        if status:
+            change_user_book_status(user=request.user, book_id=book_id, status=status)
 
         referer = request.META.get('HTTP_REFERER')
 

@@ -27,34 +27,34 @@ class Author(models.Model):
         return self.name
 
     class Meta:
-        db_table = 'author'
-        verbose_name = 'Author'
-        verbose_name_plural = 'Authors'
+        db_table = "author"
+        verbose_name = "Author"
+        verbose_name_plural = "Authors"
 
 
 class BookQuerySet(models.QuerySet):
 
-    def by_category(self, slug: str | None) -> 'BookQuerySet':
+    def by_category(self, slug: str | None) -> "BookQuerySet":
         if slug and slug != "all":
             return self.filter(subjects__slug=slug)
         return self
 
-    def by_rating(self, value: int | None) -> 'BookQuerySet':
+    def by_rating(self, value: int | None) -> "BookQuerySet":
         if value and 1 <= value <= 5:
-            return self.filter(avg_rating=value)
-        
+            return self.filter(avg_rating__gte=value)
+
         return self
 
-    def by_date(self, from_year: str | None, to_year: str | None) -> 'BookQuerySet':
+    def by_date(self, from_year: str | None, to_year: str | None) -> "BookQuerySet":
         if from_year and to_year:
             return self.filter(first_publish_date__year__range=(from_year, to_year))
-        
+
         if from_year:
             return self.filter(first_publish_date__year__gte=from_year)
-        
+
         if to_year:
             return self.filter(first_publish_date__year__lte=to_year)
-        
+
         return self
 
 
@@ -68,7 +68,7 @@ class Book(models.Model):
     )
     cover_i = models.PositiveIntegerField(null=True, blank=True)
     cover_ids = models.JSONField(default=list, blank=True)
-    title = models.CharField("Title", max_length=100)
+    title = models.CharField("Title", max_length=255)
     authors = models.ManyToManyField("books.Author", verbose_name="authors")
     first_publish_date = models.DateField(
         verbose_name="First publish year", null=True, blank=True
@@ -92,7 +92,7 @@ class Book(models.Model):
             self.rating_count += 1
 
         else:
-            
+
             self.avg_rating = (
                 self.avg_rating * self.rating_count - old_rating + new_rating
             ) / self.rating_count
@@ -106,7 +106,7 @@ class Book(models.Model):
             self.rating_count = 0
 
         else:
-            
+
             self.avg_rating = round(
                 (self.avg_rating * self.rating_count - old_rating)
                 / (self.rating_count - 1),
@@ -128,9 +128,9 @@ class Book(models.Model):
         return f"{self.title} - {self.publish_year}"
 
     class Meta:
-        db_table = 'book'
-        verbose_name = 'Book'
-        verbose_name_plural = 'Books'
+        db_table = "book"
+        verbose_name = "Book"
+        verbose_name_plural = "Books"
 
 
 class Review(models.Model):
@@ -153,6 +153,6 @@ class Review(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        db_table = 'review'
-        verbose_name = 'Review'
-        verbose_name_plural = 'Reviews'
+        db_table = "review"
+        verbose_name = "Review"
+        verbose_name_plural = "Reviews"

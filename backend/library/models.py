@@ -20,12 +20,10 @@ class UserBookQuerySet(models.QuerySet):
 
     def get_counts(self) -> dict:
         return self.aggregate(
-
             total=models.Count('id'),
             want=models.Count('id', filter=models.Q(status='want_to_read')),
             reading=models.Count('id', filter=models.Q(status='reading')),
             read=models.Count('id', filter=models.Q(status='read'))
-        
         )
     
     def paginate(self, page_number: str | float | int, per_page: int | str) -> Page:
@@ -35,22 +33,14 @@ class UserBookQuerySet(models.QuerySet):
         return paginator.get_page(page_number)
 
     
-    def safe_update_status(self, book_id: int, new_status: str, user):
-
-        with transaction.atomic():
-            user_book = (
-                self.select_for_update()
-                .filter(id=book_id, user=user)
-                .first()
+class UserBookManager(models.Manager):
+    def create_user_book(self, user, book_id):
+        if book_id:
+            self.objects.get_or_create(
+                user=user,
+                book_id=book_id
             )
-            
-            if not user_book:
-                return None, False
-                
-            user_book.change_status(new_status)
-            
-            return user_book, True
-    
+
 
 class UserBook(models.Model):
     objects = UserBookQuerySet.as_manager()
@@ -90,24 +80,26 @@ class UserBook(models.Model):
     started_at = models.DateField(null=True, blank=True)
     finished_at = models.DateField(null=True, blank=True)
 
-    created_at = models.DateTimeField(null=True, auto_now_add=True)
-    updated_at = models.DateTimeField(null=True, auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return f'{self.user.username} -- {self.book.title}'
     
 
-    def change_status(self, new_status: str) -> None:
+    def change_status(self, status: str) -> bool:
 
-        self.status = new_status
+        self.status = status
         
-        if new_status == self.Status.READING and not self.started_at:
+        if status == self.Status.READING and not self.started_at:
             self.started_at = timezone.now().date()
             
-        elif new_status == self.Status.READ and not self.finished_at:
+        elif status == self.Status.READ and not self.finished_at:
             self.finished_at = timezone.now().date()
 
         self.save(update_fields=['status', 'started_at', 'finished_at'])
+
+        return True
 
     class Meta:
         constraints = [

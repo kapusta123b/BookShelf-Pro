@@ -17,7 +17,10 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
         data = self.object.get_profile_data()
 
+        activity = self.object.get_user_activity()
+
         context.update({
+            "activity": activity,
             "library_books": data['reading'],
             "read_books_preview": data['read'],
             "want_to_read_preview": data['want_to_read'],
