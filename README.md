@@ -22,31 +22,25 @@ Users can browse books by genre, search by title, author or ISBN, add books to t
 ## Features
 
 - Book catalog with pagination and grid / list view toggle
-- Search by title, author, or ISBN
-- On-demand book import from Open Library API (Lucene subject queries)
+- Search by title, author, or ISBN with on-demand Open Library import
 - 19 genre categories
-- Personal library with reading status tracking (Want to Read / Reading / Already Read)
-- Status-based catalog filtering (shows only user's books by status)
+- Personal library with reading status tracking
+- Book rating system with average rating calculation
 - Book reviews with spoiler flag and public / private toggle
-- User profiles with reading statistics
-- Filter sidebar in catalog
-- Social authentication via Google and Facebook (django-allauth)
-- Email verification on registration
-- reCAPTCHA v2 protection on auth forms
-- Responsive layout
+- User profiles with reading statistics and recent activity feed
+- Filter sidebar (rating, year range, sort order)
+- Social authentication via Google and Facebook
+- Email verification and reCAPTCHA v2 on auth forms
+
 ---
 
 ## Stack
 
-- Python 3.13
-- Django 6.0
+- Python 3.13 / Django 6.0
 - PostgreSQL 16
-- SASS / SCSS
-- JavaScript (vanilla)
-- django-allauth 65.16
-- django-recaptcha 4.1
-- django-sass-processor 1.4
-- requests
+- SASS / SCSS / JavaScript (vanilla)
+- django-allauth, django-recaptcha
+- httpx (HTTP/2, connection pooling)
 - psycopg2
 
 ---
@@ -56,28 +50,17 @@ Users can browse books by genre, search by title, author or ISBN, add books to t
 ```text
 BookShelf-Pro
 ├── backend
-│   ├── app                  # Django settings, urls, wsgi
-│   ├── books                # Catalog, search, book import, Open Library service
-│   │   ├── services
-│   │   │   ├── book_import_service.py
-│   │   │   ├── searchBook_service.py
-│   │   │   └── subject_map.py
-│   │   ├── templates
-│   │   ├── templatetags
-│   │   ├── models.py        # Book, Author, Subject, Review
-│   │   └── views.py         # CatalogView (ListView)
-│   ├── library              # Personal library, UserBook, AddToLibrary
-│   ├── main                 # Landing page
-│   ├── users                # Custom user model, profile editing
-│   ├── templates            # Base template, allauth overrides
-│   ├── static
-│   │   └── deps
-│   │       ├── css          # SCSS source files
-│   │       └── js           # books.js, base.js
-│   └── manage.py
+│   ├── app          # settings, urls, wsgi
+│   ├── books        # catalog, search, Open Library integration
+│   │   └── services
+│   │       ├── activity.py, catalog.py, client.py
+│   │       ├── detail.py, importers.py, rating.py
+│   │       └── subject_map.py
+│   ├── library      # personal library, UserBook, status management
+│   ├── users        # user model, profile, RecentActivity
+│   ├── templates
+│   └── static
 ├── requirements.txt
-├── .gitignore
-├── LICENSE
 └── README.md
 ```
 
@@ -85,119 +68,52 @@ BookShelf-Pro
 
 ## Installation
 
-Clone the repository:
+Clone the repository and set up the environment:
 
 ```bash
 git clone https://github.com/kapusta123b/BookShelf-Pro.git
 cd BookShelf-Pro
-```
-
-Create virtual environment:
-
-```bash
 python -m venv .venv
-```
-
-Activate virtual environment:
-
-Linux:
-
-```bash
-source .venv/bin/activate
-```
-
-Windows:
-
-```bash
-.venv\Scripts\activate
-```
-
-Install dependencies:
-
-```bash
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Edit environment variables:
+Fill `backend/.env` in the required variables::
 
-```bash
-nano backend/.env
+```env
+SECRET_KEY=your_secret_key
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+CSRF_TRUSTED_ORIGINS=http://127.0.0.1,http://localhost
+DB_NAME=your_db_name
+DB_USER=your_db_user
+DB_PASS=your_db_password
+DB_HOST=localhost
+DB_PORT=5432
 ```
 
-Apply migrations:
+Apply migrations and run:
 
 ```bash
 cd backend
 python manage.py migrate
-```
-
-Create admin user:
-
-```bash
 python manage.py createsuperuser
-```
-
-Run development server:
-
-```bash
 python manage.py runserver
 ```
 
-Site is available at:
-
-```text
-http://localhost:8000
-```
+Site is available at `http://localhost:8000`
 
 ---
 
 ## Social Authentication
 
-The project supports Google and Facebook authentication through `django-allauth`.
-
-After deployment, create OAuth applications in Google Cloud Console and Facebook Developers.
+Create OAuth apps in Google Cloud Console and Facebook Developers, then add providers in Django Admin under **Social Accounts → Social Applications**.
 
 Required callback URLs:
 
-```text
+```
 http://your_domain/accounts/google/login/callback/
 http://your_domain/accounts/facebook/login/callback/
-```
-
-Then add the providers in Django Admin:
-
-```text
-Social Accounts → Social Applications → Add
-```
-
----
-
-## Open Library Integration
-
-Books are fetched from the [Open Library API](https://openlibrary.org/search.json) on demand.
-
-Search by subject uses Lucene OR queries against the `/search.json` endpoint:
-
-```
-q=subject:"young adult" OR subject:"young adult fiction" OR subject:"teen fiction"
-```
-
-The `SUBJECT_MAP` in `books/services/subject_map.py` maps 19 canonical genres to all their known Open Library subject aliases. Imported books are automatically assigned to the correct genre.
-
----
-
-## Useful Commands
-
-Open Django shell:
-
-```bash
-python manage.py shell
-```
-
-Collect static files:
-
-```bash
-python manage.py collectstatic
 ```
 
 ---
