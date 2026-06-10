@@ -193,6 +193,8 @@
                     Rated <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
                   {% elif item.action == 'reviewed' %}
                     Reviewed <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                  {% elif item.action == 'change_rate' %}
+                    Сhanged the rating for the book  <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
                   {% endif %}
                 </p>
                 <p class="activity-item__time">{{ item.created_at|timesince }} ago</p>

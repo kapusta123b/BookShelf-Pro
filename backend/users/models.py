@@ -20,7 +20,7 @@ class User(AbstractUser):
         return {"books": paginate_books, "counts": counts}
 
     def get_user_activity(self):
-        return RecentActivity.objects.filter(user=self).select_related("book")[:10]
+        return RecentActivity.objects.filter(user=self).select_related("book")[:15]
 
     def get_profile_data(self) -> dict:
 
@@ -59,6 +59,7 @@ class RecentActivity(models.Model):
         READING = "reading", "Started reading"
         READ = "read", "Finished reading"
         RATED = "rated", "Rated"
+        CHANGE_RATE = 'change_rate', "Change rating"
         REVIEWED = "reviewed", "Reviewed"
 
     user = models.ForeignKey(
@@ -80,6 +81,7 @@ class RecentActivity(models.Model):
             "read": "check.svg",
             "rated": "star-filled.svg",
             "reviewed": "edit.svg",
+            "change_rate": "change-rate.svg"
         }.get(self.action, "plus.svg")
 
     @property
@@ -91,6 +93,7 @@ class RecentActivity(models.Model):
             "read": "read",
             "rated": "rated",
             "reviewed": "rated",
+            "change_rate": "change-rate"
         }.get(self.action, "added")
 
     class Meta:

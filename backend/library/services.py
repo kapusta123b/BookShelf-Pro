@@ -1,7 +1,7 @@
 from django.db import transaction
 
+from books.services.activity import add_activity
 from library.models import UserBook
-from users.models import RecentActivity
 
 def add_book_to_library(book_id, user) -> None:
 
@@ -12,15 +12,10 @@ def add_book_to_library(book_id, user) -> None:
         )
 
         if created:
-            RecentActivity.objects.create(
-                book_id=book_id,
-                user=user,
-                action='added'
-            )
+            add_activity(user=user, book_id=book_id, action='added')
 
 def change_user_book_status(book_id: int, user, status: str) -> None:
     with transaction.atomic():
-        print(book_id)
         user_book = (
         UserBook.objects.select_for_update()
         .filter(id=book_id, user=user)
@@ -32,8 +27,4 @@ def change_user_book_status(book_id: int, user, status: str) -> None:
         created = user_book.change_status(status)
 
         if created:
-            RecentActivity.objects.create(
-                user=user,
-                book_id=user_book.book_id,
-                action=status
-            )
+            add_activity(user=user, book_id=user_book.book.id, action=status)

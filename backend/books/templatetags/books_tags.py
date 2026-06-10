@@ -9,7 +9,6 @@ from books.models import Subject
 register = template.Library()
 
 
-
 @register.simple_tag(takes_context=True)
 def url_replace(context, **kwargs):
     query = context['request'].GET.copy()
@@ -26,8 +25,10 @@ def tag_subjects():
 def render_markdown(value):
     if not value:
         return ''
+    
     result = md.markdown(
         value,
         extensions=['nl2br'],
     )
+    
     return mark_safe(result)

@@ -28,23 +28,10 @@ class CatalogView(ListView):
 
         return super().get(request, *args, **kwargs)
 
-    def _get_filters(self) -> CatalogFilters:
-        get = self.request.GET
-        return CatalogFilters(
-            search=get.get('search'),
-            search_by=get.get('search_by'),
-            subject=self.kwargs.get('subject_slug'),
-            status=get.get('status'),
-            rating=get.get('rating'),
-            year_from=get.get('year_from'),
-            year_to=get.get('year_to'),
-            sort=get.get('sort'),
-            page=get.get('page', 1),
-        )
-
     def get_queryset(self):
         if not hasattr(self, '_cached_queryset'):
             self._cached_queryset = get_catalog_queryset(self._get_filters(), self.request.user)
+        
         return self._cached_queryset
 
     def get_context_data(self, **kwargs):
@@ -62,6 +49,19 @@ class CatalogView(ListView):
 
         return context
 
+    def _get_filters(self) -> CatalogFilters:
+        get = self.request.GET
+        return CatalogFilters(
+            search=get.get('search'),
+            search_by=get.get('search_by'),
+            subject=self.kwargs.get('subject_slug'),
+            status=get.get('status'),
+            rating=get.get('rating'),
+            year_from=get.get('year_from'),
+            year_to=get.get('year_to'),
+            sort=get.get('sort'),
+            page=get.get('page', 1),
+        )
 
 class BookDetailView(DetailView):
     model = Book

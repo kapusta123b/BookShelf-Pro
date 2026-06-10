@@ -1,25 +1,31 @@
-import requests
+import logging
+
+import httpx
 
 from books.utils import import_subjects_from_the_map
-from books.services.importers import SubjectImporter
+
+logger = logging.getLogger(__name__)
 
 SEARCH_FIELDS = 'key,cover_i,title,author_name,author_key,first_publish_year,subject'
 
+_http_client = httpx.Client(
+    base_url="https://openlibrary.org",
+    headers={"User-Agent": "BookShelf Pro/1.0, https://github.com/kapusta123b/BookShelf-Pro"},
+    timeout=10,
+    http2=True,
+)
+
+
 class OpenLibaryClient:
-    BASE_URL = "https://openlibrary.org"
-    HEADERS = {"User-Agent": "BookShelf Pro/1.0, https://github.com/kapusta123b/BookShelf-Pro"}
-    TIMEOUT = 10
 
     def _get(self, path: str, params: dict | None) -> dict | None:
         try:
-            response = requests.get(
-                url=f"{self.BASE_URL}{path}", params=params, timeout=self.TIMEOUT
-            )
+            response = _http_client.get(path, params=params)
             response.raise_for_status()
-            
             return response.json()
-        
+            
         except Exception:
+            logger.exception("OpenLibrary request failed: %s", path)
             return None
 
     def search(self, argument: str, query: str, page: str | None, limit: int = 10) -> list[dict] | None:

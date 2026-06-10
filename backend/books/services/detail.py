@@ -8,6 +8,7 @@ def enrich_book_detail(book: Book) -> Book:
         raw_doc = OpenLibaryClient().get_detail(book.openlibrary_key)
         BookImport().save_from_detail(raw_doc)
         book.refresh_from_db()
+    
     return book
 
 

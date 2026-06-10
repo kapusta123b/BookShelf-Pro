@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 
+from books.services.activity import add_activity
 from books.models import Book
 from library.models import UserBook
 
@@ -14,5 +15,10 @@ def rate_book(user, book_id: int, rating: int) -> None:
 
     if old_rating is None:
         book.update_avg_rating(rating)
+        action = 'rated'
+    
     else:
         book.update_avg_rating(rating, old_rating=old_rating)
+        action = 'change_rate'
+    
+    add_activity(user=user, book_id=book_id, rating=rating, action=action)

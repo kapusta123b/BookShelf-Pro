@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from books.models import Book, Subject
+from books.models import Book, BookQuerySet, Subject
 from books.services.client import OpenLibaryClient
 from books.services.importers import BookImport
 
