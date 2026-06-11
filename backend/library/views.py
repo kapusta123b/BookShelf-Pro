@@ -18,8 +18,9 @@ class LibraryView(LoginRequiredMixin, DetailView):
 
         filter_value = self.request.GET.get('filter', 'all')
         page = self.request.GET.get('page', 1)
+        sort = self.request.GET.get('sort', '-created_at')
 
-        library_data = self.object.get_library_data(page, filter_value)
+        library_data = self.object.get_library_data(page, filter_value, sort)
 
         context.update({
             "library_books": library_data["books"],

@@ -9,10 +9,10 @@ class User(AbstractUser):
     description = models.TextField(blank=True, max_length=150, default="")
     avg_rating = models.FloatField(default=0)
 
-    def get_library_data(self, page_number: int | str, status_filter: str) -> dict:
+    def get_library_data(self, page_number: int | str, status_filter: str, sort: str) -> dict:
 
         all_books = self.library_books.all()
-        paginate_books = all_books.tabs_filter(status_filter).paginate(
+        paginate_books = all_books.tabs_filter(status_filter).sort_by(sort).paginate(
             page_number, per_page=10
         )
         counts = all_books.get_counts()

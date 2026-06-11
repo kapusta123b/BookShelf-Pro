@@ -72,20 +72,23 @@
 
       <div class="library-toolbar__sort">
         <img src="{% static 'deps/svg/sort.svg' %}" alt="">
-        <select>
-          <option>Recently Added</option>
-          <option>Title A–Z</option>
-          <option>Author A–Z</option>
-          <option>Rating</option>
-          <option>Year</option>
-        </select>
+        <form method="get" action="{{ request.path }}" id="sort-form">
+          <input type="hidden" name="filter" value="{{ request.GET.filter }}">
+          <select name="sort" onchange="this.form.submit()">
+            <option value="-created_at" {% if not request.GET.sort or request.GET.sort == '-created_at' %}selected{% endif %}>Recently Added</option>
+            <option value="title" {% if request.GET.sort == 'title' %}selected{% endif %}>Title A–Z</option>
+            <option value="authors" {% if request.GET.sort == 'authors' %}selected{% endif %}>Author A–Z</option>
+            <option value="-rating" {% if request.GET.sort == '-rating' %}selected{% endif %}>Top Rated</option>
+            <option value="first_publish_date" {% if request.GET.sort == 'first_publish_date' %}selected{% endif %}>Year</option>
+          </select>
+        </form>
       </div>
 
       <div class="library-toolbar__view">
-        <button class="active" aria-label="Grid view">
+        <button class="active" data-view="grid" aria-label="Grid view">
           <img src="{% static 'deps/svg/grid.svg' %}" alt="">
         </button>
-        <button aria-label="List view">
+        <button data-view="list" aria-label="List view">
           <img src="{% static 'deps/svg/list.svg' %}" alt="">
         </button>
       </div>
@@ -118,9 +121,22 @@
 
             <p class="library-book__author">
               {% for author in lib_book.book.get_authors %}
+
                 {{ author.name }}
+              
               {% endfor %}
             </p>
+
+            <div class="library-book__meta">
+              <div class="library-book__rating">
+                <div class="star-track">
+                  ★★★★★
+                  <div class="star-track__fill" style="width: {{ lib_book.book.rating_fill_percent }}%;">★★★★★</div>
+                </div>
+                <span>{{ lib_book.book.avg_rating }}</span>
+              </div>
+              <span class="library-book__year">{{ lib_book.book.publish_year }}</span>
+            </div>
 
           </div>
           <div class="library-book__actions">
@@ -134,7 +150,7 @@
               </button>
               {% if lib_book.status == 'read' %}
 
-                <a href="#" class="library-book__action-btn">
+                <a href="{% url "books:create_review" lib_book.book.id %}" class="library-book__action-btn">
                   <img src="{% static 'deps/svg/star.svg' %}" alt="">
                   Write a Review
                 </a>
@@ -205,7 +221,7 @@
 
       {% endfor %}
 
-      {% if library_books %}
+      {% if library_books.has_next or library_books.has_previous %}
         <div class="pagination">
           <a href="{% if library_books.has_previous %}?{% url_replace page=library_books.previous_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav">
             <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Previous" style="transform: rotate(180deg)">

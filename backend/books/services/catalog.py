@@ -61,9 +61,9 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
 
     return (
         queryset.by_category(filters.subject)
-        .by_rating(rating_value)
         .by_date(filters.year_from, filters.year_to)
         .order_by(ordering)
+        .by_rating(rating_value)
     )
 
 

@@ -1,9 +1,11 @@
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import CreateView, ListView, DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from books.models import Book
+from library.models import UserBook
+from books.forms import CreateReviewForm
+from books.models import Book, Review
 from books.services.catalog import CatalogFilters, get_catalog_queryset, fetch_more_books, get_subject
 from books.services.detail import enrich_book_detail, get_user_book_context
 from books.services.rating import rate_book
@@ -90,3 +92,23 @@ class RateBookView(LoginRequiredMixin, View):
 
         rate_book(request.user, book_id, rating)
         return redirect(request.META.get('HTTP_REFERER', '/'))
+
+class BookCreateReviewView(LoginRequiredMixin, CreateView):
+    model = Review
+    template_name = 'books/create_review.html'
+    form_class = CreateReviewForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        book_id = self.kwargs.get('book_id')
+
+        context["review_book"] = self.model.objects.get_user_book_for_review(
+            book_id=book_id, 
+            user=self.request.user
+        )
+        
+        return context
+    
+    
+    

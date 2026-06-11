@@ -1,5 +1,31 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+  const gridViewBtn = document.querySelector('[data-view="grid"]');
+  const listViewBtn = document.querySelector('[data-view="list"]');
+  const libraryGrid = document.querySelector('.library-grid');
+
+  if (gridViewBtn && listViewBtn && libraryGrid) {
+    function setView(view) {
+      if (view === 'list') {
+        libraryGrid.classList.add('list-view');
+        listViewBtn.classList.add('active');
+        gridViewBtn.classList.remove('active');
+      } else {
+        libraryGrid.classList.remove('list-view');
+        gridViewBtn.classList.add('active');
+        listViewBtn.classList.remove('active');
+      }
+      localStorage.setItem('library-view', view);
+    }
+
+    const savedView = localStorage.getItem('library-view') || 'grid';
+    setView(savedView);
+
+    gridViewBtn.addEventListener('click', function () { setView('grid'); });
+    listViewBtn.addEventListener('click', function () { setView('list'); });
+  }
+
+
   function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;

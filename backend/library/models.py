@@ -1,7 +1,7 @@
 from django.utils import timezone
 
 from django.db import models
-from django.db import transaction
+from django.db.models import Min
 
 from django.core.paginator import Page, Paginator
 
@@ -17,6 +17,28 @@ class UserBookQuerySet(models.QuerySet):
 
         else:
             return self.all()
+        
+    def sort_by(self, value: str):
+        if not value:
+            
+            return self
+        
+        self = self.select_related('book').prefetch_related('book__authors')
+
+        if value == 'title':
+            return self.order_by('book__title')
+
+        if value == 'authors':
+            return (
+                self
+                .annotate(first_author_name=Min('book__authors__name'))
+                .order_by('first_author_name')
+            )
+        
+        if value == 'rating':
+            return self.order_by('-book__avg_rating')
+
+        return self
 
     def get_counts(self) -> dict:
         return self.aggregate(
@@ -31,15 +53,6 @@ class UserBookQuerySet(models.QuerySet):
         paginator = Paginator(self, per_page)
 
         return paginator.get_page(page_number)
-
-    
-class UserBookManager(models.Manager):
-    def create_user_book(self, user, book_id):
-        if book_id:
-            self.objects.get_or_create(
-                user=user,
-                book_id=book_id
-            )
 
 
 class UserBook(models.Model):

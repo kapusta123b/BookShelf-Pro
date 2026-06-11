@@ -418,16 +418,27 @@
     }
   }
 
+  &__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.25rem;
+  }
+
   &__rating {
     display: flex;
-    gap: 2px;
-    margin-top: 0.25rem;
+    align-items: center;
+    gap: 5px;
 
-    .star {
-      width: 12px;
-      height: 12px;
-      color: $warning;
+    span {
+      font-size: $font-size-xs;
+      color: $text-muted;
     }
+  }
+
+  &__year {
+    font-size: $font-size-xs;
+    color: $text-muted;
   }
 
   &__actions {
@@ -866,5 +877,25 @@
   .library-toolbar__search {
     max-width: 100%;
     width: 100%;
+  }
+}
+
+.star-track {
+  position: relative;
+  display: inline-block;
+  font-size: 0.8rem;
+  color: $border;
+  line-height: 1;
+  letter-spacing: 1px;
+  user-select: none;
+
+  &__fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    overflow: hidden;
+    color: $warning;
+    white-space: nowrap;
   }
 }
