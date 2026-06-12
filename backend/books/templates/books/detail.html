@@ -59,10 +59,12 @@
                 <div class="star-track__fill" style="width: {{ book.rating_fill_percent }}%;">★★★★★</div>
               </div>
             </div>
+
             <div class="book-detail__rating-meta">
               <span class="book-detail__rating-score">{{ book.avg_rating }}</span>
-              <span class="book-detail__rating-count">{{ book.rating_count }} ratings</span>
+              <span class="book-detail__rating-count">{{ book.rating_count }} ratings</span>  
             </div>
+          
           </div>
 
           <div class="book-detail__vote">
@@ -72,19 +74,24 @@
               </p>
               <form method="post" action="{% url 'books:rate' book.id %}" id="vote-form">
                 {% csrf_token %}
+                
                 <input type="hidden" name="rating" id="vote-input" value="">
+                
                 <div class="star-vote" id="star-vote" data-current="{{ user_rating|default:0 }}">
+                
                   <button type="button" class="star-vote__btn" data-val="1">★</button>
                   <button type="button" class="star-vote__btn" data-val="2">★</button>
                   <button type="button" class="star-vote__btn" data-val="3">★</button>
                   <button type="button" class="star-vote__btn" data-val="4">★</button>
                   <button type="button" class="star-vote__btn" data-val="5">★</button>
+                
                 </div>
+              
               </form>
             {% else %}
 
               <a href="{% url 'users:login' %}" class="book-detail__vote-login">Sign in to rate</a>
-            
+
             {% endif %}
           </div>
 
@@ -132,65 +139,68 @@
               <h2 class="book-detail__section-title">Excerpt</h2>
 
               <blockquote class="book-detail__excerpt">
-              
+
                 <p>{{ book.excerpt }}</p>
-              
+
               </blockquote>
             </section>
-          
+
           {% endif %}
-          
+
 
           {% if book.cover_ids %}
-          <section class="book-detail__section">
-            <h2 class="book-detail__section-title">
-              Covers
-              <span class="book-detail__section-count">{{ book.cover_ids|length }}</span>
-            </h2>
-            <div class="cover-collage">
-              {% for cover_id in book.cover_ids %}
-                <div class="cover-collage__item {% if forloop.first %}cover-collage__item--featured{% endif %}">
-                  <img
-                    src="https://covers.openlibrary.org/b/id/{{ cover_id }}-M.jpg"
-                    alt="{{ book.title }} cover {{ forloop.counter }}"
-                    loading="lazy"
-                  >
-                </div>
-              {% endfor %}
-            </div>
-          </section>
+            <section class="book-detail__section">
+              <h2 class="book-detail__section-title">
+                Covers
+                <span class="book-detail__section-count">{{ book.cover_ids|length }}</span>
+              </h2>
+              <div class="cover-collage">
+                {% for cover_id in book.cover_ids %}
+                  <div class="cover-collage__item {% if forloop.first %}cover-collage__item--featured{% endif %}">
+                    <img
+                      src="https://covers.openlibrary.org/b/id/{{ cover_id }}-M.jpg"
+                      alt="{{ book.title }} cover {{ forloop.counter }}"
+                      loading="lazy"
+                    >
+                  </div>
+                {% endfor %}
+              </div>
+            </section>
           {% endif %}
 
           <section class="book-detail__section">
             <h2 class="book-detail__section-title">
               Reviews
-              <span class="book-detail__section-count">1</span>
+              <span class="book-detail__section-count"></span>
             </h2>
 
             <div class="book-detail__reviews">
+              {% for review in reviews %}
 
-              <div class="book-detail__review">
-                <div class="book-detail__review-header">
-                  <div class="book-detail__review-user">
-                    <div class="book-detail__review-avatar">J</div>
-                    <div>
-                      <p class="book-detail__review-username">john</p>
-                      <p class="book-detail__review-date">June 2, 2026</p>
+                <div class="book-detail__review">
+                  <div class="book-detail__review-header">
+                    <div class="book-detail__review-user">
+                      <div class="book-detail__review-avatar">{{ review.user_book.user.format_avatar }}</div>
+                      <div>
+                        <p class="book-detail__review-username">{{ review.user_book.user.get_full_name }}</p>
+                        <p class="book-detail__review-date">{{ review.created_at }}</p>
+                      </div>
+                    </div>
+                    <div class="book-detail__review-stars">
+                      <span style="color: #d97706;">★★★★</span><span style="color: #cbd5e1;">★</span>
                     </div>
                   </div>
-                  <div class="book-detail__review-stars">
-                    <span style="color: #d97706;">★★★★</span><span style="color: #cbd5e1;">★</span>
+
+                  <h3 class="book-detail__review-title">{{ review.title }}</h3>
+                  <p class="book-detail__review-text">{{ review.text }}</p>
+                  <div class="book-detail__review-footer">
+
+                    <span class="badge badge--neutral">{% if review.contains_spoilers %} Contains spoilers!{% else %} No spoilers {% endif %}</span>
+
                   </div>
                 </div>
-
-                <h3 class="book-detail__review-title">Lorem ipsum dolor sit amet.</h3>
-                <p class="book-detail__review-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit molestiae perferendis necessitatibus tempore asperiores, itaque ad quasi voluptas nesciunt hic odio natus omnis ullam pariatur iste aliquam ut at velit sunt? Repellendus repudiandae veritatis commodi incidunt autem! Culpa vitae vero consequuntur nostrum ea magni voluptas architecto velit accusamus cumque, iusto temporibus harum quae iste eos voluptatibus, labore ducimus doloribus quas in similique vel ullam! Consequatur repudiandae dolore distinctio fugiat, eligendi voluptatibus commodi quis porro atque perferendis omnis, nam quia eius delectus excepturi aliquam obcaecati similique veritatis consectetur facere! Veniam et officia illum nam tempora dolorum perferendis id dolores sunt minima!</p>
-                <div class="book-detail__review-footer">
-
-                  <span class="badge badge--neutral">No spoilers</span>
-
-                </div>
-              </div>
+              
+              {% endfor %}
 
 
             </div>

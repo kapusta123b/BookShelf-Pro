@@ -13,28 +13,25 @@ class CreateReviewForm(forms.ModelForm):
     captcha = ReCaptchaField(
         widget=widgets.ReCaptchaV2Checkbox(
             attrs={
-                'data-theme': 'light',
+                "data-theme": "light",
             }
         )
     )
 
     class Meta:
         model = Review
-        fields = [
-            'title', 'text', 'is_public', 'contains_spoilers'
-        ]
+        fields = ["title", "text", "is_public", "contains_spoilers"]
         widgets = {
-            'text': forms.Textarea(attrs={'rows': 3, 'maxlength': 1000}),
+            "text": forms.Textarea(attrs={"rows": 3, "maxlength": 1000}),
         }
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        self.book_id = kwargs.pop('book_id', None)
+        self.user = kwargs.pop("user", None)
+        self.book_id = kwargs.pop("book_id", None)
         super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
         review = super().save(commit=False)
-
 
         user_book = get_object_or_404(UserBook, book_id=self.book_id, user=self.user)
 
@@ -42,6 +39,5 @@ class CreateReviewForm(forms.ModelForm):
 
         if commit:
             review.save()
-        
+
         return review
-    

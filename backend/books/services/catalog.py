@@ -33,9 +33,10 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
     queryset = Book.objects
 
     if filters.search and filters.search_by in ("title", "author", "isbn"):
+        filter = filters.search_by
         queryset = queryset.filter(title__icontains=filters.search)
 
-        if not queryset.exists() or queryset.count() < 8:
+        if queryset.count() < 8:
             fetch_more_books(filters.search_by, filters.search, filters.page)
             queryset = Book.objects.filter(title__icontains=filters.search)
 

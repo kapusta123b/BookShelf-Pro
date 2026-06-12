@@ -17,8 +17,7 @@
 
         <div class="profile-card">
           <div class="profile-card__avatar">
-            {{ profile_user.first_name|first|upper }}
-            {{ profile_user.last_name|first|upper }}
+            {{ profile_user.format_avatar }}
 
             <button class="profile-card__avatar-upload">
               <img src="{% static 'deps/svg/edit.svg' %}" alt="Upload photo">
@@ -175,34 +174,36 @@
           <div class="activity-list">
 
             {% for item in activity %}
-            <div class="activity-item">
-              <div class="activity-item__icon activity-item__icon--{{ item.icon_class }}">
-                <img src="{% static 'deps/svg/' %}{{ item.icon }}" alt="">
+              <div class="activity-item">
+                <div class="activity-item__icon activity-item__icon--{{ item.icon_class }}">
+                  <img src="{% static 'deps/svg/' %}{{ item.icon }}" alt="">
+                </div>
+                <div class="activity-item__content">
+                  <p class="activity-item__text">
+                    {% if item.action == 'added' %}
+                      Added <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a> to your library
+                    {% elif item.action == 'want_to_read' %}
+                      Added <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a> to Want to Read
+                    {% elif item.action == 'reading' %}
+                      Started reading <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                    {% elif item.action == 'read' %}
+                      Finished reading <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                    {% elif item.action == 'rated' %}
+                      Rated <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                    {% elif item.action == 'reviewed' %}
+                      Reviewed <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                    {% elif item.action == 'change_rate' %}
+                      Сhanged the rating for the book  <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                    {% endif %}
+                  </p>
+                  <p class="activity-item__time">{{ item.created_at|timesince }} ago</p>
+                </div>
               </div>
-              <div class="activity-item__content">
-                <p class="activity-item__text">
-                  {% if item.action == 'added' %}
-                    Added <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a> to your library
-                  {% elif item.action == 'want_to_read' %}
-                    Added <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a> to Want to Read
-                  {% elif item.action == 'reading' %}
-                    Started reading <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
-                  {% elif item.action == 'read' %}
-                    Finished reading <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
-                  {% elif item.action == 'rated' %}
-                    Rated <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
-                  {% elif item.action == 'reviewed' %}
-                    Reviewed <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
-                  {% elif item.action == 'change_rate' %}
-                    Сhanged the rating for the book  <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
-                  {% endif %}
-                </p>
-                <p class="activity-item__time">{{ item.created_at|timesince }} ago</p>
-              </div>
-            </div>
             {% empty %}
-            <p class="profile-empty-state__text">No recent activity yet.</p>
-            {% endfor %}
+
+              <p class="profile-empty-state__text">No recent activity yet.</p>
+            
+              {% endfor %}
 
           </div>
         </div>

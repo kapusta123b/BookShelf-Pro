@@ -128,6 +128,7 @@ class SubjectImporter:
 
         for raw in raw_subjects:
             raw = raw.lower().strip()
+            
             for genre, keywords in SUBJECT_MAP.items():
                 if raw in keywords:
                     result.add(genre)

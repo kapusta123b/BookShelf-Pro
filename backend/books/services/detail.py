@@ -1,4 +1,4 @@
-from books.models import Book
+from books.models import Book, Review
 from books.services.client import OpenLibaryClient
 from books.services.importers import BookImport
 
@@ -25,4 +25,16 @@ def get_user_book_context(user, book: Book) -> dict:
         'user_library_ids': set(user.library_books.values_list('book_id', flat=True)),
         'user_rating': user_book.rating if user_book else None,
         'user_rating_pct': round(((user_book.rating or 0) / 5) * 100) if user_book else 0,
+    }
+
+
+def get_reviews(book: Book) -> dict:
+    reviews = (
+    Review.objects
+    .filter(user_book__book=book, is_public=True)
+    .select_related('user_book')
+    )
+
+    return {
+        'reviews': reviews
     }

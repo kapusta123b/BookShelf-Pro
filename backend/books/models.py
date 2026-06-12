@@ -1,7 +1,5 @@
 from django.db import models
-from django.shortcuts import get_object_or_404
 
-from library.models import UserBook
 
 class Subject(models.Model):
     slug = models.SlugField(unique=True, null=True, blank=True)
@@ -22,6 +20,7 @@ class Author(models.Model):
         unique=True,
         db_index=True,
     )
+    
     name = models.CharField(max_length=255)
     birth_date = models.IntegerField(null=True, blank=True)
 
@@ -39,12 +38,12 @@ class BookQuerySet(models.QuerySet):
     def by_category(self, slug: str | None) -> "BookQuerySet":
         if slug and slug != "all":
             return self.filter(subjects__slug=slug)
-        
+
         return self
 
     def by_rating(self, value: int | None) -> "BookQuerySet":
         if value and 1 <= value <= 5:
-            return self.filter(avg_rating__gte=value).order_by('avg_rating')
+            return self.filter(avg_rating__gte=value).order_by("avg_rating")
 
         return self
 
@@ -136,17 +135,7 @@ class Book(models.Model):
         verbose_name_plural = "Books"
 
 
-class ReviewManager(models.Manager):
-    
-    def get_user_book_for_review(self, book_id, user):
-
-        queryset = UserBook.objects.select_related('book').prefetch_related('book__authors')
-
-        return get_object_or_404(queryset, book_id=book_id, user=user)
-
 class Review(models.Model):
-    objects = ReviewManager()
-    
     user_book = models.OneToOneField(
         "library.UserBook",
         on_delete=models.CASCADE,
@@ -154,16 +143,13 @@ class Review(models.Model):
         null=True,
         blank=True,
     )
-    
+
     title = models.CharField(max_length=255, blank=True)
     text = models.TextField()
     is_public = models.BooleanField(default=True)
     contains_spoilers = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    def get_user_book(self, book_id, user):
-        return get_object_or_404(UserBook, book_id=book_id, user=user)
 
     def __str__(self) -> str:
         return f"Review for {self.user_book.book}"

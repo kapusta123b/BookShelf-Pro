@@ -1,13 +1,15 @@
 from django.shortcuts import render
 
-
-def index(request):
-    return render(request, 'main/index.html')
+from django.views.generic import TemplateView
 
 
-def privacy(request):
-    return render(request, 'main/privacy.html')
+class IndexView(TemplateView):
+    template_name = "main/index.html"
 
 
-def terms(request):
-    return render(request, 'main/terms.html')
+class PrivacyView(TemplateView):
+    template_name = "main/privacy.html"
+
+
+class TermsView(TemplateView):
+    template_name = "main/terms.html"

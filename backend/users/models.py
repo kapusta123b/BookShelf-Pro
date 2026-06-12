@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -6,14 +8,20 @@ class User(AbstractUser):
     first_name = models.CharField(blank=True, verbose_name="First name")
     last_name = models.CharField(blank=True, verbose_name="Last name")
 
+    profile_image = models.ImageField(null=True, blank=True, verbose_name="User image")
+
     description = models.TextField(blank=True, max_length=150, default="")
     avg_rating = models.FloatField(default=0)
 
-    def get_library_data(self, page_number: int | str, status_filter: str, sort: str) -> dict:
+    def get_library_data(
+        self, page_number: int | str, status_filter: str, sort: str
+    ) -> dict:
 
         all_books = self.library_books.all()
-        paginate_books = all_books.tabs_filter(status_filter).sort_by(sort).paginate(
-            page_number, per_page=10
+        paginate_books = (
+            all_books.tabs_filter(status_filter)
+            .sort_by(sort)
+            .paginate(page_number, per_page=10)
         )
         counts = all_books.get_counts()
 
@@ -28,7 +36,7 @@ class User(AbstractUser):
         counts = all_books.get_counts()
 
         recent_books = list(
-            all_books.select_related("book").order_by("updated_at")[:20]
+            all_books.select_related("book").order_by("-updated_at")[:20]
         )
 
         read = [b for b in recent_books if b.status == "read"][:5]
@@ -41,6 +49,20 @@ class User(AbstractUser):
             "read": read,
             "want_to_read": want_to_read,
         }
+    
+    def format_avatar(self) -> str | Any:
+        """
+        The function is used to format the user's first_name and last_name into a short version
+        for example: Jeffrey Epstein will be as J E
+        """
+        if self.profile_image:
+            return self.profile_image
+        
+        first_name = self.first_name[0].upper() if self.first_name else ''
+        last_name = self.last_name[0].upper() if self.last_name else ''
+
+        return f'{first_name} {last_name}'.strip()
+
 
     def __str__(self):
         return self.username
@@ -59,7 +81,7 @@ class RecentActivity(models.Model):
         READING = "reading", "Started reading"
         READ = "read", "Finished reading"
         RATED = "rated", "Rated"
-        CHANGE_RATE = 'change_rate', "Change rating"
+        CHANGE_RATE = "change_rate", "Change rating"
         REVIEWED = "reviewed", "Reviewed"
 
     user = models.ForeignKey(
@@ -81,7 +103,7 @@ class RecentActivity(models.Model):
             "read": "check.svg",
             "rated": "star-filled.svg",
             "reviewed": "edit.svg",
-            "change_rate": "change-rate.svg"
+            "change_rate": "change-rate.svg",
         }.get(self.action, "plus.svg")
 
     @property
@@ -93,7 +115,7 @@ class RecentActivity(models.Model):
             "read": "read",
             "rated": "rated",
             "reviewed": "rated",
-            "change_rate": "change-rate"
+            "change_rate": "change-rate",
         }.get(self.action, "added")
 
     class Meta:
