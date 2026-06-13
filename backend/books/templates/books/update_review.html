@@ -2,12 +2,11 @@
 {% load sass_tags %}
 {% load static %}
 
-{% block title %}Write a Review — BookShelf Pro{% endblock %}
-
-{% block meta_description %}Share your thoughts on {{ review_book.book.title }}.{% endblock %}
+{% block title %}Edit Review — BookShelf Pro{% endblock %}
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% sass_src 'deps/css/create-review.scss' %}">
+  <link rel="stylesheet" href="{% sass_src 'deps/css/update-review.scss' %}">
 {% endblock %}
 
 {% block content %}
@@ -15,36 +14,51 @@
   <div class="create-review">
 
     <div class="create-review__header">
-      <a href="{% url 'library:index' request.user.id %}" class="create-review__back">
+      <a href="#" class="create-review__back">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
-        Back to library
+        Back to book
       </a>
-      <h1 class="create-review__title">Write a Review</h1>
-      <p class="create-review__subtitle">Share your thoughts on <strong>{{ review_book.book.title }}</strong></p>
+      <h1 class="create-review__title">Edit Review</h1>
+      <p class="create-review__subtitle">Editing your review for <strong>{{review.user_book.book.title}}</strong></p>
     </div>
 
     <div class="create-review__layout">
 
       <div class="create-review-sidebar">
         <div class="create-review-sidebar__cover">
-          <img src="https://covers.openlibrary.org/b/id/{{ review_book.book.cover_i }}-M.jpg" alt="{{ review_book.book.title }}">
+          <img src="https://covers.openlibrary.org/b/id/{{ review.user_book.book.cover_i }}-M.jpg" alt="Book cover">
         </div>
-        <p class="create-review-sidebar__title">{{ review_book.book.title }}</p>
-        <p class="create-review-sidebar__author">
-          {% for author in review_book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
-        </p>
+        <p class="create-review-sidebar__title">{{ review.user_book.book.title }}</p>
+        <p class="create-review-sidebar__author">{% for author in review.user_book.book.get_authors %}
+          {{ author.name }}
+        {% endfor %}  </p>
         <div class="create-review-sidebar__rating">
           <div class="star-track">
             ★★★★★
-            <div class="star-track__fill" style="width: {{ review_book.book.rating_fill_percent }}%;">★★★★★</div>
+            <div class="star-track__fill" style="width: 80%;">★★★★★</div>
           </div>
-          <span>{{ review_book.book.avg_rating }}</span>
+          <span>4.0</span>
+        </div>
+
+        <div class="update-review-sidebar__danger">
+          <form method="post" action="{% url "books:delete_review" review.id %}" onsubmit="return confirm('Delete this review? This cannot be undone.')">
+            {% csrf_token %}
+            <button type="submit" class="update-review-sidebar__delete">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                <path d="M10 11v6M14 11v6"/>
+                <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+              </svg>
+              Delete review
+            </button>
+          </form>
         </div>
       </div>
 
-      <form method="post" action="{% url 'books:create_review' review_book.book.id %}">
+      <form method="post" action="#">
         {% csrf_token %}
 
         <div class="create-review-form">
@@ -52,27 +66,23 @@
           <div class="create-review-form__section">
             <p class="create-review-form__section-title">Review title</p>
             <p class="create-review-form__section-hint">A short headline for your review (optional)</p>
-
             <div class="create-review-form__field">
               <label for="id_title">Title</label>
               <input
+                value='{{ review.title }}'
                 type="text"
                 id="id_title"
                 name="title"
-                value="{{ form.title.value|default:'' }}"
                 placeholder="e.g. A masterpiece of storytelling"
                 maxlength="255"
+
               >
-              {% for error in form.title.errors %}
-                <span class="field-error">{{ error }}</span>
-              {% endfor %}
             </div>
           </div>
 
           <div class="create-review-form__section">
             <p class="create-review-form__section-title">Your review</p>
             <p class="create-review-form__section-hint">What did you think? Up to 1000 characters.</p>
-
             <div class="create-review-form__field">
               <label for="id_text">Review</label>
               <textarea
@@ -81,10 +91,7 @@
                 rows="6"
                 maxlength="1000"
                 placeholder="Write your honest thoughts about the book…"
-              >{{ form.text.value|default:'' }}</textarea>
-              {% for error in form.text.errors %}
-                <span class="field-error">{{ error }}</span>
-              {% endfor %}
+              >{{ review.text }}</textarea>
             </div>
           </div>
 
@@ -92,29 +99,25 @@
             <p class="create-review-form__section-title">Options</p>
 
             <label class="create-review-form__checkbox">
-              <input type="checkbox" name="is_public" id="id_is_public" {% if form.is_public.value %}checked{% endif %}>
+              <input type="checkbox" name="is_public" id="id_is_public" {% if form.is_public %} selected {% endif %} >
               <span>Make this review public</span>
             </label>
 
             <label class="create-review-form__checkbox">
-              <input type="checkbox" name="contains_spoilers" id="id_contains_spoilers" {% if form.contains_spoilers.value %}checked{% endif %}>
+              <input type="checkbox" name="contains_spoilers" id="id_contains_spoilers">
               <span>Contains spoilers</span>
             </label>
-          </div>
-
-          <div class="create-review-form__section">
-            <p class="create-review-form__section-title">Verification</p>
-            {{ form.captcha }}
-            {% for error in form.captcha.errors %}
-              <span class="field-error">{{ error }}</span>
-            {% endfor %}
           </div>
 
           <div class="create-review-form__actions">
             <a href="#" class="create-review-form__cancel" id="js-cancel">Cancel</a>
             <button type="submit" class="create-review-form__submit">
-              <img src="{% static 'deps/svg/star.svg' %}" alt="">
-              Publish Review
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;">
+                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
+              </svg>
+              Save changes
             </button>
           </div>
 

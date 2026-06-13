@@ -41,3 +41,10 @@ class CreateReviewForm(forms.ModelForm):
             review.save()
 
         return review
+
+
+class UpdateReviewForm(forms.ModelForm):
+
+    class Meta:
+        model = Review
+        fields = ["title", "text", "is_public", "contains_spoilers"]

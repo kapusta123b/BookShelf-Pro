@@ -12,5 +12,5 @@ def add_activity(user: dict, action: str, book_id: int, rating: int = 0) -> None
             rating=rating,
             action=action
         )
-    except:
+    except Exception:
         return None

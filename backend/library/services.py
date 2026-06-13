@@ -16,7 +16,9 @@ def add_book_to_library(book_id, user) -> None:
 def change_user_book_status(book_id: int, user, status: str) -> None:
     with transaction.atomic():
         user_book = (
-            UserBook.objects.select_for_update().filter(id=book_id, user=user).first()
+            UserBook.objects.select_for_update()
+            .filter(book_id=book_id, user=user)
+            .first()
         )
 
         if not user_book:

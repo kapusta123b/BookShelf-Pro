@@ -1,7 +1,10 @@
 from typing import Any
 
 from django.db import models
+from django.db.models import Avg
 from django.contrib.auth.models import AbstractUser
+
+from books.models import Review
 
 
 class User(AbstractUser):
@@ -27,8 +30,9 @@ class User(AbstractUser):
 
         return {"books": paginate_books, "counts": counts}
 
-    def get_user_activity(self):
-        return RecentActivity.objects.filter(user=self).select_related("book")[:15]
+    def get_user_activity(self, show_more=False):
+        user_activity = RecentActivity.objects.filter(user=self).select_related("book")
+        return user_activity[:10] if not show_more else user_activity
 
     def get_profile_data(self) -> dict:
 
@@ -39,6 +43,10 @@ class User(AbstractUser):
             all_books.select_related("book").order_by("-updated_at")[:20]
         )
 
+        recent_reviews = Review.objects.filter(user_book__user=self).select_related(
+            "user_book"
+        )[:5]
+
         read = [b for b in recent_books if b.status == "read"][:5]
         want_to_read = [b for b in recent_books if b.status == "want_to_read"][:5]
         reading = [b for b in recent_books if b.status == "reading"][:5]
@@ -48,21 +56,30 @@ class User(AbstractUser):
             "reading": reading,
             "read": read,
             "want_to_read": want_to_read,
+            "reviews": recent_reviews,
         }
-    
+
+    def update_avg_rating(self) -> None:
+        avg = self.library_books.filter(rating__isnull=False).aggregate(
+            avg=Avg("rating")
+        )["avg"]
+
+        self.avg_rating = round(avg, 2) if avg is not None else 0
+
+        self.save(update_fields=["avg_rating"])
+
     def format_avatar(self) -> str | Any:
         """
         The function is used to format the user's first_name and last_name into a short version
         for example: Jeffrey Epstein will be as J E
         """
         if self.profile_image:
-            return self.profile_image
-        
-        first_name = self.first_name[0].upper() if self.first_name else ''
-        last_name = self.last_name[0].upper() if self.last_name else ''
+            return self.profile_image.url
 
-        return f'{first_name} {last_name}'.strip()
+        first_name = self.first_name[0].upper() if self.first_name else ""
+        last_name = self.last_name[0].upper() if self.last_name else ""
 
+        return f"{first_name} {last_name}".strip()
 
     def __str__(self):
         return self.username

@@ -73,16 +73,16 @@
       <div class="library-toolbar__sort">
         <img src="{% static 'deps/svg/sort.svg' %}" alt="">
         <form method="get" action="{{ request.path }}" id="sort-form">
-          
+
           <input type="hidden" name="filter" value="{{ request.GET.filter }}">
           <select name="sort" onchange="this.form.submit()">
-          
+
             <option value="recently" {% if not request.GET.sort or request.GET.sort == '-created_at' %}selected{% endif %}>Recently Added</option>
             <option value="title" {% if request.GET.sort == 'title' %}selected{% endif %}>Title A–Z</option>
             <option value="authors" {% if request.GET.sort == 'authors' %}selected{% endif %}>Author A–Z</option>
             <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>Top Rated</option>
             <option value="year" {% if request.GET.sort == 'year' %}selected{% endif %}>Year</option>
-          
+
           </select>
         </form>
       </div>
@@ -190,7 +190,7 @@
                 </div>
               </div>
 
-              <form method="post" action="{% url 'library:change_status' lib_book.id %}" class="book-modal__form">
+              <form method="post" action="{% url 'library:change_status' lib_book.book.id %}" class="book-modal__form">
                 {% csrf_token %}
                 <p class="book-modal__section-label">Reading status</p>
                 <div class="book-modal__status-options">

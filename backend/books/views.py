@@ -1,13 +1,20 @@
 from django.shortcuts import redirect
 from django.urls import reverse
 
-from django.views.generic import CreateView, ListView, DetailView, View
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    ListView,
+    DetailView,
+    UpdateView,
+    View,
+)
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from books.utils import get_user_book_for_review
 
-from books.forms import CreateReviewForm
+from books.forms import CreateReviewForm, UpdateReviewForm
 
 from books.models import Book, Review
 
@@ -110,18 +117,16 @@ class RateBookView(LoginRequiredMixin, View):
         return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
-class BookCreateReviewView(LoginRequiredMixin, CreateView):
+class CreateReviewView(LoginRequiredMixin, CreateView):
     model = Review
     template_name = "books/create_review.html"
     form_class = CreateReviewForm
 
     def get_success_url(self):
         book_id = self.kwargs.get("book_id")
-        return redirect(
-            reverse(
-                "books:detail",
-                kwargs={"book_id": book_id, "subject_slug": "all"},
-            )
+        return reverse(
+            "books:detail",
+            kwargs={"book_id": book_id, "subject_slug": "all"},
         )
 
     def get_form_kwargs(self):
@@ -142,3 +147,30 @@ class BookCreateReviewView(LoginRequiredMixin, CreateView):
         )
 
         return context
+
+
+class UpdateReviewView(LoginRequiredMixin, UpdateView):
+    template_name = "books/update_review.html"
+    model = Review
+    pk_url_kwarg = "review_id"
+    context_object_name = "review"
+    form_class = UpdateReviewForm
+
+    def get_queryset(self):
+
+        return self.model.get_review_object(self.request.user)
+
+
+class DeleteReviewView(LoginRequiredMixin, DeleteView):
+    model = Review
+    pk_url_kwarg = "review_id"
+
+    def get_queryset(self):
+        return self.model.get_review_object(self.request.user)
+
+    def get_success_url(self):
+
+        return reverse("books:detail", kwargs={
+            'subject_slug': 'all',
+            'book_id': self.object.user_book.book.id
+        })

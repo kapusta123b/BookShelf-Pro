@@ -16,9 +16,10 @@ def rate_book(user, book_id: int, rating: int) -> None:
     if old_rating is None:
         book.update_avg_rating(rating)
         action = 'rated'
-    
+
     else:
         book.update_avg_rating(rating, old_rating=old_rating)
         action = 'change_rate'
-    
+
+    user.update_avg_rating()
     add_activity(user=user, book_id=book_id, rating=rating, action=action)

@@ -14,10 +14,11 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        show_more = True if "show_more" in self.request.GET else False
 
         data = self.object.get_profile_data()
 
-        activity = self.object.get_user_activity()
+        activity = self.object.get_user_activity(show_more)
 
         context.update(
             {
@@ -29,6 +30,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
                 "count_reading": data["counts"]["reading"],
                 "count_want_to_read": data["counts"]["want"],
                 "count_finished": data["counts"]["read"],
+                "reviews": data["reviews"],
             }
         )
 

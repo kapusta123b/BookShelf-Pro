@@ -62,9 +62,9 @@
 
             <div class="book-detail__rating-meta">
               <span class="book-detail__rating-score">{{ book.avg_rating }}</span>
-              <span class="book-detail__rating-count">{{ book.rating_count }} ratings</span>  
+              <span class="book-detail__rating-count">{{ book.rating_count }} ratings</span>
             </div>
-          
+
           </div>
 
           <div class="book-detail__vote">
@@ -74,19 +74,19 @@
               </p>
               <form method="post" action="{% url 'books:rate' book.id %}" id="vote-form">
                 {% csrf_token %}
-                
+
                 <input type="hidden" name="rating" id="vote-input" value="">
-                
+
                 <div class="star-vote" id="star-vote" data-current="{{ user_rating|default:0 }}">
-                
+
                   <button type="button" class="star-vote__btn" data-val="1">★</button>
                   <button type="button" class="star-vote__btn" data-val="2">★</button>
                   <button type="button" class="star-vote__btn" data-val="3">★</button>
                   <button type="button" class="star-vote__btn" data-val="4">★</button>
                   <button type="button" class="star-vote__btn" data-val="5">★</button>
-                
+
                 </div>
-              
+
               </form>
             {% else %}
 
@@ -149,6 +149,7 @@
 
 
           {% if book.cover_ids %}
+
             <section class="book-detail__section">
               <h2 class="book-detail__section-title">
                 Covers
@@ -168,43 +169,78 @@
             </section>
           {% endif %}
 
-          <section class="book-detail__section">
-            <h2 class="book-detail__section-title">
-              Reviews
-              <span class="book-detail__section-count"></span>
-            </h2>
+          {% if reviews %}
+            <section class="book-detail__section">
+              <h2 class="book-detail__section-title">
+                Reviews
+                <span class="book-detail__section-count"></span>
+              </h2>
 
-            <div class="book-detail__reviews">
-              {% for review in reviews %}
+              <div class="book-detail__reviews">
+                {% for review in reviews %}
 
-                <div class="book-detail__review">
-                  <div class="book-detail__review-header">
-                    <div class="book-detail__review-user">
-                      <div class="book-detail__review-avatar">{{ review.user_book.user.format_avatar }}</div>
-                      <div>
-                        <p class="book-detail__review-username">{{ review.user_book.user.get_full_name }}</p>
-                        <p class="book-detail__review-date">{{ review.created_at }}</p>
+                  <div class="book-detail__review">
+
+                    <div class="book-detail__review-header">
+                      <div class="book-detail__review-user">
+                        <div class="book-detail__review-avatar">{{ review.user_book.user.format_avatar }}</div>
+                        <div>
+                          <div class="book-detail__review-user-row">
+                            <p class="book-detail__review-username">{{ review.user_book.user.get_full_name }}</p>
+                            {% if review.user_book.user.id == user.id %}
+                              <span class="badge badge--mine">My review</span>
+                            {% endif %}
+                          </div>
+                          <p class="book-detail__review-date">{{ review.created_at|date:"M j, Y" }}</p>
+                        </div>
                       </div>
+                      {% if review.user_book.rating %}
+                        <div class="book-detail__review-stars">
+                          <div class="star-track star-track--sm">★★★★★<div class="star-track__fill" style="width: {% widthratio review.user_book.rating 5 100 %}%">★★★★★</div></div>
+                          <span class="book-detail__review-rating-num">{{ review.user_book.rating }}/5</span>
+                        </div>
+                      {% endif %}
                     </div>
-                    <div class="book-detail__review-stars">
-                      <span style="color: #d97706;">★★★★</span><span style="color: #cbd5e1;">★</span>
-                    </div>
+
+                    {% if review.title %}
+                      <h3 class="book-detail__review-title">{{ review.title }}</h3>
+                    {% endif %}
+
+                    {% if review.contains_spoilers %}
+                      <div class="book-detail__review-spoiler-block">
+                        <div class="book-detail__review-spoiler-warning">
+                          <span class="book-detail__review-spoiler-icon">⚠</span>
+                          <div class="book-detail__review-spoiler-copy">
+                            <strong>Contains spoilers!</strong>
+                            <span>Be careful.</span>
+                          </div>
+                          <button class="book-detail__review-spoiler-btn">Show me</button>
+                        </div>
+                        <p class="book-detail__review-text book-detail__review-text--blurred">{{ review.text }}</p>
+                        <button class="book-detail__review-more" hidden>Read more</button>
+                      </div>
+                    {% else %}
+                      <p class="book-detail__review-text">{{ review.text }}</p>
+                      <button class="book-detail__review-more" hidden>Read more</button>
+                    {% endif %}
+
+                    {% if review.user_book.user.id == user.id %}
+                      <div class="book-detail__review-footer">
+                        <a href="{% url "books:update_review" review.id %}" class="book-detail__review-edit">
+                          <img src="{% static 'deps/svg/edit.svg' %}" alt="">
+                          Edit review
+                        </a>
+                      </div>
+                    {% endif %}
+
                   </div>
 
-                  <h3 class="book-detail__review-title">{{ review.title }}</h3>
-                  <p class="book-detail__review-text">{{ review.text }}</p>
-                  <div class="book-detail__review-footer">
+                {% endfor %}
+              </div>
+            </section>
 
-                    <span class="badge badge--neutral">{% if review.contains_spoilers %} Contains spoilers!{% else %} No spoilers {% endif %}</span>
+          {% endif %}
 
-                  </div>
-                </div>
-              
-              {% endfor %}
-
-
-            </div>
-          </section>
 
         </div>
 

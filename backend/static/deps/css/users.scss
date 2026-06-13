@@ -389,7 +389,8 @@
     color: $text-secondary;
     line-height: 1.7;
     margin-bottom: 1.5rem;
-    text-align: left;
+    text-align: center;
+    word-break: break-word;
   }
 
   &__since {
@@ -786,5 +787,214 @@
 
   .auth-container {
     padding: 1.75rem 1.25rem;
+  }
+}
+
+.profile-review {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  padding: 1.25rem 1.5rem;
+
+  & + & {
+    border-top: 1px solid $border-light;
+  }
+
+  &__cover {
+    flex-shrink: 0;
+    width: 52px;
+    aspect-ratio: 2 / 3;
+    border-radius: $radius;
+    overflow: hidden;
+    background: linear-gradient(135deg, $bg-muted, $border);
+    box-shadow: $shadow-sm;
+    transition: $transition-fast;
+    display: block;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+  }
+
+  &__book-title {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: $text-primary;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 260px;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  &__rating {
+    flex-shrink: 0;
+    font-size: $font-size-xs;
+    font-weight: 700;
+    color: $warning;
+    background-color: $warning-bg;
+    padding: 0.2rem 0.5rem;
+    border-radius: $radius-full;
+    letter-spacing: 0.01em;
+  }
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $text-secondary;
+    font-style: italic;
+  }
+
+  &__spoiler-notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.625rem;
+    border-radius: $radius;
+    background-color: $warning-bg;
+    border: 1px solid rgba($warning, 0.25);
+    width: fit-content;
+
+    span {
+      font-size: $font-size-xs;
+      font-weight: 600;
+      color: $warning;
+    }
+  }
+
+  &__spoiler-reveal {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    font-family: $font-family;
+    color: $primary;
+    cursor: pointer;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: $primary-dark;
+      text-decoration: underline;
+    }
+  }
+
+  &__text {
+    &--spoiler .profile-review__content {
+      filter: blur(5px);
+      user-select: none;
+      pointer-events: none;
+      transition: filter 0.25s ease;
+    }
+
+    &--spoiler.revealed .profile-review__content {
+      filter: none;
+      user-select: auto;
+      pointer-events: auto;
+    }
+  }
+
+  &__content {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    line-height: 1.75;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+
+    &.expanded {
+      display: block;
+    }
+  }
+
+  &__read-more {
+    display: inline-block;
+    margin-top: 0.3rem;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    font-family: $font-family;
+    color: $primary;
+    cursor: pointer;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: $primary-dark;
+      text-decoration: underline;
+    }
+  }
+
+  &__date {
+    font-size: $font-size-xs;
+    color: $text-muted;
+    margin-top: 0.25rem;
+  }
+}
+
+.activity-load-more {
+  display: flex;
+  justify-content: center;
+  padding: 0.875rem 1.5rem;
+  border-top: 1px solid $border-light;
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: none;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    font-family: $font-family;
+    color: $text-muted;
+    cursor: pointer;
+    padding: 0.375rem 0.75rem;
+    border-radius: $radius;
+    transition: $transition-fast;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover {
+      color: $primary;
+      background-color: $primary-muted;
+
+      svg {
+        transform: translateY(2px);
+      }
+    }
   }
 }

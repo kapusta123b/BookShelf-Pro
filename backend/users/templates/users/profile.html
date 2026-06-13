@@ -27,7 +27,7 @@
           <h2 class="profile-card__name">{{ profile_user.get_full_name }}</h2>
           <p class="profile-card__username">@{{ profile_user.username }}</p>
           <p class="profile-card__bio">{{ profile_user.description|default:'No description yet.' }}</p>
-          <p class="profile-card__since">Member since {{ profile_user.date_joined|date:"M Y" }}</p>
+          <p class="profile-card__since">Member since {{ profile_user.date_joined|date:"M j, Y" }}</p>
 
           {% if profile_user.id == user.id %}
             <a href="{% url 'users:edit_profile' %}" class="profile-card__edit-btn">
@@ -101,7 +101,11 @@
             <div class="profile-empty-state">
               <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
               <p>No books currently in progress</p>
-              <a href="{% url 'books:index' 'all' %}" class="profile-empty-state__btn">Browse Catalog</a>
+              {% if user.id == profile_user.id %}
+
+                <a href="{% url 'books:index' 'all' %}" class="profile-empty-state__btn">Browse Catalog</a>
+
+              {% endif %}
             </div>
           {% endfor %}
 
@@ -131,7 +135,11 @@
             <div class="profile-empty-state">
               <img src="{% static 'deps/svg/check.svg' %}" alt="">
               <p>No books finished yet</p>
-              <a href="{% url 'books:index' 'all' %}" class="profile-empty-state__btn">Browse Catalog</a>
+              {% if user.id == profile_user.id %}
+
+                <a href="{% url 'books:index' 'all' %}" class="profile-empty-state__btn">Browse Catalog</a>
+
+              {% endif %}
             </div>
           {% endfor %}
 
@@ -161,8 +169,46 @@
             <div class="profile-empty-state">
               <img src="{% static 'deps/svg/bookmark.svg' %}" alt="">
               <p>Reading list is empty</p>
-              <a href="{% url 'books:index' 'all' %}" class="profile-empty-state__btn">Browse Catalog</a>
+              {% if user.id == profile_user.id %}
+                <a href="{% url 'books:index' 'all' %}" class="profile-empty-state__btn">Browse Catalog</a>
+              {% endif %}
             </div>
+          {% endfor %}
+
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-section__header">
+            <h2>Recent Reviews</h2>
+          </div>
+
+
+          {% for review in reviews %}
+
+            <div class="profile-review">
+              <a href="{% url "books:detail" 'all' review.user_book.book.id %}" class="profile-review__cover">
+                <img src="https://covers.openlibrary.org/b/id/{{ review.user_book.book.cover_i }}-M.jpg" alt="Book cover">
+              </a>
+              <div class="profile-review__body">
+                <div class="profile-review__header">
+                  <a href="{% url "books:detail" 'all' review.user_book.book.id %}" class="profile-review__book-title">
+                    {{ review.user_book.book.title }}</a>
+                  <span class="profile-review__rating">{{ review.user_book.rating|default:"0" }}&thinsp;★</span>
+                </div>
+                <p class="profile-review__title">{{ review.title }}</p>
+                <div class="profile-review__text">
+                  <p class="profile-review__content"> {{ review.text }} </p>
+                  <button class="profile-review__read-more" hidden>Read more</button>
+                </div>
+                <p class="profile-review__date">Created {{ review.created_at|date:"M j, Y" }}</p>
+                {% if review.update_at %}
+
+                  <p class="profile-review__date">Updated {{ review.update_at|date:"M j, Y" }}</p>
+
+                {% endif %}
+              </div>
+            </div>
+
           {% endfor %}
 
         </div>
@@ -198,19 +244,37 @@
                   </p>
                   <p class="activity-item__time">{{ item.created_at|timesince }} ago</p>
                 </div>
+
+
               </div>
+
             {% empty %}
 
               <p class="profile-empty-state__text">No recent activity yet.</p>
-            
-              {% endfor %}
+
+            {% endfor %}
+            <form method="get" action="{{ request.path }}" class="activity-load-more">
+              <input type="hidden" name="show_more">
+              <button type="submit" class="activity-load-more__btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+                Show more
+              </button>
+            </form>
 
           </div>
         </div>
+
+
 
       </div>
 
     </div>
   </div>
 
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'deps/js/profile.js' %}"></script>
 {% endblock %}
