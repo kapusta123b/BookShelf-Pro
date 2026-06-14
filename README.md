@@ -25,10 +25,10 @@ Users can browse books by genre, search by title, author or ISBN, add books to t
 - Search by title, author, or ISBN with on-demand Open Library import
 - 19 genre categories
 - Personal library with reading status tracking
-- Book rating system with average rating calculation
-- Book reviews with spoiler flag and public / private toggle
+- Book rating
+- Book reviews
 - User profiles with reading statistics and recent activity feed
-- Filter sidebar (rating, year range, sort order)
+- Filter sidebar
 - Social authentication via Google and Facebook
 - Email verification and reCAPTCHA v2 on auth forms
 
