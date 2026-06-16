@@ -1,15 +1,27 @@
-from books.models import Book, Review
+from django.db.models import prefetch_related_objects
+
+from books.models import Author, Book, Review
 from books.services.client import OpenLibaryClient
-from books.services.importers import BookImport
+from books.services.importers import AuthorImport, BookImport
 
 
 def enrich_book_detail(book: Book) -> Book:
     if not book.was_requested_detail:
-        raw_doc = OpenLibaryClient().get_detail(book.openlibrary_key)
+        raw_doc = OpenLibaryClient().get_detail('works', book.openlibrary_key)
         BookImport().save_from_detail(raw_doc)
         book.refresh_from_db()
-    
+
+    prefetch_related_objects([book], 'subjects', 'authors')
+
     return book
+
+def enrich_author_detail(author: Author) -> Author:
+    if not author.was_requested_detail:
+        raw_doc = OpenLibaryClient().get_detail('authors', author.openlibrary_key)
+        AuthorImport().save_from_detail(raw_doc)
+        author.refresh_from_db()
+
+    return author
 
 
 def get_user_book_context(user, book: Book) -> dict:

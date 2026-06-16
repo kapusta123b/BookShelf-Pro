@@ -16,7 +16,7 @@ from books.utils import get_user_book_for_review
 
 from books.forms import CreateReviewForm, UpdateReviewForm
 
-from books.models import Book, Review
+from books.models import Author, Book, Review
 
 from books.services.catalog import (
     CatalogFilters,
@@ -25,7 +25,7 @@ from books.services.catalog import (
     get_subject,
 )
 
-from books.services.detail import enrich_book_detail, get_reviews, get_user_book_context
+from books.services.detail import enrich_author_detail, enrich_book_detail, get_reviews, get_user_book_context
 from books.services.rating import rate_book
 
 
@@ -88,7 +88,7 @@ class CatalogView(ListView):
 
 class BookDetailView(DetailView):
     model = Book
-    template_name = "books/detail.html"
+    template_name = "books/book_detail.html"
     context_object_name = "book"
     pk_url_kwarg = "book_id"
 
@@ -101,6 +101,16 @@ class BookDetailView(DetailView):
         context.update(get_reviews(self.object))
 
         return context
+    
+
+class AuthorDetailView(DetailView):
+    model = Author
+    template_name = 'books/author_detail.html'
+    context_object_name = 'author'
+    pk_url_kwarg = 'author_id'
+
+    def get_object(self, queryset=None):
+        return enrich_author_detail(super().get_object(queryset))
 
 
 class RateBookView(LoginRequiredMixin, View):

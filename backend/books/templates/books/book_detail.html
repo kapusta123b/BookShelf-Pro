@@ -1,0 +1,258 @@
+{% extends 'books/detail_base.html' %}
+{% load sass_tags %}
+{% load books_tags %}
+{% load static %}
+
+{% block detail_title %}{{ book.title }}{% endblock %}
+{% block detail_meta %}{{ book.title }}, First published {{ book.first_publish_date }}. Discover description, excerpt, ratings and reviews.{% endblock %}
+
+{% block detail_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/book-detail.scss' %}">
+{% endblock %}
+
+{% block detail_breadcrumb %}
+  <a href="{% url "books:index" view.kwargs.subject_slug %}">Catalog</a>
+  <span>/</span>
+  <span>{{ book.title }}</span>
+{% endblock %}
+
+{% block detail_hero_media %}
+  <img src="https://covers.openlibrary.org/b/id/{{ book.cover_i }}-L.jpg" alt="{{ book.title }}">
+{% endblock %}
+
+{% block detail_hero_info %}
+
+  <div class="book-detail__subjects">
+    {% for subject in book.subjects.all %}
+      <span class="badge badge--primary">{{ subject.name }}</span>
+    {% endfor %}
+  </div>
+
+  <h1 class="book-detail__title">{{ book.title }}</h1>
+
+  {% for author in book.get_authors %}
+    <a href="{% url "books:author_detail" view.kwargs.subject_slug author.id %}" class="book-detail__authors">{{ author.name }}</a>
+  {% endfor %}
+
+  <p class="book-detail__year">{{ book.first_publish_date }}</p>
+
+  <div class="book-detail__rating">
+    <div class="book-detail__rating-stars">
+      <div class="star-track">
+        ★★★★★
+        <div class="star-track__fill" style="width: {{ book.rating_fill_percent }}%;">★★★★★</div>
+      </div>
+    </div>
+
+    <div class="book-detail__rating-meta">
+      <span class="book-detail__rating-score">{{ book.avg_rating }}</span>
+      <span class="book-detail__rating-count">{{ book.rating_count }} ratings</span>
+    </div>
+  </div>
+
+  <div class="book-detail__vote">
+    {% if user.is_authenticated %}
+      <p class="book-detail__vote-label">
+        {% if user_rating %}Your rating: <strong>{{ user_rating }}/5</strong>{% else %}Rate this book{% endif %}
+      </p>
+      <form method="post" action="{% url 'books:rate' book.id %}" id="vote-form">
+        {% csrf_token %}
+
+        <input type="hidden" name="rating" id="vote-input" value="">
+
+        <div class="star-vote" id="star-vote" data-current="{{ user_rating|default:0 }}">
+          <button type="button" class="star-vote__btn" data-val="1">★</button>
+          <button type="button" class="star-vote__btn" data-val="2">★</button>
+          <button type="button" class="star-vote__btn" data-val="3">★</button>
+          <button type="button" class="star-vote__btn" data-val="4">★</button>
+          <button type="button" class="star-vote__btn" data-val="5">★</button>
+        </div>
+
+      </form>
+    {% else %}
+      <a href="{% url 'users:login' %}" class="book-detail__vote-login">Sign in to rate</a>
+    {% endif %}
+  </div>
+
+  <div class="book-detail__actions">
+    {% if user.is_authenticated %}
+      <form method="post" action="{% url "library:add_to_library" book.id %}">
+        {% csrf_token %}
+        <button type='submit' class="book-detail__btn book-detail__btn--primary {% if book.id in user_library_ids %}active{% endif %}" {% if book.id in user_library_ids %}disabled{% endif %}>
+          <img src="{% static 'deps/svg/plus.svg' %}" alt="">
+          {% if book.id in user_library_ids %}In Library{% else %}Add to Library{% endif %}
+        </button>
+      </form>
+    {% endif %}
+    <a href="https://openlibrary.org/works/{{ book.openlibrary_key }}" class="book-detail__btn book-detail__btn--outline" target="_blank" rel="noopener noreferrer">
+      <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+      Open Library
+    </a>
+  </div>
+
+{% endblock %}
+
+{% block detail_main %}
+
+  <section class="detail-page__section">
+    <h2 class="detail-page__section-title">About this Book</h2>
+    <div class="detail-page__description">
+      {{ book.description|markdown }}
+    </div>
+  </section>
+
+  {% if book.excerpt %}
+    <section class="detail-page__section">
+      <h2 class="detail-page__section-title">Excerpt</h2>
+      <blockquote class="book-detail__excerpt">
+        <p>{{ book.excerpt }}</p>
+      </blockquote>
+    </section>
+  {% endif %}
+
+  {% if book.cover_ids %}
+    <section class="detail-page__section">
+      <h2 class="detail-page__section-title">
+        Covers
+        <span class="detail-page__section-count">{{ book.cover_ids|length }}</span>
+      </h2>
+      <div class="cover-collage">
+        {% for cover_id in book.cover_ids %}
+          <div class="cover-collage__item {% if forloop.first %}cover-collage__item--featured{% endif %}">
+            <img
+              src="https://covers.openlibrary.org/b/id/{{ cover_id }}-M.jpg"
+              alt="{{ book.title }} cover {{ forloop.counter }}"
+              loading="lazy"
+            >
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if reviews %}
+    <section class="detail-page__section">
+      <h2 class="detail-page__section-title">
+        Reviews
+        <span class="detail-page__section-count"></span>
+      </h2>
+
+      <div class="book-detail__reviews">
+        {% for review in reviews %}
+
+          <div class="book-detail__review">
+
+            <div class="book-detail__review-header">
+              <div class="book-detail__review-user">
+                <div class="book-detail__review-avatar">{{ review.user_book.user.format_avatar }}</div>
+                <div>
+                  <div class="book-detail__review-user-row">
+                    <p class="book-detail__review-username">{{ review.user_book.user.get_full_name }}</p>
+                    {% if review.user_book.user.id == user.id %}
+                      <span class="badge badge--mine">My review</span>
+                    {% endif %}
+                  </div>
+                  <p class="book-detail__review-date">{{ review.created_at|date:"M j, Y" }}</p>
+                </div>
+              </div>
+              {% if review.user_book.rating %}
+                <div class="book-detail__review-stars">
+                  <div class="star-track star-track--sm">★★★★★<div class="star-track__fill" style="width: {% widthratio review.user_book.rating 5 100 %}%">★★★★★</div></div>
+                  <span class="book-detail__review-rating-num">{{ review.user_book.rating }}/5</span>
+                </div>
+              {% endif %}
+            </div>
+
+            {% if review.title %}
+              <h3 class="book-detail__review-title">{{ review.title }}</h3>
+            {% endif %}
+
+            {% if review.contains_spoilers %}
+              <div class="book-detail__review-spoiler-block">
+                <div class="book-detail__review-spoiler-warning">
+                  <span class="book-detail__review-spoiler-icon">⚠</span>
+                  <div class="book-detail__review-spoiler-copy">
+                    <strong>Contains spoilers!</strong>
+                    <span>Be careful.</span>
+                  </div>
+                  <button class="book-detail__review-spoiler-btn">Show me</button>
+                </div>
+                <p class="book-detail__review-text book-detail__review-text--blurred">{{ review.text }}</p>
+                <button class="book-detail__review-more" hidden>Read more</button>
+              </div>
+            {% else %}
+              <p class="book-detail__review-text">{{ review.text }}</p>
+              <button class="book-detail__review-more" hidden>Read more</button>
+            {% endif %}
+
+            {% if review.user_book.user.id == user.id %}
+              <div class="book-detail__review-footer">
+                <a href="{% url "books:update_review" review.id %}" class="book-detail__review-edit">
+                  <img src="{% static 'deps/svg/edit.svg' %}" alt="">
+                  Edit review
+                </a>
+              </div>
+            {% endif %}
+
+          </div>
+
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+{% endblock %}
+
+{% block detail_sidebar %}
+
+  <div class="detail-page__sidebar-card">
+    <h3 class="detail-page__sidebar-title">Book Details</h3>
+    <ul class="detail-page__sidebar-list">
+      <li class="detail-page__sidebar-item">
+        <span class="detail-page__sidebar-label">First published</span>
+        <span class="detail-page__sidebar-value">{{ book.first_publish_date }}</span>
+      </li>
+      <li class="detail-page__sidebar-item">
+        <span class="detail-page__sidebar-label">Open Library key</span>
+        <span class="detail-page__sidebar-value">{{ book.openlibrary_key }}</span>
+      </li>
+      <li class="detail-page__sidebar-item">
+        <span class="detail-page__sidebar-label">Avg rating</span>
+        <span class="detail-page__sidebar-value">{{ book.avg_rating }} / 5</span>
+      </li>
+      <li class="detail-page__sidebar-item">
+        <span class="detail-page__sidebar-label">Added</span>
+        <span class="detail-page__sidebar-value">{{ book.date_created|date:"F j, Y" }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="detail-page__sidebar-card">
+    <h3 class="detail-page__sidebar-title">Authors</h3>
+    <div class="book-detail__authors-list">
+      {% for author in book.get_authors %}
+        <div class="book-detail__author">
+          <div class="book-detail__author-avatar">{{ author.name|first }}</div>
+          <div>
+            <p class="book-detail__author-name">{{ author.name }}</p>
+            <p class="book-detail__author-birth">{{ author.birth_date }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="detail-page__sidebar-card">
+    <h3 class="detail-page__sidebar-title">Genres</h3>
+    <div class="detail-page__sidebar-tags">
+      {% for subject in book.subjects.all %}
+        <span class="badge badge--primary">{{ subject.name }}</span>
+      {% endfor %}
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block detail_js %}
+  <script src="{% static 'deps/js/book-detail.js' %}"></script>
+{% endblock %}

@@ -1,3 +1,4 @@
+from functools import partialmethod
 import logging
 
 import httpx
@@ -13,6 +14,7 @@ _http_client = httpx.Client(
     headers={"User-Agent": "BookShelf Pro/1.0, https://github.com/kapusta123b/BookShelf-Pro"},
     timeout=10,
     http2=True,
+    follow_redirects=True,
 )
 
 
@@ -45,9 +47,10 @@ class OpenLibaryClient:
         )
 
         return data.get("docs", []) if data else None
+    
 
-    def get_detail(self, book_key: str) -> dict | None:
+    def get_detail(self, type: str, key: str) -> dict | None:
         return self._get(
-            path=f'/books/{book_key}.json',
+            path=f'/{type}/{key}.json',
             params=None
         )

@@ -30,14 +30,14 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
         else None
     )
 
-    queryset = Book.objects
+    queryset = Book.objects.prefetch_related('subjects', 'authors')
 
     if filters.search and filters.search_by in ("title", "author", "isbn"):
         queryset = queryset.filter(title__icontains=filters.search)
 
         if queryset.count() < 8:
             fetch_more_books(filters.search_by, filters.search, filters.page)
-            queryset = Book.objects.filter(title__icontains=filters.search)
+            queryset = Book.objects.prefetch_related('subjects', 'authors').filter(title__icontains=filters.search)
 
         return (
             queryset.by_rating(rating_value)
@@ -75,4 +75,5 @@ def fetch_more_books(search_by: str, search: str, page: str | int) -> None:
 def get_subject(slug: str | None) -> Subject | None:
     if slug and slug != "all":
         return Subject.objects.filter(slug=slug).first()
+    
     return None

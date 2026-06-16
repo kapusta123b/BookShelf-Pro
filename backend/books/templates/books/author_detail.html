@@ -1,0 +1,184 @@
+{% extends 'books/detail_base.html' %}
+{% load sass_tags %}
+{% load books_tags %}
+{% load static %}
+
+{% block detail_title %}J. R. R. Tolkien{% endblock %}
+{% block detail_meta %}J. R. R. Tolkien, born 3 January 1892. Discover biography, works, and more.{% endblock %}
+
+{% block detail_css %}
+  <link rel="stylesheet" href="{% sass_src 'deps/css/author-detail.scss' %}">
+{% endblock %}
+
+{% block detail_breadcrumb %}
+  <a href="{% url "books:index" "all" %}">Catalog</a>
+  <span>/</span>
+  <span>{{ author.name }}</span>
+{% endblock %}
+
+{% block detail_hero_media %}
+  <img src="https://covers.openlibrary.org/a/id/{{author.cover_ids|first}}-L.jpg" alt="J. R. R. Tolkien">
+{% endblock %}
+
+{% block detail_hero_info %}
+
+  <h1 class="author-detail__name">{{ author.name }}</h1>
+  {% if author.full_name %}
+
+    <p class="author-detail__personal-name">{{ author.full_name }}</p>
+
+  {% endif %}
+
+  <div class="author-detail__dates">
+    <span>Birthday {{ author.birth_date }}</span>
+    {% if author.death_date %}
+
+      <span class="author-detail__dates-sep">—</span>
+      <span>{{author.death_date}}</span>
+    
+    {% endif %}
+  </div>
+
+  <div class="author-detail__actions">
+    <a href="https://openlibrary.org/authors/{{author.openlibrary_key}}" class="author-detail__btn author-detail__btn--outline" target="_blank" rel="noopener noreferrer">
+      <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+      Open Library
+    </a>
+  </div>
+
+{% endblock %}
+
+{% block detail_main %}
+
+  <section class="detail-page__section">
+    <h2 class="detail-page__section-title">Biography</h2>
+    <div class="detail-page__description">
+      <p>{{ author.biography|markdown }}</p>
+    </div>
+  </section>
+
+  {% if author.known_as %}
+
+    <section class="detail-page__section">
+      <h2 class="detail-page__section-title">
+        Also Known As
+        <span class="detail-page__section-count">{{ author.known_as|length }}</span>
+      </h2>
+      <div class="author-detail__alternate-names">
+        {% for name in author.known_as %}
+          <span class="author-detail__alternate-name{% if forloop.counter > 5 %} author-detail__alternate-name--extra{% endif %}">{{ name }}</span>
+        {% endfor %}
+      </div>
+      {% if author.known_as|length > 5 %}
+        <button class="author-detail__show-more" data-show-more="names" data-count="{{ author.known_as|length|add:"-5" }}">
+          Show {{ author.known_as|length|add:"-5" }} more
+        </button>
+      {% endif %}
+    </section>
+
+  {% endif %}
+
+  <section class="detail-page__section">
+    <h2 class="detail-page__section-title">Links</h2>
+    <div class="author-detail__links">
+      <a href="" class="author-detail__link" target="_blank" rel="noopener noreferrer">
+        The Tolkien Society
+        <span class="author-detail__link-icon">↗</span>
+      </a>
+      
+    </div>
+  </section>
+
+  <section class="detail-page__section">
+    <h2 class="detail-page__section-title">
+      Books & Works
+      {% if author_books %}
+        <span class="detail-page__section-count">{{ author_books|length }}</span>
+      {% endif %}
+    </h2>
+    {% if author_books %}
+      <div class="author-detail__books" id="author-books">
+        {% for book in author_books %}
+          <a href="{% url 'books:book_detail' 'all' book.id %}" class="author-detail__book">
+            <div class="author-detail__book-cover">
+              <img src="https://covers.openlibrary.org/b/id/{{ book.cover_i }}-M.jpg" alt="{{ book.title }}" loading="lazy">
+            </div>
+            <div class="author-detail__book-info">
+              <p class="author-detail__book-title">{{ book.title }}</p>
+              <div class="author-detail__book-meta">
+                <div class="star-track star-track--sm">
+                  ★★★★★
+                  <div class="star-track__fill" style="width: {{ book.rating_fill_percent }}%;">★★★★★</div>
+                </div>
+                <span class="author-detail__book-year">{{ book.publish_year }}</span>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+      {% if has_more_books %}
+        <button
+          class="author-detail__load-more"
+          data-author-id="{{ author.id }}"
+          data-page="2"
+        >
+          Load more books
+        </button>
+      {% endif %}
+    {% else %}
+      <div class="author-detail__empty">
+        <p>No books found for this author in the local database.</p>
+        <a href="{% url 'books:index' 'all' %}" class="author-detail__btn author-detail__btn--outline">Browse catalog</a>
+      </div>
+    {% endif %}
+  </section>
+
+{% endblock %}
+
+{% block detail_sidebar %}
+
+  <div class="detail-page__sidebar-card">
+    <h3 class="detail-page__sidebar-title">Author Details</h3>
+    <ul class="detail-page__sidebar-list">
+      <li class="detail-page__sidebar-item">
+        <span class="detail-page__sidebar-label">Born</span>
+        <span class="detail-page__sidebar-value">{{ author.birth_date }}</span>
+      </li>
+      {% if author.death_date %}
+      
+        <li class="detail-page__sidebar-item">
+          <span class="detail-page__sidebar-label">Died</span>
+          <span class="detail-page__sidebar-value">{{author.death_date}}</span>
+        </li>
+        
+      {% endif %}
+      <li class="detail-page__sidebar-item">
+        <span class="detail-page__sidebar-label">Full name</span>
+        <span class="detail-page__sidebar-value">{{ author.full_name|default:"None" }}</span>
+      </li>
+      <li class="detail-page__sidebar-item">
+        <span class="detail-page__sidebar-label">Open Library</span>
+        <span class="detail-page__sidebar-value">{{author.openlibrary_key}}</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="detail-page__sidebar-card">
+    <h3 class="detail-page__sidebar-title">
+      Photos
+      <span class="detail-page__section-count">{{author.cover_ids|length}}</span>
+    </h3>
+    <div class="author-detail__photos">
+      {% for cover in author.cover_ids %}
+
+        <img src="https://covers.openlibrary.org/a/id/{{cover}}-L.jpg" alt="{{author.name}} photo 1" loading="lazy">
+      
+      {% endfor %}
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block detail_js %}
+  <script src="{% static 'deps/js/author-detail.js' %}"></script>
+{% endblock %}

@@ -186,12 +186,12 @@
           {% for review in reviews %}
 
             <div class="profile-review">
-              <a href="{% url "books:detail" 'all' review.user_book.book.id %}" class="profile-review__cover">
+              <a href="{% url "books:book_detail" 'all' review.user_book.book.id %}" class="profile-review__cover">
                 <img src="https://covers.openlibrary.org/b/id/{{ review.user_book.book.cover_i }}-M.jpg" alt="Book cover">
               </a>
               <div class="profile-review__body">
                 <div class="profile-review__header">
-                  <a href="{% url "books:detail" 'all' review.user_book.book.id %}" class="profile-review__book-title">
+                  <a href="{% url "books:book_detail" 'all' review.user_book.book.id %}" class="profile-review__book-title">
                     {{ review.user_book.book.title }}</a>
                   <span class="profile-review__rating">{{ review.user_book.rating|default:"0" }}&thinsp;★</span>
                 </div>

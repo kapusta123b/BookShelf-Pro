@@ -1,4 +1,7 @@
+from curses.ascii import isdigit
 from datetime import date, datetime
+
+from httpx import get
 
 from books.services.subject_map import SUBJECT_MAP
 
@@ -11,6 +14,25 @@ class BookImport:
 
     def save_from_search(self, docs: list[dict] | None) -> list[Book] | None:
         return [self._upsert_book(doc) for doc in docs if self._is_valid(doc)] if docs else None
+    
+    def _upsert_book(self, data: dict) -> Book:
+        book, _ = Book.objects.update_or_create(
+            openlibrary_key=_clear_key(data['key']),
+            defaults={
+                'title': data['title'],
+                'cover_i': data.get('cover_i'),
+                'first_publish_date': _format_data(data.get('first_publish_year')),
+            }
+        )
+
+        subjects = SubjectImport().save_many(data['subject'])
+        authors = AuthorImport().save_many(
+            names=data["author_name"], keys=data["author_key"]
+        )
+        book.authors.add(*authors)
+        book.subjects.add(*subjects)
+
+        return book
 
     def save_from_detail(self, data: dict | None) -> None:
         if not data:
@@ -25,10 +47,10 @@ class BookImport:
         else:
             description = raw_description or ''
 
-        clean_date = self._format_data(data.get('first_publish_date', ''))
+        clean_date = _format_data(data.get('first_publish_date', ''))
 
         defaults: dict = {
-            'cover_ids': [cover for cover in data.get('covers', []) if cover > 0],
+            'cover_ids': _clean_covers(data.get('covers', [])),
             'description': description,
             'excerpt': excerpt_text,
             'was_requested_detail': True,
@@ -38,28 +60,9 @@ class BookImport:
             defaults['first_publish_date'] = clean_date
 
         Book.objects.update_or_create(
-            openlibrary_key=self._clear_key(data['key']),
+            openlibrary_key=_clear_key(data['key']),
             defaults=defaults,
         )
-
-    def _upsert_book(self, data: dict) -> Book:
-        book, _ = Book.objects.update_or_create(
-            openlibrary_key=self._clear_key(data['key']),
-            defaults={
-                'title': data['title'],
-                'cover_i': data.get('cover_i'),
-                'first_publish_date': self._format_data(data.get('first_publish_year')),
-            }
-        )
-
-        subjects = SubjectImporter().save_many(data['subject'])
-        authors = AuthorImporter().save_many(
-            names=data["author_name"], keys=data["author_key"]
-        )
-        book.authors.add(*authors)
-        book.subjects.add(*subjects)
-
-        return book
 
     @staticmethod
     def _is_valid(data: dict) -> bool:
@@ -71,30 +74,37 @@ class BookImport:
             and data.get("key")
         )
 
-    @staticmethod
-    def _format_data(raw_date: str | int | None) -> date | None:
-        if not raw_date:
-            return None
+class AuthorImport:
 
-        raw_date = str(raw_date).strip()
+    def save_from_detail(self, data: dict | None) -> None:
+        if not data:
+            return
+        
+        death_date = data.get('death_date')
+        full_name = data.get('full_name')
+        raw_bio = data.get('bio')
 
-        if raw_date.isdigit():
-            return datetime.strptime(raw_date, "%Y").date()
+        raw_bio = raw_bio.get('value', '') if isinstance(raw_bio, dict) else raw_bio
+        
+        defaults: dict = {
+            'biography': raw_bio,
+            'birth_date': _format_data(data.get('birth_date')),
+            'cover_ids': _clean_covers(data.get('photos', [])),
+            'was_requested_detail': True,
+            'known_as': data.get('alternate_names', [])
+        }
 
-        try:
-            return datetime.strptime(raw_date, "%B %d, %Y").date()
-        except ValueError:
-            try:
-                return datetime.strptime(raw_date, "%B, %Y").date()
-            except ValueError:
-                return None
+        if death_date:
+            defaults['death_date'] = _format_data(death_date)
 
-    @staticmethod
-    def _clear_key(raw_key: str) -> str:
-        return raw_key.split('/')[-1]
+        if full_name:
+            defaults['full_name'] = full_name
 
-
-class AuthorImporter:
+        Author.objects.update_or_create(
+            openlibrary_key=_clear_key(data['key']),
+            defaults=defaults
+        )
+        
 
     def save_many(self, names: list[str], keys: list[str]) -> list[Author]:
         result = []
@@ -109,7 +119,7 @@ class AuthorImporter:
         return result
 
 
-class SubjectImporter:
+class SubjectImport:
 
     def save_many(self, raw_subjects: list[str]) -> list[Subject]:
         result = []
@@ -135,3 +145,32 @@ class SubjectImporter:
                     break
 
         return list(result)
+
+
+def _format_data(raw_date: str | int | None) -> date | None:
+        if not raw_date:
+            return None
+
+        raw_date = str(raw_date).strip()
+
+        if raw_date.isdigit():
+            return datetime.strptime(raw_date, "%Y").date()
+
+        try:
+            return datetime.strptime(raw_date, "%B %d, %Y").date()
+        except ValueError:
+            try:
+                return datetime.strptime(raw_date, "%B, %Y").date()
+            except ValueError:
+                try:
+                    return datetime.strptime(raw_date, "%d %B %Y").date()
+
+                except ValueError:
+                    return None
+            
+
+def _clear_key(raw_key: str) -> str:
+        return raw_key.split('/')[-1]
+
+def _clean_covers(covers: list) -> list:
+    return [cover for cover in covers if covers and isinstance(cover, int) and cover > 0]

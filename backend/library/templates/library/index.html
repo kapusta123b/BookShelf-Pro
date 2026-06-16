@@ -120,7 +120,7 @@
           </div>
           <div class="library-book__body">
 
-            <a href="{% url "books:detail" 'all' lib_book.book.id %}" class="library-book__title">{{ lib_book.book.title }}</a>
+            <a href="{% url "books:book_detail" 'all' lib_book.book.id %}" class="library-book__title">{{ lib_book.book.title }}</a>
 
             <p class="library-book__author">
               {% for author in lib_book.book.get_authors %}
@@ -182,7 +182,7 @@
                   <img src="https://covers.openlibrary.org/b/id/{{ lib_book.book.cover_i }}-M.jpg" alt="{{ lib_book.book.title }}">
                 </div>
                 <div class="book-modal__info">
-                  <a href="{% url "books:detail" 'all' lib_book.book.id %}" class="book-modal__title">{{ lib_book.book.title }}</a>
+                  <a href="{% url "books:book_detail" 'all' lib_book.book.id %}" class="book-modal__title">{{ lib_book.book.title }}</a>
                   <p class="book-modal__author">{% for author in lib_book.book.get_authors %}
                     {{ author.name }}
                   {% endfor %}</p>

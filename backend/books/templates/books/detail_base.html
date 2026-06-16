@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load books_tags %}
+{% load static %}
+
+{% block title %}{% block detail_title %}{% endblock %} — BookShelf Pro{% endblock %}
+{% block meta_description %}{% block detail_meta %}{% endblock %}{% endblock %}
+
+{% block extra_css %}{% block detail_css %}{% endblock %}{% endblock %}
+
+{% block content %}
+
+  <div class="detail-page">
+
+    <div class="detail-page__breadcrumb">
+      <div class="detail-page__breadcrumb-inner">
+        {% block detail_breadcrumb %}{% endblock %}
+      </div>
+    </div>
+
+    <div class="detail-page__hero">
+      <div class="detail-page__hero-inner">
+
+        <div class="detail-page__media">
+          {% block detail_hero_media %}{% endblock %}
+        </div>
+
+        <div class="detail-page__info">
+          {% block detail_hero_info %}{% endblock %}
+        </div>
+
+      </div>
+    </div>
+
+    <div class="detail-page__body">
+      <div class="detail-page__body-inner">
+
+        <div class="detail-page__main">
+          {% block detail_main %}{% endblock %}
+        </div>
+
+        <aside class="detail-page__sidebar">
+          {% block detail_sidebar %}{% endblock %}
+        </aside>
+
+      </div>
+    </div>
+
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}{% block detail_js %}{% endblock %}{% endblock %}

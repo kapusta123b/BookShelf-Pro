@@ -335,9 +335,9 @@
                 <span class="badge badge--primary">{{ book.subjects.first.name }}</span>
               </div>
 
-              <a href="{% url "books:detail" view.kwargs.subject_slug book.id %}" class="book-card-catalog__title">{{ book.title }}</a>
+              <a href="{% url "books:book_detail" view.kwargs.subject_slug book.id %}" class="book-card-catalog__title">{{ book.title }}</a>
               <p class="book-card-catalog__author">{% for author in book.get_authors %}
-                {{ author.name }}
+                {{ author.name }} {% if not forloop.last %}, {% endif %}
               {% endfor %}</p>
 
               <div class="book-card-catalog__meta">

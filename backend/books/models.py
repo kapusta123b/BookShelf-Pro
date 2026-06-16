@@ -20,9 +20,20 @@ class Author(models.Model):
         unique=True,
         db_index=True,
     )
+
+    cover_ids = models.JSONField(default=list, null=True)
+
+    was_requested_detail = models.BooleanField(default=False)
+
+    biography = models.TextField(null=True)
+
+    known_as = models.JSONField(default=list)
     
     name = models.CharField(max_length=255)
-    birth_date = models.IntegerField(null=True, blank=True)
+    full_name = models.CharField(null=True, blank=True, max_length=255)
+
+    birth_date = models.DateField(null=True, blank=True)
+    death_date = models.DateField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.name
