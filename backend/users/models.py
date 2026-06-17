@@ -1,5 +1,3 @@
-from typing import Any
-
 from django.db import models
 from django.db.models import Avg
 from django.contrib.auth.models import AbstractUser
@@ -21,42 +19,42 @@ class User(AbstractUser):
     ) -> dict:
 
         all_books = self.library_books.all()
+        counts = all_books.get_counts()
+
+        reviews = Review.objects.filter(
+            user_book__user=self
+        ).select_related(
+            "user_book__book"
+        ).prefetch_related(
+            "user_book__book__authors"
+        ).order_by("-created_at")
+        
         paginate_books = (
-            all_books.tabs_filter(status_filter)
+            all_books
+            .select_related('review')
+            .tabs_filter(status_filter)
             .sort_by(sort)
             .paginate(page_number, per_page=10)
         )
-        counts = all_books.get_counts()
 
-        return {"books": paginate_books, "counts": counts}
+        return {'reviews': reviews, "books": paginate_books, "counts": counts}
 
     def get_user_activity(self, show_more=False):
         user_activity = RecentActivity.objects.filter(user=self).select_related("book")
         return user_activity[:10] if not show_more else user_activity
 
     def get_profile_data(self) -> dict:
-
-        all_books = self.library_books
-        counts = all_books.get_counts()
-
-        recent_books = list(
-            all_books.select_related("book").order_by("-updated_at")[:20]
-        )
-
-        recent_reviews = Review.objects.filter(user_book__user=self).select_related(
-            "user_book"
-        )[:5]
-
-        read = [b for b in recent_books if b.status == "read"][:5]
-        want_to_read = [b for b in recent_books if b.status == "want_to_read"][:5]
-        reading = [b for b in recent_books if b.status == "reading"][:5]
+        all_books = self.library_books.all()
+        base_qs = all_books.select_related("book").order_by("-updated_at")
 
         return {
-            "counts": counts,
-            "reading": reading,
-            "read": read,
-            "want_to_read": want_to_read,
-            "reviews": recent_reviews,
+            "counts": all_books.get_counts(),
+            "reading": base_qs.filter(status="reading")[:5],
+            "read": base_qs.filter(status="read")[:5],
+            "want_to_read": base_qs.filter(status="want_to_read")[:5],
+            "reviews": Review.objects.filter(user_book__user=self)
+                .select_related("user_book__book")
+                .order_by("-created_at")[:5],
         }
 
     def update_avg_rating(self) -> None:
@@ -68,18 +66,14 @@ class User(AbstractUser):
 
         self.save(update_fields=["avg_rating"])
 
-    def format_avatar(self) -> str | Any:
-        """
-        The function is used to format the user's first_name and last_name into a short version
-        for example: Jeffrey Epstein will be as J E
-        """
+    def format_avatar(self) -> str:
         if self.profile_image:
             return self.profile_image.url
 
-        first_name = self.first_name[0].upper() if self.first_name else ""
-        last_name = self.last_name[0].upper() if self.last_name else ""
-
-        return f"{first_name} {last_name}".strip()
+        initials = " ".join(
+            name[0].upper() for name in (self.first_name, self.last_name) if name
+        )
+        return initials
 
     def __str__(self):
         return self.username

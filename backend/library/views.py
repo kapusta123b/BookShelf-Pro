@@ -25,6 +25,7 @@ class LibraryView(LoginRequiredMixin, DetailView):
         context.update(
             {
                 "library_books": library_data["books"],
+                "reviews": library_data["reviews"],
                 "active_filter": filter_value,
                 "count_total": library_data["counts"]["total"],
                 "count_reading": library_data["counts"]["reading"],

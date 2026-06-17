@@ -10,13 +10,13 @@ from books.models import Review
 
 
 class CreateReviewForm(forms.ModelForm):
-    captcha = ReCaptchaField(
-        widget=widgets.ReCaptchaV2Checkbox(
-            attrs={
-                "data-theme": "light",
-            }
-        )
-    )
+    # captcha = ReCaptchaField(
+    #     widget=widgets.ReCaptchaV2Checkbox(
+    #         attrs={
+    #             "data-theme": "light",
+    #         }
+    #     )
+    # )
 
     class Meta:
         model = Review

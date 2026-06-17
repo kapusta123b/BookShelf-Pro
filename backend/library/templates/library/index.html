@@ -264,6 +264,68 @@
 
     </div>
 
+    <div class="library-reviews">
+
+      <div class="library-reviews__header">
+        <h2 class="library-reviews__title">Reviews</h2>
+        <a href="{{request.path}}?filter=read" class="library-reviews__write-btn">
+          <img src="{% static 'deps/svg/star.svg' %}" alt="">
+          Write a Review
+        </a>
+      </div>
+
+      <div class="library-reviews__list">
+        {% for review in reviews %}
+          <div class="library-reviews__item">
+            <div class="library-reviews__item-header">
+              <div class="library-reviews__item-book">
+                <div class="library-reviews__item-cover">
+                  <img src="https://covers.openlibrary.org/b/id/{{ review.user_book.book.cover_i }}-M.jpg" alt="{{ review.user_book.book.title }}">
+                </div>
+                <div class="library-reviews__item-meta">
+                  <a href="{% url 'books:book_detail' 'all' review.user_book.book.id %}" class="library-reviews__item-book-title">{{ review.user_book.book.title }}</a>
+                  <span class="library-reviews__item-book-author">
+                    {% for author in review.user_book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                  </span>
+                </div>
+              </div>
+              {% if user.id == library_user.id %}
+                <div class="library-reviews__item-actions">
+                  <a href="{% url 'books:update_review' review.id %}" class="library-reviews__item-action-btn">
+                    <img src="{% static 'deps/svg/edit.svg' %}" alt="">
+                    Edit
+                  </a>
+                  <a href="{% url 'books:delete_review' review.id %}" class="library-reviews__item-action-btn library-reviews__item-action-btn--danger">
+                    <img src="{% static 'deps/svg/close.svg' %}" alt="">
+                    Delete
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+            <div class="library-reviews__item-body">
+              <div class="library-reviews__item-stars">
+                <div class="star-track">
+                  ★★★★★
+                  <div class="star-track__fill" style="width: {{ review.user_book.book.rating_fill_percent }}%;">★★★★★</div>
+                </div>
+                <span class="library-reviews__item-date">{{ review.created_at|date:"F j, Y" }}</span>
+              </div>
+              {% if review.title %}<h3 class="library-reviews__item-review-title">{{ review.title }}</h3>{% endif %}
+              <p class="library-reviews__item-text">{{ review.text }}</p>
+            </div>
+          </div>
+        {% empty %}
+          <div class="library-reviews__empty">
+            <img src="{% static 'deps/svg/star.svg' %}" alt="">
+            <h3>No reviews yet</h3>
+            <p>Books you've finished and reviewed will appear here.</p>
+          </div>
+        {% endfor %}
+
+      </div>
+
+    </div>
+
   </div>
 
 {% endblock %}

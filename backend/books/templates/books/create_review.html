@@ -103,11 +103,11 @@
           </div>
 
           <div class="create-review-form__section">
-            <p class="create-review-form__section-title">Verification</p>
+            {% comment %} <p class="create-review-form__section-title">Verification</p>
             {{ form.captcha }}
             {% for error in form.captcha.errors %}
               <span class="field-error">{{ error }}</span>
-            {% endfor %}
+            {% endfor %} {% endcomment %}
           </div>
 
           <div class="create-review-form__actions">

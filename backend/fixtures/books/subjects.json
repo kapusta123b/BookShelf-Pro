@@ -1,0 +1,97 @@
+[
+  {
+    "model": "books.subject",
+    "pk": 1,
+    "fields": { "slug": "science-fiction", "name": "Science Fiction" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 2,
+    "fields": { "slug": "fantasy", "name": "Fantasy" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 3,
+    "fields": { "slug": "horror", "name": "Horror" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 4,
+    "fields": { "slug": "mystery-detective", "name": "Mystery & Detective" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 5,
+    "fields": { "slug": "thriller-suspense", "name": "Thriller & Suspense" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 6,
+    "fields": { "slug": "classics", "name": "Classics" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 7,
+    "fields": { "slug": "historical-fiction", "name": "Historical Fiction" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 8,
+    "fields": { "slug": "romance", "name": "Romance" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 9,
+    "fields": { "slug": "adventure", "name": "Adventure" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 10,
+    "fields": { "slug": "coming-of-age", "name": "Coming of Age" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 11,
+    "fields": { "slug": "young-adult", "name": "Young Adult" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 12,
+    "fields": { "slug": "children", "name": "Children" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 13,
+    "fields": { "slug": "biography", "name": "Biography" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 14,
+    "fields": { "slug": "self-help", "name": "Self-Help" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 15,
+    "fields": { "slug": "business", "name": "Business" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 16,
+    "fields": { "slug": "psychology", "name": "Psychology" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 17,
+    "fields": { "slug": "science-non-fiction", "name": "Science & Non-Fiction" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 18,
+    "fields": { "slug": "politics-society", "name": "Politics & Society" }
+  },
+  {
+    "model": "books.subject",
+    "pk": 19,
+    "fields": { "slug": "lgbtq", "name": "LGBTQ+" }
+  }
+]

@@ -135,7 +135,7 @@ class CreateReviewView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         book_id = self.kwargs.get("book_id")
         return reverse(
-            "books:detail",
+            "books:book_detail",
             kwargs={"book_id": book_id, "subject_slug": "all"},
         )
 
@@ -167,8 +167,13 @@ class UpdateReviewView(LoginRequiredMixin, UpdateView):
     form_class = UpdateReviewForm
 
     def get_queryset(self):
-
         return self.model.get_review_object(self.request.user)
+
+    def get_success_url(self):
+        return reverse("books:book_detail", kwargs={
+            "subject_slug": "all",
+            "book_id": self.object.user_book.book_id,
+        })
 
 
 class DeleteReviewView(LoginRequiredMixin, DeleteView):
@@ -179,8 +184,7 @@ class DeleteReviewView(LoginRequiredMixin, DeleteView):
         return self.model.get_review_object(self.request.user)
 
     def get_success_url(self):
-
-        return reverse("books:detail", kwargs={
-            'subject_slug': 'all',
-            'book_id': self.object.user_book.book.id
+        return reverse("books:book_detail", kwargs={
+            "subject_slug": "all",
+            "book_id": self.object.user_book.book_id,
         })

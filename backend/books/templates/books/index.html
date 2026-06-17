@@ -336,9 +336,15 @@
               </div>
 
               <a href="{% url "books:book_detail" view.kwargs.subject_slug book.id %}" class="book-card-catalog__title">{{ book.title }}</a>
-              <p class="book-card-catalog__author">{% for author in book.get_authors %}
-                {{ author.name }} {% if not forloop.last %}, {% endif %}
-              {% endfor %}</p>
+              <p class="book-card-catalog__author">
+                {% for author in book.get_authors %}
+                
+                  <a href="{% url "books:author_detail" view.kwargs.subject_slug author.id %}">
+                    {{ author.name }} {% if not forloop.last %}, {% endif %}
+                  </a>
+
+                {% endfor %}
+              </p>
 
               <div class="book-card-catalog__meta">
                 <div class="book-card-catalog__rating">
@@ -411,6 +417,7 @@
                   <input type="hidden" name="search_by" value="subject">
                   <input type="hidden" name="search" value="{{ current_subject.name }}">
                   <input type="hidden" name="page" value="{{ page_obj.number }}">
+                  <input type="hidden" name="research">
                   <button type="submit" class="load-more__btn">Load more {% if current_subject %}{{ current_subject.name }}{% else %}books{% endif %}</button>
                 </form>
 

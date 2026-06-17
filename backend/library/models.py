@@ -11,31 +11,29 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class UserBookQuerySet(models.QuerySet):
-    def tabs_filter(self, value: str):
-        if value != "all" and value:
+    _SORT_MAP = {
+        "title": "book__title",
+        "rating": "-book__avg_rating",
+        "year": "book__first_publish_date",
+        "authors": "first_author_name",
+        "recently": "-created_at",
+    }
+
+    def tabs_filter(self, value: str) -> "UserBookQuerySet":
+        if value and value != "all":
             return self.filter(status=value)
+        return self
 
-        else:
-            return self.all()
-
-    def sort_by(self, value: str):
-        if not value:
+    def sort_by(self, value: str) -> "UserBookQuerySet":
+        if not value or value not in self._SORT_MAP:
             return self
-        
-        value_map = {
-            'title': 'book__title',
-            'rating': '-book__avg_rating',
-            'year': 'book__first_publish_date',
-            'authors': 'first_author_name',
-            'recently': '-created_at'
-        }
 
-        self = self.select_related("book").prefetch_related("book__authors")
+        qs = self.select_related("book").prefetch_related("book__authors")
 
-        if value == 'authors':
-            self = self.annotate(first_author_name=Min("book__authors__name"))
+        if value == "authors":
+            qs = qs.annotate(first_author_name=Min("book__authors__name"))
 
-        return self.order_by(value_map[value])
+        return qs.order_by(self._SORT_MAP[value])
 
     def get_counts(self) -> dict:
         return self.aggregate(
@@ -46,9 +44,7 @@ class UserBookQuerySet(models.QuerySet):
         )
 
     def paginate(self, page_number: str | float | int, per_page: int | str) -> Page:
-
         paginator = Paginator(self, per_page)
-
         return paginator.get_page(page_number)
 
 
