@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from functools import partialmethod
 import logging
 
@@ -7,11 +8,13 @@ from books.utils import import_subjects_from_the_map
 
 logger = logging.getLogger(__name__)
 
-SEARCH_FIELDS = 'key,cover_i,title,author_name,author_key,first_publish_year,subject'
+SEARCH_FIELDS = "key,cover_i,title,author_name,author_key,first_publish_year,subject"
 
 _http_client = httpx.Client(
     base_url="https://openlibrary.org",
-    headers={"User-Agent": "BookShelf Pro/1.0, https://github.com/kapusta123b/BookShelf-Pro"},
+    headers={
+        "User-Agent": "BookShelf Pro/1.0, https://github.com/kapusta123b/BookShelf-Pro"
+    },
     timeout=10,
     http2=True,
     follow_redirects=True,
@@ -24,17 +27,20 @@ class OpenLibaryClient:
         try:
             response = _http_client.get(path, params=params)
             response.raise_for_status()
+
             return response.json()
-            
+
         except Exception:
             logger.exception("OpenLibrary request failed: %s", path)
             return None
 
-    def search(self, argument: str, query: str, page: str | None, limit: int = 10) -> list[dict] | None:
-        
-        if argument == 'subject':
+    def search(
+        self, argument: str, query: str, page: str | None, limit: int = 10
+    ) -> list[dict] | None:
+
+        if argument == "subject":
             query = import_subjects_from_the_map(subject=query)
-            argument = 'q'
+            argument = "q"
 
         data = self._get(
             path="/search.json",
@@ -47,10 +53,11 @@ class OpenLibaryClient:
         )
 
         return data.get("docs", []) if data else None
-    
 
     def get_detail(self, type: str, key: str) -> dict | None:
-        return self._get(
-            path=f'/{type}/{key}.json',
-            params=None
-        )
+        return self._get(path=f"/{type}/{key}.json", params=None)
+
+    def get_author_works(self, key: str, offset=0) -> dict | None:
+        data = self._get(path=f"/author/{key}/works.json", params={"offset": offset})
+
+        return data.get('entries', []) if data else None

@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Avg
 from django.contrib.auth.models import AbstractUser
 
+from utils.helpers import paginate
 from books.models import Review
 
 
@@ -17,27 +18,26 @@ class User(AbstractUser):
     def get_library_data(
         self, page_number: int | str, status_filter: str, sort: str
     ) -> dict:
-
         all_books = self.library_books.all()
         counts = all_books.get_counts()
 
-        reviews = Review.objects.filter(
-            user_book__user=self
-        ).select_related(
-            "user_book__book"
-        ).prefetch_related(
-            "user_book__book__authors"
-        ).order_by("-created_at")
+        reviews = (
+            Review.objects.filter(user_book__user=self)
+            .select_related("user_book__book")
+            .prefetch_related("user_book__book__authors")
+            .order_by("-created_at")
+        )
         
-        paginate_books = (
+        queryset = (
             all_books
-            .select_related('review')
+            .select_related("review")
             .tabs_filter(status_filter)
             .sort_by(sort)
-            .paginate(page_number, per_page=10)
         )
 
-        return {'reviews': reviews, "books": paginate_books, "counts": counts}
+        paginate_books = paginate(queryset, page_number, per_page=10)
+
+        return {"reviews": reviews, "books": paginate_books, "counts": counts}
 
     def get_user_activity(self, show_more=False):
         user_activity = RecentActivity.objects.filter(user=self).select_related("book")
@@ -53,8 +53,8 @@ class User(AbstractUser):
             "read": base_qs.filter(status="read")[:5],
             "want_to_read": base_qs.filter(status="want_to_read")[:5],
             "reviews": Review.objects.filter(user_book__user=self)
-                .select_related("user_book__book")
-                .order_by("-created_at")[:5],
+            .select_related("user_book__book")
+            .order_by("-created_at")[:5],
         }
 
     def update_avg_rating(self) -> None:

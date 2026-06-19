@@ -71,13 +71,25 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  const catalogSearchForm = document.querySelector(".catalog__search");
   const catalogSearchInput = document.querySelector(
-    '.catalog__search input[name="q"]',
+    '.catalog__search input[name="search"]',
   );
   const catalogSearchTypeInput = document.querySelector(
-    '.catalog__search input[name="type"]',
+    '.catalog__search input[name="search_by"]',
   );
   const catalogSearchTypes = document.querySelectorAll(".catalog__search-type");
+
+  if (catalogSearchTypeInput) {
+    const currentType = catalogSearchTypeInput.value || "title";
+    catalogSearchTypes.forEach(function (btn) {
+      const isActive = btn.dataset.type === currentType;
+      btn.classList.toggle("is-active", isActive);
+      if (isActive && catalogSearchInput) {
+        catalogSearchInput.placeholder = btn.dataset.placeholder;
+      }
+    });
+  }
 
   catalogSearchTypes.forEach(function (btn) {
     btn.addEventListener("click", function () {
@@ -94,6 +106,17 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+
+  if (catalogSearchForm) {
+    catalogSearchForm.addEventListener("submit", function () {
+      const activeBtn = catalogSearchForm.querySelector(
+        ".catalog__search-type.is-active",
+      );
+      if (activeBtn && catalogSearchTypeInput) {
+        catalogSearchTypeInput.value = activeBtn.dataset.type;
+      }
+    });
+  }
 
   const filterCheckboxes = document.querySelectorAll(
     '.filters input[type="checkbox"], .filters input[type="radio"]',

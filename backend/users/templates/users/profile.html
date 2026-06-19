@@ -85,11 +85,11 @@
 
           {% for book in library_books %}
             <div class="profile-book">
-              <a href="{% url 'books:detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
+              <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
                 <img src="https://covers.openlibrary.org/b/id/{{ book.book.cover_i }}-M.jpg" alt="{{ book.book.title }}">
               </a>
               <div class="profile-book__info">
-                <a href="{% url 'books:detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
+                <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
                 <p class="profile-book__author">{% for author in book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                 <div class="profile-book__meta">
                   <span class="badge badge--reading">Reading</span>
@@ -119,11 +119,11 @@
 
           {% for book in read_books_preview %}
             <div class="profile-book">
-              <a href="{% url 'books:detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
+              <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
                 <img src="https://covers.openlibrary.org/b/id/{{ book.book.cover_i }}-M.jpg" alt="{{ book.book.title }}">
               </a>
               <div class="profile-book__info">
-                <a href="{% url 'books:detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
+                <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
                 <p class="profile-book__author">{% for author in book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                 <div class="profile-book__meta">
                   <span class="badge badge--done">Read</span>
@@ -153,11 +153,11 @@
 
           {% for book in want_to_read_preview %}
             <div class="profile-book">
-              <a href="{% url 'books:detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
+              <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
                 <img src="https://covers.openlibrary.org/b/id/{{ book.book.cover_i }}-M.jpg" alt="{{ book.book.title }}">
               </a>
               <div class="profile-book__info">
-                <a href="{% url 'books:detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
+                <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
                 <p class="profile-book__author">{% for author in book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                 <div class="profile-book__meta">
                   <span class="badge badge--want">Want to Read</span>
@@ -211,7 +211,7 @@
 
           {% empty %}
 
-          No recent reviews
+            No recent reviews
 
           {% endfor %}
 
@@ -231,19 +231,19 @@
                 <div class="activity-item__content">
                   <p class="activity-item__text">
                     {% if item.action == 'added' %}
-                      Added <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a> to your library
+                      Added <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a> to your library
                     {% elif item.action == 'want_to_read' %}
-                      Added <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a> to Want to Read
+                      Added <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a> to Want to Read
                     {% elif item.action == 'reading' %}
-                      Started reading <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                      Started reading <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a>
                     {% elif item.action == 'read' %}
-                      Finished reading <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                      Finished reading <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a>
                     {% elif item.action == 'rated' %}
-                      Rated <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                      Rated <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a>
                     {% elif item.action == 'reviewed' %}
-                      Reviewed <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                      Reviewed <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a>
                     {% elif item.action == 'change_rate' %}
-                      Сhanged the rating for the book  <a href="{% url 'books:detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                      Сhanged the rating for the book  <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a>
                     {% endif %}
                   </p>
                   <p class="activity-item__time">{{ item.created_at|timesince }} ago</p>
@@ -264,10 +264,10 @@
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 12 15 18 9"/>
                   </svg>
-                Show more
+                  Show more
                 </button>
               {% endif %}
-              
+
             </form>
 
           </div>

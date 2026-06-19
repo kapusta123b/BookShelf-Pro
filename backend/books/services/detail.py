@@ -50,3 +50,11 @@ def get_reviews(book: Book) -> dict:
     return {
         'reviews': reviews
     }
+
+
+def get_author_books(author: Author, page: str | int, load_from_api=False):
+    queryset = Book.objects.filter(authors=author).prefetch_related('authors', 'subjects')
+
+    if load_from_api:
+        raw_entry = OpenLibaryClient().get_author_works()
+        BookImport()

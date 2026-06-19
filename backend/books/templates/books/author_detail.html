@@ -35,7 +35,7 @@
 
       <span class="author-detail__dates-sep">—</span>
       <span>{{author.death_date}}</span>
-    
+
     {% endif %}
   </div>
 
@@ -81,12 +81,12 @@
   <section class="detail-page__section">
     <h2 class="detail-page__section-title">Links</h2>
     <div class="author-detail__links">
-      
+
       <a href="" class="author-detail__link" target="_blank" rel="noopener noreferrer">
         The Tolkien Society
         <span class="author-detail__link-icon">↗</span>
       </a>
-      
+
     </div>
   </section>
 
@@ -100,6 +100,7 @@
     {% if author_books %}
       <div class="author-detail__books" id="author-books">
         {% for book in author_books %}
+
           <a href="{% url 'books:book_detail' 'all' book.id %}" class="author-detail__book">
             <div class="author-detail__book-cover">
               <img src="https://covers.openlibrary.org/b/id/{{ book.cover_i }}-M.jpg" alt="{{ book.title }}" loading="lazy">
@@ -115,17 +116,24 @@
               </div>
             </div>
           </a>
+        
         {% endfor %}
       </div>
+      
       {% if has_more_books %}
-        <button
-          class="author-detail__load-more"
-          data-author-id="{{ author.id }}"
-          data-page="2"
-        >
-          Load more books
-        </button>
+        <form action="{{request.path}}" method='get'></form>
+          <input type="hidden" name='load_more' value="">
+          <input type="hidden" name='page' value="{{ page_obj.number }}">
+
+          <button
+            class="author-detail__load-more"
+            data-author-id="{{ author.id }}"
+            data-page="2"
+          >
+            Load more books
+          </button>
       {% endif %}
+    
     {% else %}
       <div class="author-detail__empty">
         <p>No books found for this author in the local database.</p>
@@ -146,12 +154,12 @@
         <span class="detail-page__sidebar-value">{{ author.birth_date }}</span>
       </li>
       {% if author.death_date %}
-      
+
         <li class="detail-page__sidebar-item">
           <span class="detail-page__sidebar-label">Died</span>
           <span class="detail-page__sidebar-value">{{author.death_date}}</span>
         </li>
-        
+
       {% endif %}
       <li class="detail-page__sidebar-item">
         <span class="detail-page__sidebar-label">Full name</span>
@@ -173,7 +181,7 @@
       {% for cover in author.cover_ids %}
 
         <img src="https://covers.openlibrary.org/a/id/{{cover}}-L.jpg" alt="{{author.name}} photo 1" loading="lazy">
-      
+
       {% endfor %}
     </div>
   </div>

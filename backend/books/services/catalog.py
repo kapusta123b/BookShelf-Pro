@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from books.models import Book, BookQuerySet, Subject
+from books.models import Author, Book, BookQuerySet, Subject
 from books.services.client import OpenLibaryClient
-from books.services.importers import BookImport
+from books.services.importers import AuthorImport, BookImport
 
 
 @dataclass
@@ -20,9 +20,7 @@ class CatalogFilters:
 
 def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
     ordering = (
-        filters.sort
-        if filters.sort and filters.sort != "relevance"
-        else "date_created"
+        filters.sort if filters.sort and filters.sort != "relevance" else "date_created"
     )
     rating_value = (
         int(filters.rating)
@@ -30,33 +28,27 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
         else None
     )
 
-    queryset = Book.objects.prefetch_related('subjects', 'authors')
+    if filters.search:
 
-    if filters.search and filters.search_by in ("title", "author", "isbn"):
-        queryset = queryset.filter(title__icontains=filters.search)
+        if filters.search_by == "title":
+            queryset = search_books(filters=filters)
 
-        if queryset.count() < 8:
-            fetch_more_books(filters.search_by, filters.search, filters.page)
-            queryset = Book.objects.prefetch_related('subjects', 'authors').filter(title__icontains=filters.search)
+        elif filters.search_by == "author":
+            queryset = search_authors(filters=filters)
 
-        return (
-            queryset.by_rating(rating_value)
-            .by_date(filters.year_from, filters.year_to)
-            .order_by(ordering)
-        )
+        else:
+            queryset = Book.objects.prefetch_related("subjects", "authors")
+
+    else:
+        queryset = Book.objects.prefetch_related("subjects", "authors")
 
     if filters.status and filters.status != "none" and user and user.is_authenticated:
-        result = (
+        queryset = (
             queryset.filter(
                 user_entries__user=user, user_entries__status=filters.status
             )
             if filters.status != "all"
             else queryset.filter(user_entries__user=user)
-        )
-        return (
-            result.by_rating(rating_value)
-            .by_date(filters.year_from, filters.year_to)
-            .order_by(ordering)
         )
 
     return (
@@ -67,13 +59,51 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
     )
 
 
+def search_authors(filters):
+    authors = Author.objects.filter(name__icontains=filters.search)
+
+    if authors.count() < 8:
+        fetch_more_authors(filters.search_by, filters.search, filters.page)
+        authors = Author.objects.filter(name__icontains=filters.search)
+
+    return Book.objects.prefetch_related("subjects", "authors").filter(
+        authors__in=authors
+    )
+
+
+def search_books(filters):
+    queryset = Book.objects.prefetch_related("subjects", "authors").filter(
+        title__icontains=filters.search
+    )
+
+    if queryset.count() < 8:
+        fetch_more_books(filters.search_by, filters.search, filters.page)
+        queryset = Book.objects.prefetch_related("subjects", "authors").filter(
+            title__icontains=filters.search
+        )
+
+    return queryset
+
+
 def fetch_more_books(search_by: str, search: str, page: str | int) -> None:
     docs = OpenLibaryClient().search(argument=search_by, query=search, page=str(page))
     BookImport().save_from_search(docs=docs)
 
 
+def fetch_more_authors(search_by: str, search: str, page: str | int) -> None:
+    docs = OpenLibaryClient().search(argument=search_by, query=search, page=str(page))
+    AuthorImport().save_from_search(docs=docs)
+
+
+def get_matched_authors(filters: CatalogFilters):
+    if filters.search and filters.search_by == "author":
+        return Author.objects.filter(name__icontains=filters.search)
+
+    return None
+
+
 def get_subject(slug: str | None) -> Subject | None:
     if slug and slug != "all":
         return Subject.objects.filter(slug=slug).first()
-    
+
     return None

@@ -28,7 +28,7 @@ class Author(models.Model):
     biography = models.TextField(null=True)
 
     known_as = models.JSONField(default=list)
-    
+
     name = models.CharField(max_length=255)
     full_name = models.CharField(null=True, blank=True, max_length=255)
 
@@ -162,10 +162,13 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
     @classmethod
     def get_review_object(cls, user):
-        return cls.objects.filter(user_book__user=user).select_related('user_book').prefetch_related('user_book__book__authors')
+        return (
+            cls.objects.filter(user_book__user=user)
+            .select_related("user_book")
+            .prefetch_related("user_book__book__authors")
+        )
 
     def __str__(self) -> str:
         return f"Review for {self.user_book.book}"

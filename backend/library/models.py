@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.db import models
 from django.db.models import Min
 
-from django.core.paginator import Page, Paginator
 
 from django.conf import settings
 
@@ -42,10 +41,6 @@ class UserBookQuerySet(models.QuerySet):
             reading=models.Count("id", filter=models.Q(status="reading")),
             read=models.Count("id", filter=models.Q(status="read")),
         )
-
-    def paginate(self, page_number: str | float | int, per_page: int | str) -> Page:
-        paginator = Paginator(self, per_page)
-        return paginator.get_page(page_number)
 
 
 class UserBook(models.Model):

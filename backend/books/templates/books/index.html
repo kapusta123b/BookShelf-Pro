@@ -34,8 +34,8 @@
         <span class="catalog__search-sep"></span>
         <img src="{% static 'deps/svg/search.svg' %}" alt="">
 
-        <input type="hidden" name="search_by" value="title">
-        <input type="text" name="search" placeholder="Search by title…" autocomplete="off">
+        <input type="hidden" name="search_by" value="{{ request.GET.search_by|default:'title' }}">
+        <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Search by title…" autocomplete="off">
 
         <button class="catalog__search-submit" type="submit" aria-label="Search">Go</button>
 
@@ -296,6 +296,23 @@
 
     <div class="books-results">
 
+      {% if matched_authors %}
+        <div class="authors-results">
+          <h2 class="authors-results__title">Authors</h2>
+          <div class="authors-results__list">
+            {% for author in matched_authors %}
+              <a href="{% url "books:author_detail" view.kwargs.subject_slug author.id %}" class="author-card">
+                <span class="author-card__name">{{ author.name }}</span>
+                {% if author.birth_date %}
+                  <span class="author-card__dates">
+                    {{ author.birth_date.year }}{% if author.death_date %} – {{ author.death_date.year }}{% endif %}
+                  </span>
+                {% endif %}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
 
       <div class="books-grid-catalog">
 
@@ -338,7 +355,7 @@
               <a href="{% url "books:book_detail" view.kwargs.subject_slug book.id %}" class="book-card-catalog__title">{{ book.title }}</a>
               <p class="book-card-catalog__author">
                 {% for author in book.get_authors %}
-                
+
                   <a href="{% url "books:author_detail" view.kwargs.subject_slug author.id %}">
                     {{ author.name }} {% if not forloop.last %}, {% endif %}
                   </a>

@@ -21,11 +21,18 @@ from books.models import Author, Book, Review
 from books.services.catalog import (
     CatalogFilters,
     get_catalog_queryset,
+    get_matched_authors,
     fetch_more_books,
     get_subject,
 )
 
-from books.services.detail import enrich_author_detail, enrich_book_detail, get_reviews, get_user_book_context
+from books.services.detail import (
+    enrich_author_detail,
+    enrich_book_detail,
+    get_author_books,
+    get_reviews,
+    get_user_book_context,
+)
 from books.services.rating import rate_book
 
 
@@ -68,6 +75,7 @@ class CatalogView(ListView):
         context["queryset_count_total"] = Book.objects.count()
         context["queryset_count_current"] = self.get_queryset().count()
         context["current_subject"] = get_subject(subject_slug)
+        context["matched_authors"] = get_matched_authors(self._get_filters())
 
         return context
 
@@ -101,16 +109,27 @@ class BookDetailView(DetailView):
         context.update(get_reviews(self.object))
 
         return context
-    
+
 
 class AuthorDetailView(DetailView):
     model = Author
-    template_name = 'books/author_detail.html'
-    context_object_name = 'author'
-    pk_url_kwarg = 'author_id'
+    template_name = "books/author_detail.html"
+    context_object_name = "author"
+    pk_url_kwarg = "author_id"
 
     def get_object(self, queryset=None):
         return enrich_author_detail(super().get_object(queryset))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        page = self.request.GET.get("page")
+        load_author_books = True if "load_more" in self.request.GET else False
+
+        context["author_books"] = get_author_books(
+            author=self.get_object(), load_from_api=load_author_books, page=page
+        )
+
+        return context
 
 
 class RateBookView(LoginRequiredMixin, View):
@@ -170,10 +189,13 @@ class UpdateReviewView(LoginRequiredMixin, UpdateView):
         return self.model.get_review_object(self.request.user)
 
     def get_success_url(self):
-        return reverse("books:book_detail", kwargs={
-            "subject_slug": "all",
-            "book_id": self.object.user_book.book_id,
-        })
+        return reverse(
+            "books:book_detail",
+            kwargs={
+                "subject_slug": "all",
+                "book_id": self.object.user_book.book_id,
+            },
+        )
 
 
 class DeleteReviewView(LoginRequiredMixin, DeleteView):
@@ -184,7 +206,10 @@ class DeleteReviewView(LoginRequiredMixin, DeleteView):
         return self.model.get_review_object(self.request.user)
 
     def get_success_url(self):
-        return reverse("books:book_detail", kwargs={
-            "subject_slug": "all",
-            "book_id": self.object.user_book.book_id,
-        })
+        return reverse(
+            "books:book_detail",
+            kwargs={
+                "subject_slug": "all",
+                "book_id": self.object.user_book.book_id,
+            },
+        )

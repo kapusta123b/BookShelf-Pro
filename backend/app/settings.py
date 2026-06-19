@@ -30,6 +30,8 @@ INSTALLED_APPS = [
     # SCSS
     "sass_processor",
     "compressor",
+
+    'django_extensions',
     # ReCaptcha
     "django_recaptcha",
     # allauth

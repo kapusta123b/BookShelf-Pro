@@ -1038,10 +1038,12 @@
       border-radius: $radius;
       font-size: $font-size-xs;
       font-weight: 600;
+      font-family: $font-family;
       text-decoration: none;
       border: 1px solid $border;
       background-color: $bg-card;
       color: $text-muted;
+      cursor: pointer;
       transition: $transition-fast;
 
       img {
@@ -1060,8 +1062,16 @@
           border-color: $error;
           color: $error;
           background-color: $error-bg;
+
+          img {
+            filter: invert(23%) sepia(90%) saturate(5000%) hue-rotate(355deg) brightness(85%);
+          }
         }
       }
+    }
+
+    &-delete-form {
+      display: contents;
     }
 
     &-body {

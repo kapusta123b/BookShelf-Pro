@@ -295,10 +295,13 @@
                     <img src="{% static 'deps/svg/edit.svg' %}" alt="">
                     Edit
                   </a>
-                  <a href="{% url 'books:delete_review' review.id %}" class="library-reviews__item-action-btn library-reviews__item-action-btn--danger">
-                    <img src="{% static 'deps/svg/close.svg' %}" alt="">
-                    Delete
-                  </a>
+                  <form class="library-reviews__item-delete-form" method="post" action="{% url "books:delete_review" review.id %}" onsubmit="return confirm('Delete this review? This cannot be undone.')">
+                    {% csrf_token %}
+                    <button type="submit" class="library-reviews__item-action-btn library-reviews__item-action-btn--danger">
+                      <img src="{% static 'deps/svg/close.svg' %}" alt="">
+                      Delete
+                    </button>
+                  </form>
                 </div>
               {% endif %}
             </div>

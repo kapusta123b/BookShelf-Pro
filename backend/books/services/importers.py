@@ -76,6 +76,20 @@ class BookImport:
 
 class AuthorImport:
 
+    def save_from_search(self, docs: list[dict] | None) -> list[Author] | None:
+        return [self._upsert_author(doc) for doc in docs if self._is_valid(doc)] if docs else None
+    
+    def _upsert_author(self, data: dict) -> Author:
+        author, _ = Author.objects.update_or_create(
+            openlibrary_key=_clear_key(data['key']),
+            defaults={
+                'name': data['name'],
+                'birth_date': _format_data(data.get('birth_date')),
+            }
+        )
+
+        return author
+
     def save_from_detail(self, data: dict | None) -> None:
         if not data:
             return
@@ -117,6 +131,14 @@ class AuthorImport:
             result.append(author)
 
         return result
+
+    @staticmethod
+    def _is_valid(data: dict) -> bool:
+        return bool(
+            data.get("birth_date")
+            and data.get("key")
+            and data.get("name")
+        )
 
 
 class SubjectImport:
