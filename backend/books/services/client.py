@@ -57,7 +57,19 @@ class OpenLibaryClient:
     def get_detail(self, type: str, key: str) -> dict | None:
         return self._get(path=f"/{type}/{key}.json", params=None)
 
-    def get_author_works(self, key: str, offset=0) -> dict | None:
-        data = self._get(path=f"/author/{key}/works.json", params={"offset": offset})
+    def search_author_works(
+        self, author_key: str, page: str | int | None = 1, limit: int = 30
+    ) -> list[dict] | None:
+        return self.search(
+            argument="author_key",
+            query=author_key,
+            page=str(page or 1),
+            limit=limit,
+        )
 
-        return data.get('entries', []) if data else None
+    def get_author_works(self, key: str, limit=30, offset=0) -> list[dict] | None:
+        data = self._get(
+            path=f"/authors/{key}/works.json", params={"offset": offset, "limit": limit}
+        )
+
+        return data.get("entries", []) if data else None

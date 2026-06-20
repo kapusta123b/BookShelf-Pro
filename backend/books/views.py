@@ -122,14 +122,23 @@ class AuthorDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        page = self.request.GET.get("page")
+        page = self._get_books_page()
         load_author_books = True if "load_more" in self.request.GET else False
 
         context["author_books"] = get_author_books(
-            author=self.get_object(), load_from_api=load_author_books, page=page
+            author=self.object, load_from_api=load_author_books, page=page
         )
+        context["next_author_books_page"] = page + 1
 
         return context
+
+    def _get_books_page(self) -> int:
+        try:
+            page = int(self.request.GET.get("page", 1))
+        except (TypeError, ValueError):
+            return 1
+
+        return max(page, 1)
 
 
 class RateBookView(LoginRequiredMixin, View):

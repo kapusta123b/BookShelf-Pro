@@ -3,8 +3,8 @@
 {% load books_tags %}
 {% load static %}
 
-{% block detail_title %}J. R. R. Tolkien{% endblock %}
-{% block detail_meta %}J. R. R. Tolkien, born 3 January 1892. Discover biography, works, and more.{% endblock %}
+{% block detail_title %}{{ author.name }}{% endblock %}
+{% block detail_meta %}{{ author.name }}, born {{ author.birth_date }}. Discover biography, works, and more.{% endblock %}
 
 {% block detail_css %}
   <link rel="stylesheet" href="{% sass_src 'deps/css/author-detail.scss' %}">
@@ -103,16 +103,31 @@
 
           <a href="{% url 'books:book_detail' 'all' book.id %}" class="author-detail__book">
             <div class="author-detail__book-cover">
-              <img src="https://covers.openlibrary.org/b/id/{{ book.cover_i }}-M.jpg" alt="{{ book.title }}" loading="lazy">
+              {% if book.cover_i %}
+                <img
+                  src="https://covers.openlibrary.org/b/id/{{ book.cover_i }}-M.jpg"
+                  alt="{{ book.title }} cover"
+                  loading="lazy"
+                >
+              {% else %}
+                <div class="author-detail__book-cover-placeholder">
+                  <img src="{% static 'deps/svg/book-open.svg' %}" alt="">
+                </div>
+              {% endif %}
             </div>
             <div class="author-detail__book-info">
               <p class="author-detail__book-title">{{ book.title }}</p>
               <div class="author-detail__book-meta">
-                <div class="star-track star-track--sm">
-                  ★★★★★
-                  <div class="star-track__fill" style="width: {{ book.rating_fill_percent }}%;">★★★★★</div>
+                <div class="author-detail__book-rating">
+                  <div class="star-track star-track--sm">
+                    ★★★★★
+                    <div class="star-track__fill" style="width: {{ book.rating_fill_percent }}%;">★★★★★</div>
+                  </div>
+                  <span>{{ book.avg_rating|floatformat:1 }}</span>
                 </div>
-                <span class="author-detail__book-year">{{ book.publish_year }}</span>
+                {% if book.publish_year %}
+                  <span class="author-detail__book-year">{{ book.publish_year }}</span>
+                {% endif %}
               </div>
             </div>
           </a>
@@ -120,18 +135,20 @@
         {% endfor %}
       </div>
       
-      {% if has_more_books %}
-        <form action="{{request.path}}" method='get'></form>
-          <input type="hidden" name='load_more' value="">
-          <input type="hidden" name='page' value="{{ page_obj.number }}">
+      {% if author_books %}
+        <form action="{{request.path}}" method="get" class="author-detail__books-form">
+          <input type="hidden" name="load_more" value="">
+          <input type="hidden" name="page" value="{{ next_author_books_page }}">
 
           <button
+            type="submit"
             class="author-detail__load-more"
             data-author-id="{{ author.id }}"
-            data-page="2"
+            data-page="{{ next_author_books_page }}"
           >
             Load more books
           </button>
+        </form>
       {% endif %}
     
     {% else %}

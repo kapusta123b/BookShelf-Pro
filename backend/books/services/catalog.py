@@ -92,7 +92,7 @@ def fetch_more_books(search_by: str, search: str, page: str | int) -> None:
 
 def fetch_more_authors(search_by: str, search: str, page: str | int) -> None:
     docs = OpenLibaryClient().search(argument=search_by, query=search, page=str(page))
-    AuthorImport().save_from_search(docs=docs)
+    AuthorImport().save_authors_from_search(docs=docs)
 
 
 def get_matched_authors(filters: CatalogFilters):
