@@ -1,5 +1,6 @@
 from django.db.models import prefetch_related_objects
 
+from utils.helpers import paginate
 from books.models import Author, Book, Review
 from books.services.client import OpenLibaryClient
 from books.services.importers import AuthorImport, BookImport
@@ -33,7 +34,13 @@ def get_author_books(author: Author, page: str | int, load_from_api=False):
         )
         BookImport().save_from_search(docs=docs)
 
-    return Book.objects.filter(authors=author).prefetch_related("authors", "subjects")
+    return paginate(
+        queryset=Book.objects.filter(authors=author).prefetch_related(
+            "authors", "subjects"
+        ),
+        page_number=page,
+        per_page=10,
+    )
 
 
 def get_user_book_context(user, book: Book) -> dict:

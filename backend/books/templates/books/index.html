@@ -35,7 +35,7 @@
         <img src="{% static 'deps/svg/search.svg' %}" alt="">
 
         <input type="hidden" name="search_by" value="{{ request.GET.search_by|default:'title' }}">
-        <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Search by title…" autocomplete="off">
+        <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Search by title…" autocomplete="on">
 
         <button class="catalog__search-submit" type="submit" aria-label="Search">Go</button>
 
@@ -320,7 +320,7 @@
           <div class="book-card-catalog">
 
             <div class="book-card-catalog__cover book-cover">
-              <img class="book-card-catalog__cover-img" src="https://covers.openlibrary.org/b/id/{{ book.cover_i }}-M.jpg" alt="{{ book.title }}">
+              <img class="book-card-catalog__cover-img" src="{% get_cover letter='M' cover=book.cover_i %}" alt="{{ book.title }}">
               <div class="book-card-catalog__cover-quick-add">
 
                 {% if book.id in user_library_ids %}
@@ -447,42 +447,9 @@
 
       </div>
       {% if books %}
-        <div class="pagination">
-          <a href="{% if page_obj.has_previous %}?{% url_replace page=page_obj.previous_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav">
-            <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Previous" style="transform: rotate(180deg)">
-          </a>
-          {% if page_obj.number > 4 %}
 
-            <a href="?{% url_replace page=1 %}" class="pagination__btn">1</a>
+        {% include "includes/pagination.html" %}
 
-            {% if page_obj.number > 5 %}
-
-              <span class="pagination__ellipsis">…</span>
-
-            {% endif %}
-
-          {% endif %}
-
-          {% for p in paginator.page_range %}
-
-            {% if p >= page_obj.number|add:-3 and p <= page_obj.number|add:3 %}
-
-              <a href="?{% url_replace page=p %}" class="pagination__btn {% if p == page_obj.number %}active{% endif %}">{{ p }}</a>
-
-            {% endif %}
-
-          {% endfor %}
-
-          {% if page_obj.paginator.num_pages > page_obj.number|add:3 %}
-
-            <span class="pagination__ellipsis">…</span>
-            <a href="?{% url_replace page=page_obj.paginator.num_pages %}" class="pagination__btn">{{ page_obj.paginator.num_pages }}</a>
-          {% endif %}
-
-          <a href="{% if page_obj.has_next %}?{% url_replace page=page_obj.next_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav">
-            <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Next">
-          </a>
-        </div>
       {% endif %}
 
     </div>

@@ -1,6 +1,7 @@
 {% extends 'books/detail_base.html' %}
 {% load sass_tags %}
 {% load books_tags %}
+
 {% load static %}
 
 {% block detail_title %}{{ author.name }}{% endblock %}
@@ -93,19 +94,19 @@
   <section class="detail-page__section">
     <h2 class="detail-page__section-title">
       Books & Works
-      {% if author_books %}
-        <span class="detail-page__section-count">{{ author_books|length }}</span>
+      {% if page_obj %}
+        <span class="detail-page__section-count">{{ page_obj|length }}</span>
       {% endif %}
     </h2>
-    {% if author_books %}
+    {% if page_obj %}
       <div class="author-detail__books" id="author-books">
-        {% for book in author_books %}
+        {% for book in page_obj %}
 
           <a href="{% url 'books:book_detail' 'all' book.id %}" class="author-detail__book">
             <div class="author-detail__book-cover">
               {% if book.cover_i %}
                 <img
-                  src="https://covers.openlibrary.org/b/id/{{ book.cover_i }}-M.jpg"
+                  src="{% get_cover letter='M' cover=book.cover_i %}"
                   alt="{{ book.title }} cover"
                   loading="lazy"
                 >
@@ -131,31 +132,19 @@
               </div>
             </div>
           </a>
-        
+
         {% endfor %}
       </div>
-      
-      {% if author_books %}
-        <form action="{{request.path}}" method="get" class="author-detail__books-form">
-          <input type="hidden" name="load_more" value="">
-          <input type="hidden" name="page" value="{{ next_author_books_page }}">
 
-          <button
-            type="submit"
-            class="author-detail__load-more"
-            data-author-id="{{ author.id }}"
-            data-page="{{ next_author_books_page }}"
-          >
-            Load more books
-          </button>
-        </form>
-      {% endif %}
-    
     {% else %}
       <div class="author-detail__empty">
         <p>No books found for this author in the local database.</p>
         <a href="{% url 'books:index' 'all' %}" class="author-detail__btn author-detail__btn--outline">Browse catalog</a>
       </div>
+    {% endif %}
+
+    {% if page_obj.has_next or page_obj.has_previous %}
+      {% include "includes/pagination.html" %}
     {% endif %}
   </section>
 
@@ -178,10 +167,13 @@
         </li>
 
       {% endif %}
-      <li class="detail-page__sidebar-item">
-        <span class="detail-page__sidebar-label">Full name</span>
-        <span class="detail-page__sidebar-value">{{ author.full_name|default:"None" }}</span>
-      </li>
+      {% if author.full_name %}
+        <li class="detail-page__sidebar-item">
+          <span class="detail-page__sidebar-label">Full name</span>
+          <span class="detail-page__sidebar-value">{{ author.full_name|default:"None" }}</span>
+        </li>
+      {% endif %}
+      
       <li class="detail-page__sidebar-item">
         <span class="detail-page__sidebar-label">Open Library</span>
         <span class="detail-page__sidebar-value">{{author.openlibrary_key}}</span>

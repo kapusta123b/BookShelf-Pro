@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load sass_tags %}
+{% load books_tags %}
 {% load static %}
 
 {% block title %}Edit Review — BookShelf Pro{% endblock %}
@@ -28,7 +29,7 @@
 
       <div class="create-review-sidebar">
         <div class="create-review-sidebar__cover">
-          <img src="https://covers.openlibrary.org/b/id/{{ review.user_book.book.cover_i }}-M.jpg" alt="Book cover">
+          <img src="{% get_cover letter='M' cover=review.user_book.book.cover_i %}" alt="Book cover">
         </div>
         <p class="create-review-sidebar__title">{{ review.user_book.book.title }}</p>
         <p class="create-review-sidebar__author">{% for author in review.user_book.book.get_authors %}
@@ -37,9 +38,9 @@
         <div class="create-review-sidebar__rating">
           <div class="star-track">
             ★★★★★
-            <div class="star-track__fill" style="width: 80%;">★★★★★</div>
+            <div class="star-track__fill" style="width: {{ review.user_book.book.rating_fill_percent }}%;">★★★★★</div>
           </div>
-          <span>4.0</span>
+          <span>{{ review.user_book.book.avg_rating }}</span>
         </div>
 
         <div class="update-review-sidebar__danger">
@@ -99,7 +100,7 @@
             <p class="create-review-form__section-title">Options</p>
 
             <label class="create-review-form__checkbox">
-              <input type="checkbox" name="is_public" id="id_is_public" {% if form.is_public %} selected {% endif %} >
+              <input type="checkbox" name="is_public" id="id_is_public" {% if review.is_public %} selected {% endif %} >
               <span>Make this review public</span>
             </label>
 

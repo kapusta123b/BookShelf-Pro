@@ -19,18 +19,21 @@ class LibraryView(LoginRequiredMixin, DetailView):
         filter_value = self.request.GET.get("filter", "all")
         page = self.request.GET.get("page", 1)
         sort = self.request.GET.get("sort", "recently")
+        reverse_sort = self.request.GET.get("reverse_sort") == "true"
 
-        library_data = self.object.get_library_data(page, filter_value, sort)
-
+        library_data = self.object.get_library_data(
+            page, filter_value, sort, reverse_sort
+        )
         context.update(
             {
-                "library_books": library_data["books"],
+                "page_obj": library_data["books"],
                 "reviews": library_data["reviews"],
                 "active_filter": filter_value,
                 "count_total": library_data["counts"]["total"],
                 "count_reading": library_data["counts"]["reading"],
                 "count_want_to_read": library_data["counts"]["want"],
                 "count_finished": library_data["counts"]["read"],
+                "reviews_ids": library_data["reviews_ids"]
             }
         )
 

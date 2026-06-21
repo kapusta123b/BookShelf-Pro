@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block detail_hero_media %}
-  <img src="https://covers.openlibrary.org/b/id/{{ book.cover_i }}-L.jpg" alt="{{ book.title }}">
+  <img src="{% get_cover letter='L' cover=book.cover_i %}" alt="{{ book.title }}">
 {% endblock %}
 
 {% block detail_hero_info %}
@@ -30,9 +30,16 @@
 
   <h1 class="book-detail__title">{{ book.title }}</h1>
 
-  {% for author in book.get_authors %}
-    <a href="{% url "books:author_detail" view.kwargs.subject_slug author.id %}" class="book-detail__authors">{{ author.name }}</a>
-  {% endfor %}
+
+  <div>
+    {% for author in book.get_authors %}
+      <a href="{% url "books:author_detail" view.kwargs.subject_slug author.id %}" class="book-detail__authors">
+
+        {{ author.name }}{% if not forloop.last %},{% endif %}
+      </a>
+    {% endfor %}
+
+  </div>
 
   <p class="book-detail__year">{{ book.first_publish_date }}</p>
 
@@ -120,7 +127,7 @@
         {% for cover_id in book.cover_ids %}
           <div class="cover-collage__item {% if forloop.first %}cover-collage__item--featured{% endif %}">
             <img
-              src="https://covers.openlibrary.org/b/id/{{ cover_id }}-M.jpg"
+              src="{% get_cover letter='M' cover=cover_id %}"
               alt="{{ book.title }} cover {{ forloop.counter }}"
               loading="lazy"
             >
@@ -228,16 +235,21 @@
   </div>
 
   <div class="detail-page__sidebar-card">
-    <h3 class="detail-page__sidebar-title">Authors</h3>
+    <h3 class="detail-page__sidebar-title">Authors <span class="detail-page__section-count">{{ book.get_authors|length }}</span></h3>
+
     <div class="book-detail__authors-list">
       {% for author in book.get_authors %}
-        <div class="book-detail__author">
-          <div class="book-detail__author-avatar">{{ author.name|first }}</div>
-          <div>
-            <p class="book-detail__author-name">{{ author.name }}</p>
-            <p class="book-detail__author-birth">{{ author.birth_date }}</p>
+        <a href="{% url "books:author_detail" view.kwargs.subject_slug author.id %}">
+          <div class="book-detail__author">
+            <div class="book-detail__author-avatar">{{ author.name|first }}</div>
+            <div>
+              <p class="book-detail__author-name">{{ author.name }}</p>
+              {% if author.birth_date %}
+                <p class="book-detail__author-birth">{{ author.birth_date }}</p>
+              {% endif %}
+            </div>
           </div>
-        </div>
+        </a>
       {% endfor %}
     </div>
   </div>

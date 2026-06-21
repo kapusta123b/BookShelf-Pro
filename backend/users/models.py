@@ -16,7 +16,7 @@ class User(AbstractUser):
     avg_rating = models.FloatField(default=0)
 
     def get_library_data(
-        self, page_number: int | str, status_filter: str, sort: str
+        self, page_number: int | str, status_filter: str, sort: str, reverse_sort: bool
     ) -> dict:
         all_books = self.library_books.all()
         counts = all_books.get_counts()
@@ -27,17 +27,24 @@ class User(AbstractUser):
             .prefetch_related("user_book__book__authors")
             .order_by("-created_at")
         )
-        
+
+        reviews_ids = set(reviews.values_list("user_book_id", flat=True))
+
         queryset = (
-            all_books
-            .select_related("review")
-            .tabs_filter(status_filter)
-            .sort_by(sort)
+            all_books.select_related("review").tabs_filter(status_filter).sort_by(sort)
         )
+
+        if reverse_sort:
+            queryset = queryset.reverse()
 
         paginate_books = paginate(queryset, page_number, per_page=10)
 
-        return {"reviews": reviews, "books": paginate_books, "counts": counts}
+        return {
+            "reviews_ids": reviews_ids,
+            "reviews": reviews,
+            "books": paginate_books,
+            "counts": counts,
+        }
 
     def get_user_activity(self, show_more=False):
         user_activity = RecentActivity.objects.filter(user=self).select_related("book")

@@ -78,14 +78,26 @@
           <select name="sort" onchange="this.form.submit()">
 
             <option value="recently" {% if not request.GET.sort or request.GET.sort == '-created_at' %}selected{% endif %}>Recently Added</option>
-            <option value="title" {% if request.GET.sort == 'title' %}selected{% endif %}>Title A–Z</option>
-            <option value="authors" {% if request.GET.sort == 'authors' %}selected{% endif %}>Author A–Z</option>
-            <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>Top Rated</option>
+            <option value="title" {% if request.GET.sort == 'title' %}selected{% endif %}>Title {% if request.GET.reverse_sort == 'true' %}Z-A {% else %}A-Z{% endif %}</option>
+            <option value="authors" {% if request.GET.sort == 'authors' %}selected{% endif %}>Author {% if request.GET.reverse_sort == 'true' %}Z-A{% else %}A-Z{% endif %}</option>
+            <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>Rating</option>
             <option value="year" {% if request.GET.sort == 'year' %}selected{% endif %}>Year</option>
 
           </select>
         </form>
       </div>
+
+      {% if request.GET.reverse_sort == 'true' %}
+        <a href="{% url_replace reverse_sort='' %}" class="library-toolbar__reverse is-active">
+          <img src="{% static 'deps/svg/sort.svg' %}" alt="">
+          Normal sort
+        </a>
+      {% else %}
+        <a href="{% url_replace reverse_sort='true' %}" class="library-toolbar__reverse">
+          <img src="{% static 'deps/svg/sort.svg' %}" alt="">
+          Reverse sort
+        </a>
+      {% endif %}
 
       <div class="library-toolbar__view">
         <button class="active" data-view="grid" aria-label="Grid view">
@@ -98,14 +110,14 @@
 
     </div>
 
-    <div class="library-grid">
+    <div id="library-grid-container" class="library-grid">
 
-      {% for lib_book in library_books %}
+      {% for lib_book in page_obj %}
 
         <div class="library-book">
           <div class="library-book__cover book-cover-3">
             <div class="book-card-catalog__cover-placeholder">
-              <img src="https://covers.openlibrary.org/b/id/{{ lib_book.book.cover_i }}-M.jpg" alt="">
+              <img src="{% get_cover letter='M' cover=lib_book.book.cover_i %}" alt="">
             </div>
             <div class="library-book__cover-status">
               <span class="badge
@@ -141,7 +153,9 @@
               <span class="library-book__year">{{ lib_book.book.publish_year }}</span>
             </div>
 
+            <span class="library-book__added">Added {{ lib_book.created_at|date:"M j, Y" }}</span>
           </div>
+
           <div class="library-book__actions">
             {% if user.id == library_user.id %}
 
@@ -151,7 +165,7 @@
                 Update
 
               </button>
-              {% if lib_book.status == 'read' %}
+              {% if lib_book.status == 'read' and lib_book.id not in reviews_ids %}
 
                 <a href="{% url "books:create_review" lib_book.book.id %}" class="library-book__action-btn">
                   <img src="{% static 'deps/svg/star.svg' %}" alt="">
@@ -179,7 +193,7 @@
 
               <div class="book-modal__header">
                 <div class="book-modal__cover">
-                  <img src="https://covers.openlibrary.org/b/id/{{ lib_book.book.cover_i }}-M.jpg" alt="{{ lib_book.book.title }}">
+                  <img src="{% get_cover letter='M' cover=lib_book.book.cover_i %}" alt="{{ lib_book.book.title }}">
                 </div>
                 <div class="book-modal__info">
                   <a href="{% url "books:book_detail" 'all' lib_book.book.id %}" class="book-modal__title">{{ lib_book.book.title }}</a>
@@ -224,42 +238,8 @@
 
       {% endfor %}
 
-      {% if library_books.has_next or library_books.has_previous %}
-        <div class="pagination">
-          <a href="{% if library_books.has_previous %}?{% url_replace page=library_books.previous_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav">
-            <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Previous" style="transform: rotate(180deg)">
-          </a>
-          {% if library_books.number > 4 %}
-
-            <a href="?{% url_replace page=1 %}" class="pagination__btn">1</a>
-
-            {% if library_books.number > 5 %}
-
-              <span class="pagination__ellipsis">…</span>
-
-            {% endif %}
-          {% endif %}
-
-          {% for p in library_books.paginator.page_range %}
-
-            {% if p >= library_books.number|add:-3 and p <= library_books.number|add:3 %}
-
-              <a href="?{% url_replace page=p %}" class="pagination__btn {% if p == library_books.number %}active{% endif %}">{{ p }}</a>
-
-            {% endif %}
-
-          {% endfor %}
-
-          {% if library_books.paginator.num_pages > library_books.number|add:3 %}
-
-            <span class="pagination__ellipsis">…</span>
-            <a href="?{% url_replace page=library_books.paginator.num_pages %}" class="pagination__btn">{{ library_books.paginator.num_pages }}</a>
-          {% endif %}
-
-          <a href="{% if library_books.has_next %}?{% url_replace page=library_books.next_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav">
-            <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Next">
-          </a>
-        </div>
+      {% if page_obj.has_next or page_obj.has_previous %}
+        {% include "includes/pagination.html" %}
       {% endif %}
 
     </div>
@@ -280,7 +260,7 @@
             <div class="library-reviews__item-header">
               <div class="library-reviews__item-book">
                 <div class="library-reviews__item-cover">
-                  <img src="https://covers.openlibrary.org/b/id/{{ review.user_book.book.cover_i }}-M.jpg" alt="{{ review.user_book.book.title }}">
+                  <img src="{% get_cover letter='M' cover=review.user_book.book.cover_i %}" alt="{{ review.user_book.book.title }}">
                 </div>
                 <div class="library-reviews__item-meta">
                   <a href="{% url 'books:book_detail' 'all' review.user_book.book.id %}" class="library-reviews__item-book-title">{{ review.user_book.book.title }}</a>

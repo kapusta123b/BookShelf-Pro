@@ -257,6 +257,38 @@
     }
   }
 
+  &__reverse {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    background-color: $bg-card;
+    border: 1px solid $border;
+    border-radius: $radius;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $text-secondary;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: $transition-fast;
+
+    img {
+      width: 14px;
+      height: 14px;
+    }
+
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+    }
+
+    &.is-active {
+      border-color: $primary;
+      background-color: $primary-muted;
+      color: $primary;
+    }
+  }
+
   &__view {
     display: flex;
     align-items: center;
@@ -439,6 +471,12 @@
   &__year {
     font-size: $font-size-xs;
     color: $text-muted;
+  }
+
+  &__added {
+    font-size: $font-size-xs;
+    color: $text-muted;
+    margin-top: 0.25rem;
   }
 
   &__actions {

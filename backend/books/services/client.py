@@ -66,10 +66,3 @@ class OpenLibaryClient:
             page=str(page or 1),
             limit=limit,
         )
-
-    def get_author_works(self, key: str, limit=30, offset=0) -> list[dict] | None:
-        data = self._get(
-            path=f"/authors/{key}/works.json", params={"offset": offset, "limit": limit}
-        )
-
-        return data.get("entries", []) if data else None

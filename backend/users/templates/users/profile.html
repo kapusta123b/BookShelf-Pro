@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load sass_tags %}
+{% load books_tags %}
 {% load static %}
 
 {% block title %}Profile — BookShelf Pro{% endblock %}
@@ -86,7 +87,7 @@
           {% for book in library_books %}
             <div class="profile-book">
               <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
-                <img src="https://covers.openlibrary.org/b/id/{{ book.book.cover_i }}-M.jpg" alt="{{ book.book.title }}">
+                <img src="{% get_cover letter='M' cover=book.book.cover_i %}" alt="{{ book.book.title }}">
               </a>
               <div class="profile-book__info">
                 <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
@@ -120,7 +121,7 @@
           {% for book in read_books_preview %}
             <div class="profile-book">
               <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
-                <img src="https://covers.openlibrary.org/b/id/{{ book.book.cover_i }}-M.jpg" alt="{{ book.book.title }}">
+                <img src="{% get_cover letter='M' cover=book.book.cover_i %}" alt="{{ book.book.title }}">
               </a>
               <div class="profile-book__info">
                 <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
@@ -154,7 +155,7 @@
           {% for book in want_to_read_preview %}
             <div class="profile-book">
               <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
-                <img src="https://covers.openlibrary.org/b/id/{{ book.book.cover_i }}-M.jpg" alt="{{ book.book.title }}">
+                <img src="{% get_cover letter='M' cover=book.book.cover_i %}" alt="{{ book.book.title }}">
               </a>
               <div class="profile-book__info">
                 <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
@@ -187,7 +188,7 @@
 
             <div class="profile-review">
               <a href="{% url "books:book_detail" 'all' review.user_book.book.id %}" class="profile-review__cover">
-                <img src="https://covers.openlibrary.org/b/id/{{ review.user_book.book.cover_i }}-M.jpg" alt="Book cover">
+                <img src="{% get_cover letter='M' cover=review.user_book.book.cover_i %}" alt="Book cover">
               </a>
               <div class="profile-review__body">
                 <div class="profile-review__header">
