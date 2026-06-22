@@ -3,7 +3,7 @@
 
 
 <div class="pagination">
-  <a href="{% if page_obj.has_previous %}{% url_replace page=page_obj.previous_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav">
+  <a href="{% if page_obj.has_previous %}{% url_replace page=page_obj.previous_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav" {% if not page_obj.has_previous %}disabled{% endif %}>
     <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Previous" style="transform: rotate(180deg)">
   </a>
   {% if page_obj.number > 4 %}
@@ -34,7 +34,7 @@
     <a href="{% url_replace page=page_obj.paginator.num_pages %}" class="pagination__btn">{{ page_obj.paginator.num_pages }}</a>
   {% endif %}
 
-  <a href="{% if page_obj.has_next %}{% url_replace page=page_obj.next_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav">
+  <a href="{% if page_obj.has_next %}{% url_replace page=page_obj.next_page_number %}{% else %}#{% endif %}" class="pagination__btn pagination__btn--nav" {% if not page_obj.has_next %}disabled{% endif %}>
     <img src="{% static 'deps/svg/chevron-right.svg' %}" alt="Next">
   </a>
 </div>

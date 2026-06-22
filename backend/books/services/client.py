@@ -1,8 +1,6 @@
-from dataclasses import dataclass
-from functools import partialmethod
 import logging
 
-import httpx
+from httpx import Client
 
 from books.utils import import_subjects_from_the_map
 
@@ -10,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 SEARCH_FIELDS = "key,cover_i,title,author_name,author_key,first_publish_year,subject"
 
-_http_client = httpx.Client(
+_http_client = Client(
     base_url="https://openlibrary.org",
     headers={
         "User-Agent": "BookShelf Pro/1.0, https://github.com/kapusta123b/BookShelf-Pro"

@@ -19,12 +19,23 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   const heroSearchInput = document.querySelector(
-    '.hero__search-bar input[name="q"]',
+    '.hero__search-bar input[name="search"]',
   );
   const heroSearchTypeInput = document.querySelector(
-    '.hero__search-bar input[name="type"]',
+    '.hero__search-bar input[name="search_by"]',
   );
   const heroSearchTabs = document.querySelectorAll(".hero__search-tab");
+
+  if (heroSearchTypeInput) {
+    const currentType = heroSearchTypeInput.value || "title";
+    heroSearchTabs.forEach(function (tab) {
+      const isActive = tab.dataset.type === currentType;
+      tab.classList.toggle("is-active", isActive);
+      if (isActive && heroSearchInput) {
+        heroSearchInput.placeholder = tab.dataset.placeholder;
+      }
+    });
+  }
 
   heroSearchTabs.forEach(function (tab) {
     tab.addEventListener("click", function () {

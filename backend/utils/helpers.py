@@ -1,4 +1,4 @@
-from django.core.paginator import Page, Paginator
+from django.core.paginator import Page, Paginator, InvalidPage
 from django.db.models import QuerySet
 from typing import Union
 
@@ -12,4 +12,9 @@ def paginate(queryset: QuerySet, page_number: Numeric, per_page: Numeric) -> Pag
         per_page = 10
         
     paginator = Paginator(queryset, per_page)
-    return paginator.page(page_number)
+    try:
+        return paginator.page(page_number)
+    
+    except InvalidPage:
+
+        return paginator.page(1)

@@ -18,7 +18,9 @@
 {% endblock %}
 
 {% block detail_hero_media %}
-  <img src="https://covers.openlibrary.org/a/id/{{author.cover_ids|first}}-L.jpg" alt="J. R. R. Tolkien">
+
+  <img src="https://covers.openlibrary.org/a/id/{{author.cover_ids|first}}-L.jpg" alt="{{ author.name }}">
+
 {% endblock %}
 
 {% block detail_hero_info %}
@@ -61,25 +63,32 @@
   {% if author.known_as %}
 
     <section class="detail-page__section">
+
       <h2 class="detail-page__section-title">
         Also Known As
         <span class="detail-page__section-count">{{ author.known_as|length }}</span>
       </h2>
       <div class="author-detail__alternate-names">
         {% for name in author.known_as %}
+
           <span class="author-detail__alternate-name{% if forloop.counter > 5 %} author-detail__alternate-name--extra{% endif %}">{{ name }}</span>
+        
         {% endfor %}
       </div>
       {% if author.known_as|length > 5 %}
+
         <button class="author-detail__show-more" data-show-more="names" data-count="{{ author.known_as|length|add:"-5" }}">
           Show {{ author.known_as|length|add:"-5" }} more
         </button>
+      
       {% endif %}
+
     </section>
 
   {% endif %}
 
   <section class="detail-page__section">
+
     <h2 class="detail-page__section-title">Links</h2>
     <div class="author-detail__links">
 
@@ -93,18 +102,20 @@
 
   <section class="detail-page__section">
     <h2 class="detail-page__section-title">
+
       Books & Works
-      {% if page_obj %}
-        <span class="detail-page__section-count">{{ page_obj|length }}</span>
-      {% endif %}
+  
     </h2>
+    
     {% if page_obj %}
+
       <div class="author-detail__books" id="author-books">
         {% for book in page_obj %}
 
           <a href="{% url 'books:book_detail' 'all' book.id %}" class="author-detail__book">
             <div class="author-detail__book-cover">
               {% if book.cover_i %}
+
                 <img
                   src="{% get_cover letter='M' cover=book.cover_i %}"
                   alt="{{ book.title }} cover"
@@ -134,6 +145,25 @@
           </a>
 
         {% endfor %}
+
+        {% if page_obj and not page_obj.has_next %}
+
+          <form action="{{request.path}}" method="post" class="author-detail__books-form">
+            {% csrf_token %}
+            <input type="hidden" name="load_more" value="">
+            <input type="hidden" name="page" value={{page_obj.number}}>
+            
+            <button
+              type="submit"
+              class="author-detail__load-more"
+            >
+
+              Load more books
+            
+            </button>
+          </form>
+
+        {% endif %}
       </div>
 
     {% else %}
@@ -144,7 +174,9 @@
     {% endif %}
 
     {% if page_obj.has_next or page_obj.has_previous %}
+
       {% include "includes/pagination.html" %}
+    
     {% endif %}
   </section>
 

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from utils.search import q_search
 from books.models import Author, Book, BookQuerySet, Subject
 from books.services.client import OpenLibaryClient
 from books.services.importers import AuthorImport, BookImport
@@ -19,6 +20,9 @@ class CatalogFilters:
 
 
 def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
+    is_relevance_search = bool(filters.search) and filters.search_by == "title" and (
+        not filters.sort or filters.sort == "relevance"
+    )
     ordering = (
         filters.sort if filters.sort and filters.sort != "relevance" else "date_created"
     )
@@ -28,19 +32,15 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
         else None
     )
 
+    queryset = Book.objects.prefetch_related("subjects", "authors")
+
     if filters.search:
 
         if filters.search_by == "title":
-            queryset = search_books(filters=filters)
+            queryset = search_books(queryset=queryset, filters=filters)
 
         elif filters.search_by == "author":
             queryset = search_authors(filters=filters)
-
-        else:
-            queryset = Book.objects.prefetch_related("subjects", "authors")
-
-    else:
-        queryset = Book.objects.prefetch_related("subjects", "authors")
 
     if filters.status and filters.status != "none" and user and user.is_authenticated:
         queryset = (
@@ -51,12 +51,16 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
             else queryset.filter(user_entries__user=user)
         )
 
-    return (
+    qs = (
         queryset.by_category(filters.subject)
         .by_date(filters.year_from, filters.year_to)
-        .order_by(ordering)
         .by_rating(rating_value)
     )
+
+    if not is_relevance_search:
+        qs = qs.order_by(ordering)
+
+    return qs
 
 
 def search_authors(filters):
@@ -71,18 +75,14 @@ def search_authors(filters):
     )
 
 
-def search_books(filters):
-    queryset = Book.objects.prefetch_related("subjects", "authors").filter(
-        title__icontains=filters.search
-    )
+def search_books(queryset, filters):
+    result = q_search(queryset=queryset, query=filters.search, search_type='catalog')
 
-    if queryset.count() < 8:
+    if result.count() < 8:
         fetch_more_books(filters.search_by, filters.search, filters.page)
-        queryset = Book.objects.prefetch_related("subjects", "authors").filter(
-            title__icontains=filters.search
-        )
+        result = q_search(queryset=queryset, query=filters.search, search_type='catalog')
 
-    return queryset
+    return result
 
 
 def fetch_more_books(search_by: str, search: str, page: str | int) -> None:

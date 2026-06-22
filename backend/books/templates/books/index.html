@@ -35,7 +35,7 @@
         <img src="{% static 'deps/svg/search.svg' %}" alt="">
 
         <input type="hidden" name="search_by" value="{{ request.GET.search_by|default:'title' }}">
-        <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Search by title…" autocomplete="on">
+        <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Search by title…" autocomplete="off">
 
         <button class="catalog__search-submit" type="submit" aria-label="Search">Go</button>
 

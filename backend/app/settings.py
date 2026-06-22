@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 
-SECRET_KEY = environ.get("SECRET_KEY")
+SECRET_KEY = environ["SECRET_KEY"]
 
 DEBUG = environ.get("DEBUG", "False") == "True"
 
@@ -80,11 +80,11 @@ WSGI_APPLICATION = "app.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": environ.get("DB_NAME"),
-        "USER": environ.get("DB_USER"),
-        "PASSWORD": environ.get("DB_PASS"),
-        "HOST": environ.get("DB_HOST"),
-        "PORT": environ.get("DB_PORT"),
+        "NAME": environ["DB_NAME"],
+        "USER": environ["DB_USER"],
+        "PASSWORD": environ["DB_PASS"],
+        "HOST": environ["DB_HOST"],
+        "PORT": environ["DB_PORT"],
     }
 }
 
@@ -145,13 +145,13 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = environ.get("EMAIL_NAME")
-EMAIL_HOST_PASSWORD = environ.get("EMAIL_APP_PASSWORD")
+EMAIL_HOST_USER = environ["EMAIL_NAME"]
+EMAIL_HOST_PASSWORD = environ["EMAIL_APP_PASSWORD"]
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # django-recaptcha
-RECAPTCHA_PUBLIC_KEY = environ.get("RECAPTCHA_PUBLIC_KEY")
-RECAPTCHA_PRIVATE_KEY = environ.get("RECAPTCHA_PRIVATE_KEY")
+RECAPTCHA_PUBLIC_KEY = environ["RECAPTCHA_PUBLIC_KEY"]
+RECAPTCHA_PRIVATE_KEY = environ["RECAPTCHA_PRIVATE_KEY"]
 
 # django-allauth configuration
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
@@ -163,7 +163,6 @@ ACCOUNT_LOGOUT_ON_GET = False
 SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_QUERY_EMAIL = True
-SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https" if not DEBUG else "http"

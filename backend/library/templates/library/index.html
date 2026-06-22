@@ -137,7 +137,7 @@
             <p class="library-book__author">
               {% for author in lib_book.book.get_authors %}
 
-                {{ author.name }}
+                <a href="{% url "books:author_detail" 'all' author.id %}">{{ author.name }}</a>
 
               {% endfor %}
             </p>
@@ -239,7 +239,9 @@
       {% endfor %}
 
       {% if page_obj.has_next or page_obj.has_previous %}
+
         {% include "includes/pagination.html" %}
+      
       {% endif %}
 
     </div>
@@ -256,6 +258,7 @@
 
       <div class="library-reviews__list">
         {% for review in reviews %}
+
           <div class="library-reviews__item">
             <div class="library-reviews__item-header">
               <div class="library-reviews__item-book">
@@ -269,7 +272,9 @@
                   </span>
                 </div>
               </div>
+
               {% if user.id == library_user.id %}
+              
                 <div class="library-reviews__item-actions">
                   <a href="{% url 'books:update_review' review.id %}" class="library-reviews__item-action-btn">
                     <img src="{% static 'deps/svg/edit.svg' %}" alt="">
@@ -297,12 +302,15 @@
               <p class="library-reviews__item-text">{{ review.text }}</p>
             </div>
           </div>
+
         {% empty %}
+
           <div class="library-reviews__empty">
             <img src="{% static 'deps/svg/star.svg' %}" alt="">
             <h3>No reviews yet</h3>
             <p>Books you've finished and reviewed will appear here.</p>
           </div>
+  
         {% endfor %}
 
       </div>

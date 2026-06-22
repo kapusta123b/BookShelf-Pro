@@ -122,14 +122,26 @@ class AuthorDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        page = self.request.GET.get('page', 1)
-        load_author_books = True if "load_more" in self.request.GET else False
+        page = self.request.POST.get("page") or self.request.GET.get("page", 1)
 
         context["page_obj"] = get_author_books(
-            author=self.object, load_from_api=load_author_books, page=page
+            author=self.object, load_from_api=False, page=page
         )
 
         return context
+    
+    def post(self, request, *args, **kwargs):
+        author = self.get_object()
+
+        page = request.POST.get("page", 1)
+
+        get_author_books(
+            author=author,
+            load_from_api=True,
+            page=page,
+        )
+
+        return redirect(request.path + f'?page={page}')
 
 
 class RateBookView(LoginRequiredMixin, View):
