@@ -2,7 +2,6 @@ from django.db import models
 from django.db.models import Avg
 from django.contrib.auth.models import AbstractUser
 
-from utils.helpers import paginate
 from books.models import Review
 
 
@@ -16,7 +15,7 @@ class User(AbstractUser):
     avg_rating = models.FloatField(default=0)
 
     def get_library_data(
-        self, page_number: int | str, status_filter: str, sort: str, reverse_sort: bool
+        self, status_filter: str, sort: str, reverse_sort: bool
     ) -> dict:
         all_books = self.library_books.all()
         counts = all_books.get_counts()
@@ -37,12 +36,10 @@ class User(AbstractUser):
         if reverse_sort:
             queryset = queryset.reverse()
 
-        paginate_books = paginate(queryset, page_number, per_page=10)
-
         return {
             "reviews_ids": reviews_ids,
             "reviews": reviews,
-            "books": paginate_books,
+            "books": queryset,
             "counts": counts,
         }
 

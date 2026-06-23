@@ -38,6 +38,8 @@
           {% endif %}
         </div>
 
+        <a href="{% url 'library:index' profile_user.id %}"> View {% if not profile_user.id == user.id  %}user{% endif %} Library </a>
+
         <div class="profile-stats">
 
           <div class="profile-stats__item">

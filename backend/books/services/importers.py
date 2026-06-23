@@ -75,6 +75,7 @@ class SubjectImport:
 
 
 class AuthorImport:
+
     @transaction.atomic
     def save_authors_from_search(self, docs: list[dict] | None) -> list[Author] | None:
         if not docs:
@@ -84,6 +85,7 @@ class AuthorImport:
         
         if not valid_docs:
             return []
+        
 
         payload = [
             Author(
@@ -218,9 +220,14 @@ class AuthorImport:
     def _bulk_upsert_authors(self, authors: list[Author]) -> None:
         if not authors:
             return
+        
+        unique_authors = {}
+        for author in authors:
+            if author.openlibrary_key:
+                unique_authors[author.openlibrary_key] = author
 
-        Author.objects.bulk_create(
-            authors,
+        authors = Author.objects.bulk_create(
+            unique_authors.values(),
             batch_size=1000,
             update_conflicts=True,
             update_fields=["name", "birth_date"],
@@ -310,9 +317,10 @@ class AuthorImport:
 class BookImport:
 
     @transaction.atomic
-    def save_from_search(self, docs: list[dict] | None) -> list[Book] | None:
+    def save_from_search(self, docs: list[dict] | None) -> None:
         if not docs:
             return None
+        
 
         valid_docs = [doc for doc in docs if self._is_valid(doc)]
 
@@ -336,6 +344,7 @@ class BookImport:
         subjects = SubjectImport().bulk_upsert(list(all_subjects))
 
         book_payload = []
+
         for doc in valid_docs:
             book_payload.append(
                 Book(
@@ -345,6 +354,7 @@ class BookImport:
                     first_publish_date=_format_data(doc.get("first_publish_year")),
                 )
             )
+
 
         Book.objects.bulk_create(
             book_payload,
@@ -373,6 +383,7 @@ class BookImport:
         }
 
         saved_subjects = {subject.slug: subject for subject in subjects}
+
 
         self._bulk_create_book_relations_from_search(
             valid_docs,
@@ -428,6 +439,7 @@ class BookImport:
         book_author_through = Book.authors.through
         book_subject_through = Book.subjects.through
 
+
         book_author_links = []
         book_subject_links = []
 
@@ -449,6 +461,7 @@ class BookImport:
                     book_subject_links.append(
                         book_subject_through(book_id=book.id, subject_id=subject.id)
                     )
+
 
         if book_author_links:
             book_author_through.objects.bulk_create(

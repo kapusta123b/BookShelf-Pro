@@ -17,15 +17,18 @@ class CatalogFilters:
     year_to: str | None
     sort: str | None
     page: str | int
+    reverse_sort: bool
 
 
 def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
     is_relevance_search = bool(filters.search) and filters.search_by == "title" and (
         not filters.sort or filters.sort == "relevance"
     )
+
     ordering = (
         filters.sort if filters.sort and filters.sort != "relevance" else "date_created"
     )
+    
     rating_value = (
         int(filters.rating)
         if filters.rating and filters.rating not in ("", "all")
@@ -37,7 +40,7 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
     if filters.search:
 
         if filters.search_by == "title":
-            queryset = search_books(queryset=queryset, filters=filters)
+            queryset = search_books(filters=filters)
 
         elif filters.search_by == "author":
             queryset = search_authors(filters=filters)
@@ -60,6 +63,10 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
     if not is_relevance_search:
         qs = qs.order_by(ordering)
 
+
+    if filters.reverse_sort:
+        qs = qs.reverse()
+
     return qs
 
 
@@ -75,12 +82,12 @@ def search_authors(filters):
     )
 
 
-def search_books(queryset, filters):
-    result = q_search(queryset=queryset, query=filters.search, search_type='catalog')
+def search_books(filters):
+    result = Book.objects.filter(title__icontains=filters.search)
 
     if result.count() < 8:
         fetch_more_books(filters.search_by, filters.search, filters.page)
-        result = q_search(queryset=queryset, query=filters.search, search_type='catalog')
+        result = Book.objects.filter(title__icontains=filters.search)
 
     return result
 

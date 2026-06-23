@@ -91,6 +91,7 @@ class CatalogView(ListView):
             year_to=get.get("year_to"),
             sort=get.get("sort"),
             page=get.get("page", 1),
+            reverse_sort=get.get("reverse_sort") == "true",
         )
 
 
@@ -129,7 +130,7 @@ class AuthorDetailView(DetailView):
         )
 
         return context
-    
+
     def post(self, request, *args, **kwargs):
         author = self.get_object()
 
@@ -141,7 +142,7 @@ class AuthorDetailView(DetailView):
             page=page,
         )
 
-        return redirect(request.path + f'?page={page}')
+        return redirect(request.path + f"?page={page}")
 
 
 class RateBookView(LoginRequiredMixin, View):

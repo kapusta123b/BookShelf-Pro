@@ -72,7 +72,7 @@
         {% for name in author.known_as %}
 
           <span class="author-detail__alternate-name{% if forloop.counter > 5 %} author-detail__alternate-name--extra{% endif %}">{{ name }}</span>
-        
+
         {% endfor %}
       </div>
       {% if author.known_as|length > 5 %}
@@ -80,7 +80,7 @@
         <button class="author-detail__show-more" data-show-more="names" data-count="{{ author.known_as|length|add:"-5" }}">
           Show {{ author.known_as|length|add:"-5" }} more
         </button>
-      
+
       {% endif %}
 
     </section>
@@ -104,9 +104,9 @@
     <h2 class="detail-page__section-title">
 
       Books & Works
-  
+
     </h2>
-    
+
     {% if page_obj %}
 
       <div class="author-detail__books" id="author-books">
@@ -152,14 +152,14 @@
             {% csrf_token %}
             <input type="hidden" name="load_more" value="">
             <input type="hidden" name="page" value={{page_obj.number}}>
-            
+
             <button
               type="submit"
               class="author-detail__load-more"
             >
 
               Load more books
-            
+
             </button>
           </form>
 
@@ -176,7 +176,7 @@
     {% if page_obj.has_next or page_obj.has_previous %}
 
       {% include "includes/pagination.html" %}
-    
+
     {% endif %}
   </section>
 
@@ -205,7 +205,7 @@
           <span class="detail-page__sidebar-value">{{ author.full_name|default:"None" }}</span>
         </li>
       {% endif %}
-      
+
       <li class="detail-page__sidebar-item">
         <span class="detail-page__sidebar-label">Open Library</span>
         <span class="detail-page__sidebar-value">{{author.openlibrary_key}}</span>

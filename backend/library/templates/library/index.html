@@ -67,11 +67,17 @@
 
       <div class="library-toolbar__search">
         <img src="{% static 'deps/svg/search.svg' %}" alt="">
-        <input type="text" placeholder="Search in library…">
+
+        <form action="{{ request.path }}">
+
+          <input type="text" name='search' value="{{ request.GET.search }}" placeholder="Search in library…">
+
+        </form>
       </div>
 
       <div class="library-toolbar__sort">
         <img src="{% static 'deps/svg/sort.svg' %}" alt="">
+
         <form method="get" action="{{ request.path }}" id="sort-form">
 
           <input type="hidden" name="filter" value="{{ request.GET.filter }}">
@@ -84,19 +90,25 @@
             <option value="year" {% if request.GET.sort == 'year' %}selected{% endif %}>Year</option>
 
           </select>
+
         </form>
+
       </div>
 
       {% if request.GET.reverse_sort == 'true' %}
+
         <a href="{% url_replace reverse_sort='' %}" class="library-toolbar__reverse is-active">
           <img src="{% static 'deps/svg/sort.svg' %}" alt="">
           Normal sort
         </a>
+
       {% else %}
+
         <a href="{% url_replace reverse_sort='true' %}" class="library-toolbar__reverse">
           <img src="{% static 'deps/svg/sort.svg' %}" alt="">
           Reverse sort
         </a>
+
       {% endif %}
 
       <div class="library-toolbar__view">
@@ -241,7 +253,7 @@
       {% if page_obj.has_next or page_obj.has_previous %}
 
         {% include "includes/pagination.html" %}
-      
+
       {% endif %}
 
     </div>
@@ -274,7 +286,7 @@
               </div>
 
               {% if user.id == library_user.id %}
-              
+
                 <div class="library-reviews__item-actions">
                   <a href="{% url 'books:update_review' review.id %}" class="library-reviews__item-action-btn">
                     <img src="{% static 'deps/svg/edit.svg' %}" alt="">
@@ -310,7 +322,7 @@
             <h3>No reviews yet</h3>
             <p>Books you've finished and reviewed will appear here.</p>
           </div>
-  
+
         {% endfor %}
 
       </div>

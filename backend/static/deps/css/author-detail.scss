@@ -2,7 +2,6 @@
 @import "detail-page";
 
 .author-detail {
-
   &__name {
     font-size: $font-size-4xl;
     font-weight: 700;
@@ -135,7 +134,9 @@
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 3px rgba($primary, 0.16), $shadow-md;
+      box-shadow:
+        0 0 0 3px rgba($primary, 0.16),
+        $shadow-md;
     }
 
     &:hover &-cover img {

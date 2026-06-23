@@ -3,6 +3,8 @@ from django.views.generic import DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 
+from utils.helpers import paginate
+from utils.search import q_search
 from library.services import add_book_to_library, change_user_book_status
 from users.models import User
 
@@ -16,24 +18,31 @@ class LibraryView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        search = self.request.GET.get("search")
+
         filter_value = self.request.GET.get("filter", "all")
         page = self.request.GET.get("page", 1)
         sort = self.request.GET.get("sort", "recently")
         reverse_sort = self.request.GET.get("reverse_sort") == "true"
 
-        library_data = self.object.get_library_data(
-            page, filter_value, sort, reverse_sort
-        )
+        library_data = self.object.get_library_data(filter_value, sort, reverse_sort)
+        if search:
+            library_data["books"] = q_search(
+                query=search, queryset=library_data["books"], search_type="library"
+            )
+
+        paginate_books = paginate(library_data["books"], page, per_page=10)
+
         context.update(
             {
-                "page_obj": library_data["books"],
+                "page_obj": paginate_books,
                 "reviews": library_data["reviews"],
                 "active_filter": filter_value,
                 "count_total": library_data["counts"]["total"],
                 "count_reading": library_data["counts"]["reading"],
                 "count_want_to_read": library_data["counts"]["want"],
                 "count_finished": library_data["counts"]["read"],
-                "reviews_ids": library_data["reviews_ids"]
+                "reviews_ids": library_data["reviews_ids"],
             }
         )
 

@@ -178,6 +178,38 @@
       color: $text-muted;
     }
 
+    &__reverse {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.325rem 0.575rem;
+      background-color: $bg-card;
+      border: 1px solid $border;
+      border-radius: $radius;
+      font-size: $font-size-sm;
+      font-weight: 600;
+      color: $text-secondary;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: $transition-fast;
+
+      img {
+        width: 14px;
+        height: 14px;
+      }
+
+      &:hover {
+        border-color: $primary;
+        color: $primary;
+      }
+
+      &.is-active {
+        border-color: $primary;
+        background-color: $primary-muted;
+        color: $primary;
+      }
+    }
+
     select {
       border: none;
       outline: none;

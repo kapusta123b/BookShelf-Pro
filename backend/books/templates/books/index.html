@@ -73,15 +73,32 @@
             <input type="hidden" name="rating" value="{{ request.GET.rating }}">
             <input type="hidden" name="year_from" value="{{ request.GET.year_from }}">
             <input type="hidden" name="year_to" value="{{ request.GET.year_to }}">
+
             <select name="sort" onchange="this.form.submit()">
               <option value="relevance" {% if not request.GET.sort or request.GET.sort == 'relevance' %}selected{% endif %}>Relevance</option>
-              <option value="-avg_rating" {% if request.GET.sort == '-avg_rating' %}selected{% endif %}>Top Rated</option>
-              <option value="-first_publish_date" {% if request.GET.sort == '-first_publish_date' %}selected{% endif %}>Newest First</option>
-              <option value="first_publish_date" {% if request.GET.sort == 'first_publish_date' %}selected{% endif %}>Oldest First</option>
+              <option value="-avg_rating" {% if request.GET.sort == '-avg_rating' %}selected{% endif %}>Rated</option>
+              <option value="-first_publish_date" {% if request.GET.sort == '-first_publish_date' %}selected{% endif %}>Year</option>
               <option value="title" {% if request.GET.sort == 'title' %}selected{% endif %}>Title A–Z</option>
             </select>
           </form>
+          
+          {% if request.GET.reverse_sort == 'true' %}
+  
+            <a href="{% url_replace reverse_sort='' %}" class="catalog__sort__reverse is-active">
+              <img src="{% static 'deps/svg/sort.svg' %}" alt="">
+              Normal sort
+            </a>
+          
+          {% else %}
+          
+            <a href="{% url_replace reverse_sort='true' %}" class="catalog__sort__reverse">
+              <img src="{% static 'deps/svg/sort.svg' %}" alt="">
+              Reverse sort
+            </a>
+          
+          {% endif %}
         </div>
+
 
         <div class="catalog__view-toggle">
           <button class="active" data-view="grid" aria-label="Grid view">

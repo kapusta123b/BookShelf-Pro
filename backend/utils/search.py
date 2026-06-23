@@ -7,11 +7,6 @@ _map = {
         "book__authors__name",
         "book__first_publish_date",
         "book_id",
-        "openlibrary_key",
-    ),
-
-    "catalog": (
-        "title",
     ),
 }
 
@@ -32,4 +27,4 @@ def q_search(query: str, queryset: QuerySet, search_type: str) -> QuerySet | Non
         .order_by("-rank")
     )
 
-    return result.none()
+    return result
