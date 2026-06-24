@@ -1,10 +1,10 @@
 
 
 
-from users.models import RecentActivity
+from users.models import RecentActivity, User
 
 
-def add_activity(user: dict, action: str, book_id: int, rating: int = 0) -> None:
+def add_activity(user: User, action: str, book_id: int, rating: int = 0) -> None:
     try:
         RecentActivity.objects.create(
             user=user,
@@ -12,5 +12,6 @@ def add_activity(user: dict, action: str, book_id: int, rating: int = 0) -> None
             rating=rating,
             action=action
         )
+
     except Exception:
         return None

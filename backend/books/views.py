@@ -30,11 +30,15 @@ from books.services.detail import (
     enrich_author_detail,
     enrich_book_detail,
     get_author_books,
-    get_reviews,
-    get_user_book_context,
+
 )
 from books.services.rating import rate_book
 
+from books.selectors import (
+    get_review_object,
+    get_reviews,
+    get_user_book_context,
+)
 
 class CatalogView(ListView):
     template_name = "books/index.html"
@@ -199,7 +203,7 @@ class UpdateReviewView(LoginRequiredMixin, UpdateView):
     form_class = UpdateReviewForm
 
     def get_queryset(self):
-        return self.model.get_review_object(self.request.user)
+        return get_review_object(self.request.user)
 
     def get_success_url(self):
         return reverse(
@@ -216,7 +220,7 @@ class DeleteReviewView(LoginRequiredMixin, DeleteView):
     pk_url_kwarg = "review_id"
 
     def get_queryset(self):
-        return self.model.get_review_object(self.request.user)
+        return get_review_object(self.request.user)
 
     def get_success_url(self):
         return reverse(

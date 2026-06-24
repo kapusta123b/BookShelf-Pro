@@ -371,7 +371,7 @@
 
               <a href="{% url "books:book_detail" view.kwargs.subject_slug book.id %}" class="book-card-catalog__title">{{ book.title }}</a>
               <p class="book-card-catalog__author">
-                {% for author in book.get_authors %}
+                {% for author in book.authors.all %}
 
                   <a href="{% url "books:author_detail" view.kwargs.subject_slug author.id %}">
                     {{ author.name }} {% if not forloop.last %}, {% endif %}

@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.db.models import QuerySet
+
 
 class Subject(models.Model):
     slug = models.SlugField(unique=True, null=True, blank=True)
@@ -94,41 +96,6 @@ class Book(models.Model):
     avg_rating = models.FloatField(default=0)
     rating_count = models.PositiveIntegerField(default=0)
 
-    def get_authors(self) -> list[Author]:
-        return self.authors.all()
-
-    def update_avg_rating(self, new_rating: int, old_rating: int | None = None) -> None:
-        if old_rating is None:
-            self.avg_rating = (self.avg_rating * self.rating_count + new_rating) / (
-                self.rating_count + 1
-            )
-            self.rating_count += 1
-
-        else:
-
-            self.avg_rating = (
-                self.avg_rating * self.rating_count - old_rating + new_rating
-            ) / self.rating_count
-
-        self.avg_rating = round(self.avg_rating, 2)
-        self.save(update_fields=["avg_rating", "rating_count"])
-
-    def remove_rating(self, old_rating: int) -> None:
-        if self.rating_count <= 1:
-            self.avg_rating = 0
-            self.rating_count = 0
-
-        else:
-
-            self.avg_rating = round(
-                (self.avg_rating * self.rating_count - old_rating)
-                / (self.rating_count - 1),
-                2,
-            )
-            self.rating_count -= 1
-
-        self.save(update_fields=["avg_rating", "rating_count"])
-
     @property
     def rating_fill_percent(self) -> float:
         return round((self.avg_rating / 5) * 100, 2)
@@ -162,16 +129,11 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    @classmethod
-    def get_review_object(cls, user):
-        return (
-            cls.objects.filter(user_book__user=user)
-            .select_related("user_book")
-            .prefetch_related("user_book__book__authors")
-        )
-
     def __str__(self) -> str:
-        return f"Review for {self.user_book.book}"
+        if self.user_book is not None:
+            return f"Review for {self.user_book.book}"
+
+        return "Review for unknown book"
 
     class Meta:
         ordering = ["-created_at"]

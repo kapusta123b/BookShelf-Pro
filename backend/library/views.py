@@ -3,6 +3,7 @@ from django.views.generic import DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 
+from library.selectors import get_library_data
 from utils.helpers import paginate
 from utils.search import q_search
 from library.services import add_book_to_library, change_user_book_status
@@ -19,13 +20,12 @@ class LibraryView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
 
         search = self.request.GET.get("search")
-
         filter_value = self.request.GET.get("filter", "all")
         page = self.request.GET.get("page", 1)
         sort = self.request.GET.get("sort", "recently")
         reverse_sort = self.request.GET.get("reverse_sort") == "true"
 
-        library_data = self.object.get_library_data(filter_value, sort, reverse_sort)
+        library_data = get_library_data(self.request.user, filter_value, sort, reverse_sort)
         if search:
             library_data["books"] = q_search(
                 query=search, queryset=library_data["books"], search_type="library"

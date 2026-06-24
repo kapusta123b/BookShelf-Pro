@@ -34,7 +34,7 @@
         </div>
         <p class="create-review-sidebar__title">{{ review_book.book.title }}</p>
         <p class="create-review-sidebar__author">
-          {% for author in review_book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+          {% for author in review_book.book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
         </p>
         <div class="create-review-sidebar__rating">
           <div class="star-track">

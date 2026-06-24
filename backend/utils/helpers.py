@@ -2,7 +2,7 @@ from django.core.paginator import Page, Paginator, InvalidPage
 from django.db.models import QuerySet
 from typing import Union
 
-Numeric = Union[str, float, int]
+Numeric = Union[str, int]
 
 
 def paginate(queryset: QuerySet, page_number: Numeric, per_page: Numeric) -> Page:
@@ -13,6 +13,7 @@ def paginate(queryset: QuerySet, page_number: Numeric, per_page: Numeric) -> Pag
         per_page = 10
 
     paginator = Paginator(queryset, per_page)
+    
     try:
         return paginator.page(page_number)
 

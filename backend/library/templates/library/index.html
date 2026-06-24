@@ -147,7 +147,7 @@
             <a href="{% url "books:book_detail" 'all' lib_book.book.id %}" class="library-book__title">{{ lib_book.book.title }}</a>
 
             <p class="library-book__author">
-              {% for author in lib_book.book.get_authors %}
+              {% for author in lib_book.book.authors.all %}
 
                 <a href="{% url "books:author_detail" 'all' author.id %}">{{ author.name }}</a>
 
@@ -209,7 +209,7 @@
                 </div>
                 <div class="book-modal__info">
                   <a href="{% url "books:book_detail" 'all' lib_book.book.id %}" class="book-modal__title">{{ lib_book.book.title }}</a>
-                  <p class="book-modal__author">{% for author in lib_book.book.get_authors %}
+                  <p class="book-modal__author">{% for author in lib_book.book.authors.all %}
                     {{ author.name }}
                   {% endfor %}</p>
                   <span class="badge {% if lib_book.status == 'reading' %}badge--reading{% elif lib_book.status == 'want_to_read' %}badge--want{% elif lib_book.status == 'read' %}badge--done{% endif %}">{{ lib_book.get_status_display }}</span>
@@ -280,7 +280,7 @@
                 <div class="library-reviews__item-meta">
                   <a href="{% url 'books:book_detail' 'all' review.user_book.book.id %}" class="library-reviews__item-book-title">{{ review.user_book.book.title }}</a>
                   <span class="library-reviews__item-book-author">
-                    {% for author in review.user_book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    {% for author in review.user_book.book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
                   </span>
                 </div>
               </div>

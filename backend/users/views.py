@@ -2,6 +2,7 @@ from django.views.generic import DetailView, UpdateView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 
+from users.selectors import get_profile_data, get_user_activity
 from users.models import User
 from users.forms import EditProfileForm
 
@@ -15,10 +16,11 @@ class ProfileView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         show_more = True if "show_more" in self.request.GET else False
+        user = self.request.user
 
-        data = self.object.get_profile_data()
+        data = get_profile_data(user)
 
-        activity = self.object.get_user_activity(show_more)
+        activity = get_user_activity(user, show_more)
 
         context.update(
             {

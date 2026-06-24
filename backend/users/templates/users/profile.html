@@ -93,7 +93,7 @@
               </a>
               <div class="profile-book__info">
                 <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
-                <p class="profile-book__author">{% for author in book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                <p class="profile-book__author">{% for author in book.book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                 <div class="profile-book__meta">
                   <span class="badge badge--reading">Reading</span>
                   {% if book.started_at %}<span class="profile-book__date">Since {{ book.started_at|date:"M j, Y" }}</span>{% endif %}
@@ -127,7 +127,7 @@
               </a>
               <div class="profile-book__info">
                 <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
-                <p class="profile-book__author">{% for author in book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                <p class="profile-book__author">{% for author in book.book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                 <div class="profile-book__meta">
                   <span class="badge badge--done">Read</span>
                   {% if book.finished_at %}<span class="profile-book__date">{{ book.finished_at|date:"M j, Y" }}</span>{% endif %}
@@ -161,7 +161,7 @@
               </a>
               <div class="profile-book__info">
                 <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
-                <p class="profile-book__author">{% for author in book.book.get_authors %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                <p class="profile-book__author">{% for author in book.book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                 <div class="profile-book__meta">
                   <span class="badge badge--want">Want to Read</span>
                   {% if book.created_at %}<span class="profile-book__date">Added {{ book.created_at|date:"M j, Y" }}</span>{% endif %}

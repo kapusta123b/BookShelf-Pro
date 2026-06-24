@@ -1,5 +1,3 @@
-from django.utils import timezone
-
 from django.db import models
 from django.db.models import Min
 
@@ -8,9 +6,7 @@ from django.conf import settings
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-
-class UserBookQuerySet(models.QuerySet):
-    _SORT_MAP = {
+_SORT_MAP = {
         "title": "book__title",
         "rating": "-book__avg_rating",
         "year": "book__first_publish_date",
@@ -18,13 +14,16 @@ class UserBookQuerySet(models.QuerySet):
         "recently": "-created_at",
     }
 
+class UserBookQuerySet(models.QuerySet):
+    
+
     def tabs_filter(self, value: str) -> "UserBookQuerySet":
         if value and value != "all":
             return self.filter(status=value)
         return self
 
     def sort_by(self, value: str) -> "UserBookQuerySet":
-        if not value or value not in self._SORT_MAP:
+        if not value or value not in _SORT_MAP:
             return self
 
         qs = self.select_related("book").prefetch_related("book__authors")
@@ -32,7 +31,7 @@ class UserBookQuerySet(models.QuerySet):
         if value == "authors":
             qs = qs.annotate(first_author_name=Min("book__authors__name"))
 
-        return qs.order_by(self._SORT_MAP[value])
+        return qs.order_by(_SORT_MAP[value])
 
     def get_counts(self) -> dict:
         return self.aggregate(
@@ -44,7 +43,7 @@ class UserBookQuerySet(models.QuerySet):
 
 
 class UserBook(models.Model):
-    objects = UserBookQuerySet.as_manager()
+    objects = UserBookQuerySet.as_manager() # type: ignore[assignment]
 
     class Status(models.TextChoices):
         WANT_TO_READ = "want_to_read", "Want to read"
@@ -86,21 +85,7 @@ class UserBook(models.Model):
 
     def __str__(self):
         return f"{self.user.username} -- {self.book.title}"
-
-    def change_status(self, status: str) -> bool:
-
-        self.status = status
-
-        if status == self.Status.READING and not self.started_at:
-            self.started_at = timezone.now().date()
-
-        elif status == self.Status.READ and not self.finished_at:
-            self.finished_at = timezone.now().date()
-
-        self.save(update_fields=["status", "started_at", "finished_at"])
-
-        return True
-
+    
     class Meta:
         constraints = [
             models.UniqueConstraint(

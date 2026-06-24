@@ -32,7 +32,7 @@
           <img src="{% get_cover letter='M' cover=review.user_book.book.cover_i %}" alt="Book cover">
         </div>
         <p class="create-review-sidebar__title">{{ review.user_book.book.title }}</p>
-        <p class="create-review-sidebar__author">{% for author in review.user_book.book.get_authors %}
+        <p class="create-review-sidebar__author">{% for author in review.user_book.book.authors.all %}
           {{ author.name }}
         {% endfor %}  </p>
         <div class="create-review-sidebar__rating">

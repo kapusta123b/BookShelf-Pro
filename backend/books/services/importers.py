@@ -259,7 +259,7 @@ class AuthorImport:
         entries: list[dict],
         saved_books: dict[str, Book],
         saved_authors: dict[str, Author],
-        saved_subjects: dict[str, Subject],
+        saved_subjects: dict[str | None, Subject],
     ) -> None:
         book_author_through = Book.authors.through
         book_subject_through = Book.subjects.through
@@ -326,7 +326,7 @@ class BookImport:
 
         if not valid_docs:
 
-            return []
+            return
 
         author_payload: list[Author] = []
         all_subjects: set[str] = set()
