@@ -32,10 +32,13 @@ def change_user_book_status(book_id: int, user, status: str) -> None:
         if created:
             add_activity(user=user, book_id=user_book.book.id, action=status)
 
+        return True
+    
+    return False
+
 
 
 def change_status(user_book: UserBook, status: str) -> bool:
-
     user_book.status = status
 
     if status == user_book.Status.READING and not user_book.started_at:
