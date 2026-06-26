@@ -16,6 +16,7 @@ def paginate(queryset: QuerySet, page_number: Numeric, per_page: Numeric) -> Pag
     
     try:
         return paginator.page(page_number)
+    
 
     except InvalidPage:
 
