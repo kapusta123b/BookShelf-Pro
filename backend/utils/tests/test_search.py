@@ -1,8 +1,12 @@
 import pytest
 
+from tests.factory import create_book, create_user_book
 from library.models import UserBook
 from books.models import Book
 from utils.search import q_search
+
+from library.models import UserBookQuerySet
+
 
 @pytest.mark.django_db
 def test_unknown_search_type_returns_none():
@@ -21,32 +25,26 @@ def test_unknown_search_type_returns_none():
 @pytest.mark.django_db
 def test_search_returns_matching_book(book, user):
 
-    user_book = UserBook.objects.create(book=book, user=user)
-
+    user_book = create_user_book(user, book)
 
     result = q_search(
-        query='Title',
+        query='Harry',
         queryset=UserBook.objects.all(),
         search_type='library'
     )
     
-    assert user_book in result
+    assert result.count() == 1
+    assert result.first() == user_book
 
+@pytest.mark.django_db
+def test_search_not_contains_wrong_user_book(user):
 
-def test_search_not_contains_wrong_book(user, book):
+    book1 = create_book(title='Harry Potter')
 
-    book1 = Book.objects.create(
-        title="Harry Potter",
-        openlibrary_key="OL1"
-    )
+    book2 = create_book()
 
-    book2 = Book.objects.create(
-        title="Lord of the Rings",
-        openlibrary_key="OL2"
-    )
-
-    UserBook.objects.create(user=user, book=book1)
-    UserBook.objects.create(user=user, book=book2)
+    create_user_book(user, book1)
+    create_user_book(user, book2)
 
     result = q_search(
         query='Harry Potter',
@@ -55,3 +53,16 @@ def test_search_not_contains_wrong_book(user, book):
     )
 
     assert book2 not in [obj.book for obj in result]
+
+@pytest.mark.django_db
+def test_search_is_queryset(user, book):
+
+    create_user_book(user, book)
+
+    result = q_search(
+        query='Harry',
+        queryset=UserBook.objects.all(),
+        search_type='library'
+    )
+
+    assert result.exists()

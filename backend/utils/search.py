@@ -1,6 +1,7 @@
 from django.db.models import QuerySet
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
+
 _map = {
     "library": (
         "book__title",
