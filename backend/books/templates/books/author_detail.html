@@ -112,7 +112,7 @@
       <div class="author-detail__books" id="author-books">
         {% for book in page_obj %}
 
-          <a href="{% url 'books:book_detail' 'all' book.id %}" class="author-detail__book">
+          <a href="{% url 'books:book_detail' 'all' book.openlibrary_key %}" class="author-detail__book">
             <div class="author-detail__book-cover">
               {% if book.cover_i %}
 

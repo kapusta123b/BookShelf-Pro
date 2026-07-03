@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load sass_tags %}
+{% load cache %}
 {% load books_tags %}
 {% load static %}
 
@@ -176,29 +177,31 @@
       <h2 class="section__title">Explore categories</h2>
 
       <div class="categories__grid" id="categories-grid">
+        {% cache 86400 global_categories_menu %}
+          {% tag_subjects as subjects %}
+          {% for subject in subjects %}
 
-        {% tag_subjects as subjects %}
-        {% for subject in subjects %}
+            <a href="{% url 'books:index' subject.slug %}" class="categories__card{% if forloop.counter > 8 %} categories__card--hidden{% endif %}">
+              <span class="categories__card-emoji">{{ subject.emoji }}</span>
+              <div class="categories__card-info">
+                <h4>{{ subject.name }}</h4>
+              </div>
+            </a>
 
-          <a href="{% url 'books:index' subject.slug %}" class="categories__card{% if forloop.counter > 8 %} categories__card--hidden{% endif %}">
-            <span class="categories__card-emoji">{{ subject.emoji }}</span>
-            <div class="categories__card-info">
-              <h4>{{ subject.name }}</h4>
-            </div>
-          </a>
-
-        {% endfor %}
+          {% endfor %}
+        {% endcache %}
 
       </div>
-
-      {% tag_subjects as subjects %}
-      {% if subjects.count > 8 %}
-        <div class="categories__more">
-          <button type="button" class="categories__more-btn" id="categories-toggle">
-            Show more
-          </button>
-        </div>
-      {% endif %}
+      {% cache 86400 global_categories_menu %}
+        {% tag_subjects as subjects %}
+        {% if subjects.count > 8 %}
+          <div class="categories__more">
+            <button type="button" class="categories__more-btn" id="categories-toggle">
+              Show more
+            </button>
+          </div>
+        {% endif %}
+      {% endcache %}
 
     </div>
   </section>

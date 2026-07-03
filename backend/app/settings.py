@@ -19,6 +19,11 @@ ALLOWED_HOSTS = environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 USE_X_FORWARDED_HOST = True
 
+if DEBUG:
+    INTERNAL_IPS = [
+        '127.0.0.1', 
+        'localhost',
+    ]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -30,7 +35,8 @@ INSTALLED_APPS = [
     # SCSS
     "sass_processor",
     "compressor",
-    
+    # debug
+    "debug_toolbar",
     # ReCaptcha
     "django_recaptcha",
     # allauth
@@ -55,6 +61,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # allauth
     "allauth.account.middleware.AccountMiddleware",
+    # debugtoolbar
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = "app.urls"
@@ -84,6 +93,13 @@ DATABASES = {
         "PASSWORD": environ["DB_PASS"],
         "HOST": environ["DB_HOST"],
         "PORT": environ["DB_PORT"],
+    }
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": BASE_DIR / "cache",
     }
 }
 

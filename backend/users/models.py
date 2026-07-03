@@ -1,8 +1,18 @@
 from django.db import models
-from django.db.models import Avg
 from django.contrib.auth.models import AbstractUser
+import shortuuid
+
+def generate_short_uuid():
+    return shortuuid.ShortUUID().random(length=10)
 
 class User(AbstractUser):
+    public_id = models.CharField(
+        max_length=10,
+        default=generate_short_uuid,
+        unique=True,
+        editable=False
+    )
+
     first_name = models.CharField(blank=True, verbose_name="First name")
     last_name = models.CharField(blank=True, verbose_name="Last name")
 
@@ -19,6 +29,7 @@ class User(AbstractUser):
             name[0].upper() for name in (self.first_name, self.last_name) if name
         )
         return initials
+    
 
     def __str__(self):
         return self.username
@@ -77,3 +88,9 @@ class RecentActivity(models.Model):
     class Meta:
         db_table = "users_activities"
         ordering = ["-created_at"]
+        
+        indexes = [
+            models.Index(
+                fields=["user", "-created_at"]
+            )
+        ]

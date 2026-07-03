@@ -12,8 +12,7 @@ from library.services import (
 )
 
 
-def create_user():
-    return User.objects.create_user(username="User")
+
 
 def create_book():
     return Book.objects.create(title="Title")

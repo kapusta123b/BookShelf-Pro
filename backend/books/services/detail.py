@@ -1,7 +1,7 @@
 from django.db.models import prefetch_related_objects
 
 from utils.helpers import paginate
-from books.models import Author, Book, Review
+from books.models import Author, Book
 from books.services.client import OpenLibaryClient
 from books.services.importers import AuthorImport, BookImport
 

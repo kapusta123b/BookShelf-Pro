@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-from utils.search import q_search
 from books.models import Author, Book, BookQuerySet, Subject
 from books.services.client import OpenLibaryClient
 from books.services.importers import AuthorImport, BookImport
@@ -35,7 +34,7 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
         else None
     )
 
-    queryset = Book.objects.prefetch_related("subjects", "authors")
+    queryset = Book.objects.all()
 
     if filters.search:
 
@@ -58,6 +57,7 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
         queryset.by_category(filters.subject)
         .by_date(filters.year_from, filters.year_to)
         .by_rating(rating_value)
+        .prefetch_related("subjects", "authors")
     )
 
     if not is_relevance_search:
@@ -73,7 +73,7 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
 def search_authors(filters):
     authors = Author.objects.filter(name__icontains=filters.search)
 
-    if authors.count() < 8:
+    if len(authors) < 8:
         fetch_more_authors(filters.search_by, filters.search, filters.page)
         authors = Author.objects.filter(name__icontains=filters.search)
 
@@ -81,15 +81,14 @@ def search_authors(filters):
         authors__in=authors
     )
 
-
 def search_books(filters):
-    result = Book.objects.filter(title__icontains=filters.search)
+    books = Book.objects.filter(title__icontains=filters.search)
 
-    if result.count() < 8:
+    if len(books) < 8:
         fetch_more_books(filters.search_by, filters.search, filters.page)
-        result = Book.objects.filter(title__icontains=filters.search)
+        books = Book.objects.filter(title__icontains=filters.search)
 
-    return result
+    return books
 
 
 def fetch_more_books(search_by: str, search: str, page: str | int) -> None:

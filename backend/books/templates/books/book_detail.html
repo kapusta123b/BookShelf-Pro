@@ -33,7 +33,7 @@
 
   <div>
     {% for author in book.authors.all %}
-      <a href="{% url "books:author_detail" view.kwargs.subject_slug author.id %}" class="book-detail__authors">
+      <a href="{% url "books:author_detail" view.kwargs.subject_slug author.openlibrary_key %}" class="book-detail__authors">
 
         {{ author.name }}{% if not forloop.last %},{% endif %}
       </a>
@@ -239,7 +239,7 @@
 
     <div class="book-detail__authors-list">
       {% for author in book.authors.all %}
-        <a href="{% url "books:author_detail" view.kwargs.subject_slug author.id %}">
+        <a href="{% url "books:author_detail" view.kwargs.subject_slug author.openlibrary_key %}">
           <div class="book-detail__author">
             <div class="book-detail__author-avatar">{{ author.name|first }}</div>
             <div>

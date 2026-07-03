@@ -38,7 +38,7 @@
 
           {% if user.is_authenticated %}
 
-            <a href="{% url 'library:index' user.id %}" class="nav__link">My Library</a>
+            <a href="{% url 'library:index' user.public_id %}" class="nav__link">My Library</a>
 
           {% endif %}
         </div>
@@ -56,11 +56,11 @@
                 <img class="chevron" src="{% static 'deps/svg/chevron-down.svg' %}" alt="">
               </button>
               <div class="nav__user-menu-dropdown">
-                <a href="{% url 'users:profile' user.id %}" class="nav__user-menu-item">
+                <a href="{% url 'users:profile' user.public_id %}" class="nav__user-menu-item">
                   <img src="{% static 'deps/svg/user.svg' %}" alt="">
                   Profile
                 </a>
-                <a href="{% url 'library:index' user.id %}" class="nav__user-menu-item">
+                <a href="{% url 'library:index' user.public_id %}" class="nav__user-menu-item">
                   <img src="{% static 'deps/svg/library.svg' %}" alt="">
                   My Library
                 </a>
@@ -103,7 +103,7 @@
       </a>
       {% if user.is_authenticated %}
 
-        <a href="{% url 'library:index' user.id %}" class="nav-mobile__link">
+        <a href="{% url 'library:index' user.public_id %}" class="nav-mobile__link">
           <img src="{% static 'deps/svg/library.svg' %}" alt="">
           My Library
         </a>
@@ -113,7 +113,7 @@
       <div class="nav-mobile__divider"></div>
 
       {% if user.is_authenticated %}
-        <a href="{% url 'users:profile' user.id %}" class="nav-mobile__link">
+        <a href="{% url 'users:profile' user.public_id %}" class="nav-mobile__link">
           <img src="{% static 'deps/svg/user.svg' %}" alt="">
           Profile
         </a>
@@ -136,7 +136,6 @@
           <a href="{% url 'users:register' %}" class="nav-mobile__btn nav-mobile__btn--primary">Get Started</a>
         {% endif %}
       </div>
-
     </div>
 
     <div class="search-overlay">

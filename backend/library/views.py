@@ -12,7 +12,8 @@ from users.models import User
 
 class LibraryView(LoginRequiredMixin, DetailView):
     model = User
-    pk_url_kwarg = "user_id"
+    slug_field = 'public_id'
+    slug_url_kwarg = 'public_id'
     template_name = "library/index.html"
     context_object_name = "library_user"
 
@@ -25,7 +26,7 @@ class LibraryView(LoginRequiredMixin, DetailView):
         sort = self.request.GET.get("sort", "recently")
         reverse_sort = self.request.GET.get("reverse_sort") == "true"
 
-        library_data = get_library_data(self.request.user, filter_value, sort, reverse_sort)
+        library_data = get_library_data(self.object, filter_value, sort, reverse_sort)
         if search:
             library_data["books"] = q_search(
                 query=search, queryset=library_data["books"], search_type="library"

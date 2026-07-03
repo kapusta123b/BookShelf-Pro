@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load sass_tags %}
+{% load cache %}
 {% load books_tags %}
 {% load static %}
 
@@ -78,24 +79,24 @@
               <option value="relevance" {% if not request.GET.sort or request.GET.sort == 'relevance' %}selected{% endif %}>Relevance</option>
               <option value="-avg_rating" {% if request.GET.sort == '-avg_rating' %}selected{% endif %}>Rated</option>
               <option value="-first_publish_date" {% if request.GET.sort == '-first_publish_date' %}selected{% endif %}>Year</option>
-              <option value="title" {% if request.GET.sort == 'title' %}selected{% endif %}>Title A–Z</option>
+              <option value="title" {% if request.GET.sort == 'title' %}selected{% endif %}>Title {% if not request.GET.reverse_sort %}A–Z{% else %}Z-A{% endif %}</option>
             </select>
           </form>
-          
+
           {% if request.GET.reverse_sort == 'true' %}
-  
+
             <a href="{% url_replace reverse_sort='' %}" class="catalog__sort__reverse is-active">
               <img src="{% static 'deps/svg/sort.svg' %}" alt="">
               Normal sort
             </a>
-          
+
           {% else %}
-          
+
             <a href="{% url_replace reverse_sort='true' %}" class="catalog__sort__reverse">
               <img src="{% static 'deps/svg/sort.svg' %}" alt="">
               Reverse sort
             </a>
-          
+
           {% endif %}
         </div>
 
@@ -145,15 +146,17 @@
         <div class="filters__group-body">
           <div class="filters__checkboxes">
 
-            {% tag_subjects as subjects %}
+            {% cache 86400 global_categories_menu view.kwargs.subject_slug %}
+              {% tag_subjects as subjects %}
 
-            <a href="{% url 'books:index' 'all' %}" class="filters__tag {% if view.kwargs.subject_slug == 'all' %}active{% endif %}">All</a>
+              <a href="{% url 'books:index' 'all' %}" class="filters__tag {% if view.kwargs.subject_slug == 'all' %}active{% endif %}">All</a>
 
-            {% for subject in subjects %}
+              {% for subject in subjects %}
 
-              <a href="{% url "books:index" subject.slug %}" class="filters__tag {% if view.kwargs.subject_slug == subject.slug %}active{% endif %}">{{ subject.name }}</a>
+                <a href="{% url "books:index" subject.slug %}" class="filters__tag {% if view.kwargs.subject_slug == subject.slug %}active{% endif %}">{{ subject.name }}</a>
 
-            {% endfor %}
+              {% endfor %}
+            {% endcache %}
           </div>
         </div>
       </div>
@@ -318,7 +321,7 @@
           <h2 class="authors-results__title">Authors</h2>
           <div class="authors-results__list">
             {% for author in matched_authors %}
-              <a href="{% url "books:author_detail" view.kwargs.subject_slug author.id %}" class="author-card">
+              <a href="{% url "books:author_detail" view.kwargs.subject_slug author.openlibrary_key %}" class="author-card">
                 <span class="author-card__name">{{ author.name }}</span>
                 {% if author.birth_date %}
                   <span class="author-card__dates">
@@ -366,14 +369,14 @@
             <div class="book-card-catalog__body">
 
               <div class="book-card-catalog__genre">
-                <span class="badge badge--primary">{{ book.subjects.first.name }}</span>
+                <span class="badge badge--primary">{{ book.first_subjects }}</span>
               </div>
 
-              <a href="{% url "books:book_detail" view.kwargs.subject_slug book.id %}" class="book-card-catalog__title">{{ book.title }}</a>
+              <a href="{% url "books:book_detail" view.kwargs.subject_slug book.openlibrary_key %}" class="book-card-catalog__title">{{ book.title }}</a>
               <p class="book-card-catalog__author">
                 {% for author in book.authors.all %}
 
-                  <a href="{% url "books:author_detail" view.kwargs.subject_slug author.id %}">
+                  <a href="{% url "books:author_detail" view.kwargs.subject_slug author.openlibrary_key %}">
                     {{ author.name }} {% if not forloop.last %}, {% endif %}
                   </a>
 

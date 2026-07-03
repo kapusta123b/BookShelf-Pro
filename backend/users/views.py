@@ -9,18 +9,18 @@ from users.forms import EditProfileForm
 
 class ProfileView(LoginRequiredMixin, DetailView):
     model = User
-    pk_url_kwarg = "user_id"
     template_name = "users/profile.html"
     context_object_name = "profile_user"
+    slug_field = 'public_id'
+    slug_url_kwarg = 'public_id'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         show_more = True if "show_more" in self.request.GET else False
-        user = self.request.user
 
-        data = get_profile_data(user)
+        data = get_profile_data(self.object)
 
-        activity = get_user_activity(user, show_more)
+        activity = get_user_activity(self.object, show_more)
 
         context.update(
             {

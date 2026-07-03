@@ -1,6 +1,5 @@
 from django.db import models
-
-from django.db.models import QuerySet
+from django.urls import reverse
 
 
 class Subject(models.Model):
@@ -95,7 +94,7 @@ class Book(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=True)
     avg_rating = models.FloatField(default=0)
     rating_count = models.PositiveIntegerField(default=0)
-
+    
     @property
     def rating_fill_percent(self) -> float:
         return round((self.avg_rating / 5) * 100, 2)
@@ -103,6 +102,11 @@ class Book(models.Model):
     @property
     def publish_year(self) -> int | None:
         return self.first_publish_date.year if self.first_publish_date else None
+    
+    @property
+    def first_subject(self):
+        subjects = self.subjects.all()
+        return subjects[0] if subjects else None
 
     def __str__(self) -> str:
         return f"{self.title} - {self.publish_year}"

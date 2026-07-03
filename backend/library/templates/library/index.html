@@ -144,12 +144,12 @@
           </div>
           <div class="library-book__body">
 
-            <a href="{% url "books:book_detail" 'all' lib_book.book.id %}" class="library-book__title">{{ lib_book.book.title }}</a>
+            <a href="{% url "books:book_detail" 'all' lib_book.book.openlibrary_key %}" class="library-book__title">{{ lib_book.book.title }}</a>
 
             <p class="library-book__author">
               {% for author in lib_book.book.authors.all %}
 
-                <a href="{% url "books:author_detail" 'all' author.id %}">{{ author.name }}</a>
+                <a href="{% url "books:author_detail" 'all' author.openlibrary_key %}">{{ author.name }}</a>
 
               {% endfor %}
             </p>
@@ -179,7 +179,7 @@
               </button>
               {% if lib_book.status == 'read' and lib_book.id not in reviews_ids %}
 
-                <a href="{% url "books:create_review" lib_book.book.id %}" class="library-book__action-btn">
+                <a href="{% url "books:create_review" lib_book.book.openlibrary_key %}" class="library-book__action-btn">
                   <img src="{% static 'deps/svg/star.svg' %}" alt="">
                   Write a Review
                 </a>

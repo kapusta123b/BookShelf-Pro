@@ -6,7 +6,7 @@ from users.models import User
 
 @pytest.fixture
 def user(db):
-    return User.objects.create_user(username="User")
+    return User.objects.create_user(username="User1")
 
 @pytest.fixture
 def book(db):

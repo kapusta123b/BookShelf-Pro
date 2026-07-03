@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 
 from django.views.generic import (
@@ -76,8 +76,12 @@ class CatalogView(ListView):
             if self.request.user.is_authenticated
             else set()
         )
+        
+        page_obj = context["page_obj"]
+        if subject_slug and subject_slug != "all":
+            context["queryset_count_current"] = page_obj.paginator.count
+
         context["queryset_count_total"] = Book.objects.count()
-        context["queryset_count_current"] = self.get_queryset().count()
         context["current_subject"] = get_subject(subject_slug)
         context["matched_authors"] = get_matched_authors(self._get_filters())
 
@@ -103,10 +107,14 @@ class BookDetailView(DetailView):
     model = Book
     template_name = "books/book_detail.html"
     context_object_name = "book"
-    pk_url_kwarg = "book_id"
+    slug_url_kwarg = 'openlibrary_key'
+    slug_field = 'openlibrary_key'
 
     def get_object(self, queryset=None):
-        return enrich_book_detail(super().get_object(queryset))
+        opl_key = self.kwargs.get('opl_key')
+        
+        book = get_object_or_404(Book, openlibrary_key=opl_key)
+        return enrich_book_detail(book)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -120,10 +128,14 @@ class AuthorDetailView(DetailView):
     model = Author
     template_name = "books/author_detail.html"
     context_object_name = "author"
-    pk_url_kwarg = "author_id"
+    slug_field = 'openlibrary_key'
+    slug_url_kwarg = 'openlibrary_key'
 
     def get_object(self, queryset=None):
-        return enrich_author_detail(super().get_object(queryset))
+        opl_key = self.kwargs.get('opl_key')
+        
+        author = get_object_or_404(Author, openlibrary_key=opl_key)
+        return enrich_author_detail(author)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

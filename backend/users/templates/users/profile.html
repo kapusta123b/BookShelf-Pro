@@ -88,11 +88,11 @@
 
           {% for book in library_books %}
             <div class="profile-book">
-              <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
+              <a href="{% url 'books:book_detail' 'all' book.book.openlibrary_key %}" class="profile-book__cover book-cover-3">
                 <img src="{% get_cover letter='M' cover=book.book.cover_i %}" alt="{{ book.book.title }}">
               </a>
               <div class="profile-book__info">
-                <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
+                <a href="{% url 'books:book_detail' 'all' book.book.openlibrary_key %}" class="profile-book__title">{{ book.book.title }}</a>
                 <p class="profile-book__author">{% for author in book.book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                 <div class="profile-book__meta">
                   <span class="badge badge--reading">Reading</span>
@@ -122,11 +122,11 @@
 
           {% for book in read_books_preview %}
             <div class="profile-book">
-              <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
+              <a href="{% url 'books:book_detail' 'all' book.book.openlibrary_key %}" class="profile-book__cover book-cover-3">
                 <img src="{% get_cover letter='M' cover=book.book.cover_i %}" alt="{{ book.book.title }}">
               </a>
               <div class="profile-book__info">
-                <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
+                <a href="{% url 'books:book_detail' 'all' book.book.openlibrary_key %}" class="profile-book__title">{{ book.book.title }}</a>
                 <p class="profile-book__author">{% for author in book.book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                 <div class="profile-book__meta">
                   <span class="badge badge--done">Read</span>
@@ -156,11 +156,11 @@
 
           {% for book in want_to_read_preview %}
             <div class="profile-book">
-              <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__cover book-cover-3">
+              <a href="{% url 'books:book_detail' 'all' book.book.openlibrary_key %}" class="profile-book__cover book-cover-3">
                 <img src="{% get_cover letter='M' cover=book.book.cover_i %}" alt="{{ book.book.title }}">
               </a>
               <div class="profile-book__info">
-                <a href="{% url 'books:book_detail' 'all' book.book.id %}" class="profile-book__title">{{ book.book.title }}</a>
+                <a href="{% url 'books:book_detail' 'all' book.book.openlibrary_key %}" class="profile-book__title">{{ book.book.title }}</a>
                 <p class="profile-book__author">{% for author in book.book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                 <div class="profile-book__meta">
                   <span class="badge badge--want">Want to Read</span>
@@ -189,12 +189,12 @@
           {% for review in reviews %}
 
             <div class="profile-review">
-              <a href="{% url "books:book_detail" 'all' review.user_book.book.id %}" class="profile-review__cover">
+              <a href="{% url "books:book_detail" 'all' review.user_book.book.openlibrary_key %}" class="profile-review__cover">
                 <img src="{% get_cover letter='M' cover=review.user_book.book.cover_i %}" alt="Book cover">
               </a>
               <div class="profile-review__body">
                 <div class="profile-review__header">
-                  <a href="{% url "books:book_detail" 'all' review.user_book.book.id %}" class="profile-review__book-title">
+                  <a href="{% url "books:book_detail" 'all' review.user_book.book.openlibrary_key %}" class="profile-review__book-title">
                     {{ review.user_book.book.title }}</a>
                   <span class="profile-review__rating">{{ review.user_book.rating|default:"0" }}&thinsp;★</span>
                 </div>
@@ -234,19 +234,19 @@
                 <div class="activity-item__content">
                   <p class="activity-item__text">
                     {% if item.action == 'added' %}
-                      Added <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a> to your library
+                      Added <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a> to your library
                     {% elif item.action == 'want_to_read' %}
-                      Added <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a> to Want to Read
+                      Added <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a> to Want to Read
                     {% elif item.action == 'reading' %}
-                      Started reading <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                      Started reading <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a>
                     {% elif item.action == 'read' %}
-                      Finished reading <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                      Finished reading <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a>
                     {% elif item.action == 'rated' %}
-                      Rated <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                      Rated <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a>
                     {% elif item.action == 'reviewed' %}
-                      Reviewed <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                      Reviewed <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a>
                     {% elif item.action == 'change_rate' %}
-                      Сhanged the rating for the book  <a href="{% url 'books:book_detail' 'all' item.book.id %}">{{ item.book.title }}</a>
+                      Сhanged the rating for the book  <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a>
                     {% endif %}
                   </p>
                   <p class="activity-item__time">{{ item.created_at|timesince }} ago</p>
