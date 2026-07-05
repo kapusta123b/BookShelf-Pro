@@ -5,7 +5,7 @@ from books.models import Book
 from users.models import User
 from library.models import UserBook
 
-from library.services import (
+from backend.library.services.services import (
     add_book_to_library,
     change_status,
     change_user_book_status,

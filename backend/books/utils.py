@@ -11,8 +11,7 @@ def import_subjects_from_the_map(subject: str) -> str:
     return " OR ".join(parts)
 
 
-def get_user_book_for_review(book_id, user):
+def get_user_book_for_review(opl_key, user):
 
-    queryset = UserBook.objects.select_related("book").prefetch_related("book__authors")
-
-    return get_object_or_404(queryset, book_id=book_id, user=user)
+    queryset = UserBook.objects.select_related("book").prefetch_related("book__authors", 'book__subjects')
+    return get_object_or_404(queryset, book__openlibrary_key=opl_key, user=user)

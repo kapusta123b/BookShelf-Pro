@@ -44,7 +44,7 @@
         </div>
 
         <div class="update-review-sidebar__danger">
-          <form method="post" action="{% url "books:delete_review" review.id %}" onsubmit="return confirm('Delete this review? This cannot be undone.')">
+          <form method="post" action="{% url "books:delete_review" review.hashid %}" onsubmit="return confirm('Delete this review? This cannot be undone.')">
             {% csrf_token %}
             <button type="submit" class="update-review-sidebar__delete">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

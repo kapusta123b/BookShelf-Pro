@@ -45,7 +45,7 @@
         </div>
       </div>
 
-      <form method="post" action="{% url 'books:create_review' review_book.book.id %}">
+      <form method="post" action="{% url 'books:create_review' review_book.book.openlibrary_key %}">
         {% csrf_token %}
 
         <div class="create-review-form">

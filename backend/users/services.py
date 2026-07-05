@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from users.models import User
 from django.db.models import Avg
 

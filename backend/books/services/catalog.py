@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from django.db.models import QuerySet
+
 from books.models import Author, Book, BookQuerySet, Subject
 from books.services.client import OpenLibaryClient
 from books.services.importers import AuthorImport, BookImport
@@ -101,11 +103,11 @@ def fetch_more_authors(search_by: str, search: str, page: str | int) -> None:
     AuthorImport().save_authors_from_search(docs=docs)
 
 
-def get_matched_authors(filters: CatalogFilters):
+def get_matched_authors(filters: CatalogFilters) -> QuerySet[Author]:
     if filters.search and filters.search_by == "author":
         return Author.objects.filter(name__icontains=filters.search)
 
-    return None
+    return Author.objects.none()
 
 
 def get_subject(slug: str | None) -> Subject | None:

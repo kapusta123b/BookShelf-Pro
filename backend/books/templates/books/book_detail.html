@@ -194,7 +194,7 @@
 
             {% if review.user_book.user.id == user.id %}
               <div class="book-detail__review-footer">
-                <a href="{% url "books:update_review" review.id %}" class="book-detail__review-edit">
+                <a href="{% url "books:update_review" review.hashid %}" class="book-detail__review-edit">
                   <img src="{% static 'deps/svg/edit.svg' %}" alt="">
                   Edit review
                 </a>

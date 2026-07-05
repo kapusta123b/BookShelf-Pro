@@ -27,14 +27,17 @@ class CreateReviewForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        self.book_id = kwargs.pop("book_id", None)
+        self.opl_key = kwargs.pop("opl_key", None)
         super().__init__(*args, **kwargs)
+
 
     def save(self, commit=True):
         review = super().save(commit=False)
 
-        user_book = get_object_or_404(UserBook, book_id=self.book_id, user=self.user)
+        print(review)
 
+        user_book = get_object_or_404(UserBook, book__openlibrary_key=self.opl_key, user=self.user)
+    
         review.user_book = user_book
 
         if commit:

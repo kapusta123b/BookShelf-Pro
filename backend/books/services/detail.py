@@ -34,10 +34,12 @@ def get_author_books(author: Author, page: str | int, load_from_api=False):
         )
         BookImport().save_from_search(docs=docs)
 
+    queryset = Book.objects.filter(authors=author).prefetch_related(
+        "authors", "subjects"
+    )
+
     return paginate(
-        queryset=Book.objects.filter(authors=author).prefetch_related(
-            "authors", "subjects"
-        ),
+        queryset=queryset,
         page_number=page,
         per_page=10,
     )

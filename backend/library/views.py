@@ -3,51 +3,46 @@ from django.views.generic import DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 
-from library.selectors import get_library_data
-from utils.helpers import paginate
-from utils.search import q_search
-from library.services import add_book_to_library, change_user_book_status
+from django.core.cache import cache
+
+from library.services.changes import change_user_book_status
+from library.services.library import LibraryFilters, fetch_library_data
+
+from utils.cache import get_cache_key
+from library.services.services import add_book_to_library
 from users.models import User
 
 
 class LibraryView(LoginRequiredMixin, DetailView):
     model = User
-    slug_field = 'public_id'
-    slug_url_kwarg = 'public_id'
+    slug_field = "public_id"
+    slug_url_kwarg = "public_id"
     template_name = "library/index.html"
     context_object_name = "library_user"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        search = self.request.GET.get("search")
-        filter_value = self.request.GET.get("filter", "all")
-        page = self.request.GET.get("page", 1)
-        sort = self.request.GET.get("sort", "recently")
-        reverse_sort = self.request.GET.get("reverse_sort") == "true"
+        filters = self._get_filters()
+        cache_key = get_cache_key(f"library:user={self.object.public_id}", filters)
 
-        library_data = get_library_data(self.object, filter_value, sort, reverse_sort)
-        if search:
-            library_data["books"] = q_search(
-                query=search, queryset=library_data["books"], search_type="library"
-            )
+        def fetch_data():
+            return fetch_library_data(self.object, filters)
 
-        paginate_books = paginate(library_data["books"], page, per_page=10)
-
-        context.update(
-            {
-                "page_obj": paginate_books,
-                "reviews": library_data["reviews"],
-                "active_filter": filter_value,
-                "count_total": library_data["counts"]["total"],
-                "count_reading": library_data["counts"]["reading"],
-                "count_want_to_read": library_data["counts"]["want"],
-                "count_finished": library_data["counts"]["read"],
-                "reviews_ids": library_data["reviews_ids"],
-            }
-        )
-
+        library_data = cache.get_or_set(cache_key, fetch_data, timeout=600)
+        context.update(library_data)
+        
         return context
+
+    def _get_filters(self) -> LibraryFilters:
+        get = self.request.GET
+        return LibraryFilters(
+            search=get.get("search"),
+            filter_value=get.get("filter", "all"),
+            sort=get.get("sort", "recently"),
+            page=get.get("page", 1),
+            reverse_sort=get.get("reverse_sort") == "true",
+        )
 
 
 class AddToLibraryView(LoginRequiredMixin, View):

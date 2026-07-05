@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django_hashids import HashidsField
 
 
 class Subject(models.Model):
@@ -118,6 +119,8 @@ class Book(models.Model):
 
 
 class Review(models.Model):
+    hashid = HashidsField(real_field_name='id', min_length=5)
+    
     user_book = models.OneToOneField(
         "library.UserBook",
         on_delete=models.CASCADE,

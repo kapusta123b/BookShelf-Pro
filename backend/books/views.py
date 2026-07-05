@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 
+from django.core.cache import cache
+
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -12,6 +14,7 @@ from django.views.generic import (
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from utils.cache import get_cache_key
 from books.utils import get_user_book_for_review
 
 from books.forms import CreateReviewForm, UpdateReviewForm
@@ -30,15 +33,16 @@ from books.services.detail import (
     enrich_author_detail,
     enrich_book_detail,
     get_author_books,
-
 )
 from books.services.rating import rate_book
 
 from books.selectors import (
     get_review_object,
+    get_review_queryset,
     get_reviews,
     get_user_book_context,
 )
+
 
 class CatalogView(ListView):
     template_name = "books/index.html"
@@ -60,30 +64,49 @@ class CatalogView(ListView):
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        if not hasattr(self, "_cached_queryset"):
-            self._cached_queryset = get_catalog_queryset(
-                self._get_filters(), self.request.user
-            )
-
-        return self._cached_queryset
+        filters = self._get_filters()
+        return get_catalog_queryset(filters, self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        filters = self._get_filters()
         subject_slug = self.kwargs.get("subject_slug")
+
+        cache_key = get_cache_key("catalog_context", filters)
+
+        def fetch_paginated_data():
+            return list(context["object_list"])
+
+        context["object_list"] = cache.get_or_set(
+            cache_key, fetch_paginated_data, timeout=300
+        )
+        context["page_obj"].object_list = context["object_list"]
+        context["books"] = context["object_list"]
 
         context["user_library_ids"] = (
             set(self.request.user.library_books.values_list("book_id", flat=True))
             if self.request.user.is_authenticated
             else set()
         )
-        
+
         page_obj = context["page_obj"]
         if subject_slug and subject_slug != "all":
             context["queryset_count_current"] = page_obj.paginator.count
 
-        context["queryset_count_total"] = Book.objects.count()
-        context["current_subject"] = get_subject(subject_slug)
-        context["matched_authors"] = get_matched_authors(self._get_filters())
+        context["queryset_count_total"] = cache.get_or_set(
+            "catalog_total_count", lambda: Book.objects.count(), timeout=30
+        )
+
+        context["current_subject"] = cache.get_or_set(
+            f"subject_{subject_slug}", lambda: get_subject(subject_slug), timeout=600
+        )
+
+        authors_cache_key = get_cache_key("catalog_authors", filters)
+        context["matched_authors"] = cache.get_or_set(
+            authors_cache_key,
+            lambda: list(get_matched_authors(filters)),
+            timeout=600,
+        )
 
         return context
 
@@ -107,19 +130,26 @@ class BookDetailView(DetailView):
     model = Book
     template_name = "books/book_detail.html"
     context_object_name = "book"
-    slug_url_kwarg = 'openlibrary_key'
-    slug_field = 'openlibrary_key'
+    slug_url_kwarg = "opl_key"
+    slug_field = "openlibrary_key"
 
     def get_object(self, queryset=None):
-        opl_key = self.kwargs.get('opl_key')
+        book = super().get_object(queryset)
         
-        book = get_object_or_404(Book, openlibrary_key=opl_key)
         return enrich_book_detail(book)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update(get_user_book_context(self.request.user, self.object))
-        context.update(get_reviews(self.object))
+        book = self.object
+        
+        context.update(get_user_book_context(self.request.user, book))
+
+        reviews_cache_key = f"book_reviews_{book.openlibrary_key}"
+        
+        def fetch_cached_reviews():
+            return list(get_reviews(book))
+            
+        context["reviews"] = cache.get_or_set(reviews_cache_key, fetch_cached_reviews, timeout=600)
 
         return context
 
@@ -128,22 +158,35 @@ class AuthorDetailView(DetailView):
     model = Author
     template_name = "books/author_detail.html"
     context_object_name = "author"
-    slug_field = 'openlibrary_key'
-    slug_url_kwarg = 'openlibrary_key'
+    slug_field = "openlibrary_key"
+    slug_url_kwarg = "opl_key"
 
     def get_object(self, queryset=None):
-        opl_key = self.kwargs.get('opl_key')
-        
+        opl_key = self.kwargs.get("opl_key")
+
         author = get_object_or_404(Author, openlibrary_key=opl_key)
         return enrich_author_detail(author)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         page = self.request.POST.get("page") or self.request.GET.get("page", 1)
+        opl_key = self.kwargs.get("opl_key")
 
-        context["page_obj"] = get_author_books(
-            author=self.object, load_from_api=False, page=page
+        author_books_cache_key = f"author_books:{opl_key}_page={page}"
+
+        def fetch_author_books():
+            paginator_obj = get_author_books(
+                author=self.object, load_from_api=False, page=page
+            )
+
+            paginator_obj.object_list = list(paginator_obj.object_list)
+            return paginator_obj
+
+        context["page_obj"] = cache.get_or_set(
+            author_books_cache_key, fetch_author_books, timeout=300
         )
+
+        context["books"] = context["page_obj"].object_list
 
         return context
 
@@ -181,27 +224,27 @@ class CreateReviewView(LoginRequiredMixin, CreateView):
     form_class = CreateReviewForm
 
     def get_success_url(self):
-        book_id = self.kwargs.get("book_id")
+        opl_key = self.kwargs.get("opl_key")
         return reverse(
             "books:book_detail",
-            kwargs={"book_id": book_id, "subject_slug": "all"},
+            kwargs={"opl_key": opl_key, "subject_slug": "all"},
         )
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
 
         kwargs["user"] = self.request.user
-        kwargs["book_id"] = self.kwargs.get("book_id")
+        kwargs["opl_key"] = self.kwargs.get("opl_key")
 
         return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        book_id = self.kwargs.get("book_id")
+        opl_key = self.kwargs.get("opl_key")
 
         context["review_book"] = get_user_book_for_review(
-            book_id=book_id, user=self.request.user
+            opl_key=opl_key, user=self.request.user
         )
 
         return context
@@ -210,35 +253,49 @@ class CreateReviewView(LoginRequiredMixin, CreateView):
 class UpdateReviewView(LoginRequiredMixin, UpdateView):
     template_name = "books/update_review.html"
     model = Review
-    pk_url_kwarg = "review_id"
     context_object_name = "review"
     form_class = UpdateReviewForm
 
+    def get_object(self, queryset=None):
+
+        current_queryset = super().get_queryset()
+
+        return get_review_object(
+            hash_id=self.kwargs.get("review_hashid"), queryset=current_queryset
+        )
+
     def get_queryset(self):
-        return get_review_object(self.request.user)
+        return get_review_queryset(self.request.user)
 
     def get_success_url(self):
         return reverse(
             "books:book_detail",
             kwargs={
                 "subject_slug": "all",
-                "book_id": self.object.user_book.book_id,
+                "opl_key": self.object.user_book.book.openlibrary_key,
             },
         )
 
 
 class DeleteReviewView(LoginRequiredMixin, DeleteView):
     model = Review
-    pk_url_kwarg = "review_id"
+
+    def get_object(self, queryset=None):
+
+        current_queryset = super().get_queryset()
+
+        return get_review_object(
+            hash_id=self.kwargs.get("review_hashid"), queryset=current_queryset
+        )
 
     def get_queryset(self):
-        return get_review_object(self.request.user)
+        return get_review_queryset(self.request.user)
 
     def get_success_url(self):
         return reverse(
             "books:book_detail",
             kwargs={
                 "subject_slug": "all",
-                "book_id": self.object.user_book.book_id,
+                "opl_key": self.object.user_book.book.openlibrary_key,
             },
         )

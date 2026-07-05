@@ -186,3 +186,7 @@ ACCOUNT_FORMS = {
     "login": "users.forms.UserLoginForm",
     "signup": "users.forms.UserSignUpForm",
 }
+
+
+#django-hashid
+DJANGO_HASHIDS_SALT = SECRET_KEY    
