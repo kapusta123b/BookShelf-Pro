@@ -430,6 +430,31 @@
   }
 }
 
+.profile-view-library-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: 1px solid $border;
+  border-radius: $radius;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  font-family: $font-family;
+  color: $text-primary;
+  background: $bg-card;
+  cursor: pointer;
+  transition: $transition-fast;
+  text-decoration: none;
+  
+  &:hover {
+      border-color: $primary;
+      color: $primary;
+      background-color: $primary-muted;
+    }
+}
+
 .profile-stats {
   background-color: $bg-card;
   border: 1px solid $border;

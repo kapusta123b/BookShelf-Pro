@@ -1,6 +1,7 @@
 import logging
 
 from httpx import Client
+from requests import status_codes
 
 from books.utils import import_subjects_from_the_map
 
@@ -13,7 +14,7 @@ _http_client = Client(
     headers={
         "User-Agent": "BookShelf Pro/1.0, https://github.com/kapusta123b/BookShelf-Pro"
     },
-    timeout=10,
+    timeout=25,
     http2=True,
     follow_redirects=True,
 )
@@ -21,16 +22,19 @@ _http_client = Client(
 
 class OpenLibaryClient:
 
-    def _get(self, path: str, params: dict | None) -> dict | None:
+    def _get(self, path: str, params: dict | None) -> tuple[dict | None, int | None]:
+        status_code = None
+
         try:
             response = _http_client.get(path, params=params)
+            status_code = response.status_code
             response.raise_for_status()
 
-            return response.json()
+            return response.json(), status_code
 
         except Exception:
             logger.exception("OpenLibrary request failed: %s", path)
-            return None
+            return None, status_code
 
     def search(
         self, argument: str, query: str, page: str | None, limit: int = 10
@@ -40,7 +44,7 @@ class OpenLibaryClient:
             query = import_subjects_from_the_map(subject=query)
             argument = "q"
 
-        data = self._get(
+        data, status_code = self._get(
             path="/search.json",
             params={
                 argument: query,
@@ -50,10 +54,12 @@ class OpenLibaryClient:
             },
         )
 
-        return data.get("docs", []) if data else None
+        return data.get("docs", []) if data and status_code == 200 else None
 
     def get_detail(self, type: str, key: str) -> dict | None:
-        return self._get(path=f"/{type}/{key}.json", params=None)
+        data, status_code = self._get(path=f"/{type}/{key}.json", params=None)
+        return data if status_code == 200 else None
+        
 
     def search_author_works(
         self, author_key: str, page: str | int | None = 1, limit: int = 30

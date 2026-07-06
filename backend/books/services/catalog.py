@@ -1,6 +1,11 @@
+from curses.ascii import isdigit
 from dataclasses import dataclass
 
+from string import ascii_lowercase
+
 from django.db.models import QuerySet
+from django.shortcuts import redirect
+from django.urls import reverse
 
 from books.models import Author, Book, BookQuerySet, Subject
 from books.services.client import OpenLibaryClient
@@ -22,14 +27,16 @@ class CatalogFilters:
 
 
 def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
-    is_relevance_search = bool(filters.search) and filters.search_by == "title" and (
-        not filters.sort or filters.sort == "relevance"
+    is_relevance_search = (
+        bool(filters.search)
+        and filters.search_by == "title"
+        and (not filters.sort or filters.sort == "relevance")
     )
 
     ordering = (
         filters.sort if filters.sort and filters.sort != "relevance" else "date_created"
     )
-    
+
     rating_value = (
         int(filters.rating)
         if filters.rating and filters.rating not in ("", "all")
@@ -65,14 +72,13 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> "BookQuerySet":
     if not is_relevance_search:
         qs = qs.order_by(ordering)
 
-
     if filters.reverse_sort:
         qs = qs.reverse()
 
     return qs
 
 
-def search_authors(filters):
+def search_authors(filters: CatalogFilters):
     authors = Author.objects.filter(name__icontains=filters.search)
 
     if len(authors) < 8:
@@ -83,7 +89,8 @@ def search_authors(filters):
         authors__in=authors
     )
 
-def search_books(filters):
+
+def search_books(filters: CatalogFilters):
     books = Book.objects.filter(title__icontains=filters.search)
 
     if len(books) < 8:
@@ -91,6 +98,21 @@ def search_books(filters):
         books = Book.objects.filter(title__icontains=filters.search)
 
     return books
+
+
+def search_by_isbn(filters: CatalogFilters):
+    isbn = (
+        filters.search.lower().split("isbn")[-1].strip().replace("-", "")
+    )  # make ISBN 978-5-389-07435-4 like 9785389074354
+
+    book = Book.objects.filter(isbns__contains=[isbn])
+
+    if not book and isbn.isdigit():
+        data = OpenLibaryClient().get_detail(type="isbn", key=isbn)
+        BookImport().save_from_isbn(data=data, searched_isbn=isbn)
+        book = Book.objects.filter(isbns__contains=[isbn])
+
+    return book
 
 
 def fetch_more_books(search_by: str, search: str, page: str | int) -> None:

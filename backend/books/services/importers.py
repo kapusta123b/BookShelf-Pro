@@ -55,7 +55,9 @@ class SubjectImport:
         ]
 
         if to_create:
-            Subject.objects.bulk_create(to_create, batch_size=1000, ignore_conflicts=True)
+            Subject.objects.bulk_create(
+                to_create, batch_size=1000, ignore_conflicts=True
+            )
 
         return list(Subject.objects.filter(slug__in=slugs))
 
@@ -82,10 +84,9 @@ class AuthorImport:
             return None
 
         valid_docs = [doc for doc in docs if self._is_valid_author(doc)]
-        
+
         if not valid_docs:
             return []
-        
 
         payload = [
             Author(
@@ -168,13 +169,18 @@ class AuthorImport:
 
         saved_authors = {
             author.openlibrary_key: author
-            for author in Author.objects.filter(openlibrary_key__in=list(all_author_keys))
+            for author in Author.objects.filter(
+                openlibrary_key__in=list(all_author_keys)
+            )
         }
 
         saved_subjects = {
             subject.slug: subject
             for subject in Subject.objects.filter(
-                slug__in=[slugify(name) for name in SubjectImport()._resolve(list(all_subjects))]
+                slug__in=[
+                    slugify(name)
+                    for name in SubjectImport()._resolve(list(all_subjects))
+                ]
             )
         }
 
@@ -220,7 +226,7 @@ class AuthorImport:
     def _bulk_upsert_authors(self, authors: list[Author]) -> None:
         if not authors:
             return
-        
+
         unique_authors = {}
         for author in authors:
             if author.openlibrary_key:
@@ -320,7 +326,6 @@ class BookImport:
     def save_from_search(self, docs: list[dict] | None) -> None:
         if not docs:
             return None
-        
 
         valid_docs = [doc for doc in docs if self._is_valid(doc)]
 
@@ -355,7 +360,6 @@ class BookImport:
                 )
             )
 
-
         Book.objects.bulk_create(
             book_payload,
             batch_size=1000,
@@ -375,15 +379,12 @@ class BookImport:
             author.openlibrary_key: author
             for author in Author.objects.filter(
                 openlibrary_key__in={
-                    _clear_key(key)
-                    for doc in valid_docs
-                    for key in doc["author_key"]
+                    _clear_key(key) for doc in valid_docs for key in doc["author_key"]
                 }
             )
         }
 
         saved_subjects = {subject.slug: subject for subject in subjects}
-
 
         self._bulk_create_book_relations_from_search(
             valid_docs,
@@ -393,7 +394,7 @@ class BookImport:
         )
 
     @staticmethod
-    def get_detail_information(data: dict) -> dict:
+    def get_detail_information(data: dict, **kwargs) -> dict:
         excerpts = data.get("excerpts", [])
         excerpt_text = excerpts[0].get("excerpt") if excerpts else None
 
@@ -409,9 +410,12 @@ class BookImport:
             "excerpt": excerpt_text,
             "was_requested_detail": True,
             "title": data.get("title"),
+            **kwargs,
         }
 
-        clean_date = _format_data(data.get("first_publish_date", ""))
+        clean_date = _format_data(
+            (data.get("publish_date", "") or data.get("first_publish_date", ""))
+        )
         if clean_date:
             defaults["first_publish_date"] = clean_date
 
@@ -429,6 +433,38 @@ class BookImport:
             defaults=defaults,
         )
 
+    def save_from_isbn(self, data: dict | None, searched_isbn: str):
+        if not data:
+            return
+        
+        covers = data.get('covers')
+
+        isbns = []
+        for key in ("isbn_13", "isbn_10"):
+            val = data.get(key)
+            if isinstance(val, list):
+                isbns.extend(val)
+
+            elif val:
+                isbns.append(str(val))
+
+        isbns = [str(i).strip() for i in isbns if i]
+
+        if searched_isbn not in isbns:
+            isbns.append(searched_isbn)
+
+        defaults = self.get_detail_information(
+            data=data, was_requested_detail=False, isbns=isbns,
+        )
+
+        if covers:
+            defaults['cover_i'] = covers[0]
+
+        Book.objects.update_or_create(
+            openlibrary_key=_clear_key(data["key"]),
+            defaults=defaults,
+        )
+
     def _bulk_create_book_relations_from_search(
         self,
         docs: list[dict],
@@ -438,7 +474,6 @@ class BookImport:
     ) -> None:
         book_author_through = Book.authors.through
         book_subject_through = Book.subjects.through
-
 
         book_author_links = []
         book_subject_links = []
@@ -461,7 +496,6 @@ class BookImport:
                     book_subject_links.append(
                         book_subject_through(book_id=book.id, subject_id=subject.id)
                     )
-
 
         if book_author_links:
             book_author_through.objects.bulk_create(

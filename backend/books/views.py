@@ -27,6 +27,7 @@ from books.services.catalog import (
     get_matched_authors,
     fetch_more_books,
     get_subject,
+    search_by_isbn,
 )
 
 from books.services.detail import (
@@ -60,6 +61,25 @@ class CatalogView(ListView):
             fetch_more_books(search_by, search, page)
             url = reverse("books:index", kwargs={"subject_slug": subject})
             return redirect(f"{url}?search={search}&search_by={search_by}&page={page}")
+
+        if search and search_by == "isbn":
+            filters = self._get_filters()
+            books_queryset = search_by_isbn(filters=filters)
+
+            found_book = books_queryset.first()
+
+            if found_book:
+                return redirect(
+                    reverse(
+                        "books:book_detail",
+                        kwargs={
+                            "opl_key": found_book.openlibrary_key,
+                            'subject_slug': 'all'
+                        },
+                    )
+                )
+            else:
+                return books_queryset.none()
 
         return super().get(request, *args, **kwargs)
 
@@ -135,21 +155,23 @@ class BookDetailView(DetailView):
 
     def get_object(self, queryset=None):
         book = super().get_object(queryset)
-        
+
         return enrich_book_detail(book)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         book = self.object
-        
+
         context.update(get_user_book_context(self.request.user, book))
 
         reviews_cache_key = f"book_reviews_{book.openlibrary_key}"
-        
+
         def fetch_cached_reviews():
             return list(get_reviews(book))
-            
-        context["reviews"] = cache.get_or_set(reviews_cache_key, fetch_cached_reviews, timeout=600)
+
+        context["reviews"] = cache.get_or_set(
+            reviews_cache_key, fetch_cached_reviews, timeout=600
+        )
 
         return context
 

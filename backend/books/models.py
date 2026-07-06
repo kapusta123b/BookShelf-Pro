@@ -74,7 +74,10 @@ class BookQuerySet(models.QuerySet):
 
 
 class Book(models.Model):
+
     objects = BookQuerySet.as_manager()
+
+    isbns = models.JSONField(default=list, null=True, blank=True)
 
     openlibrary_key = models.CharField(
         max_length=50,
@@ -95,7 +98,7 @@ class Book(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=True)
     avg_rating = models.FloatField(default=0)
     rating_count = models.PositiveIntegerField(default=0)
-    
+
     @property
     def rating_fill_percent(self) -> float:
         return round((self.avg_rating / 5) * 100, 2)
@@ -103,7 +106,7 @@ class Book(models.Model):
     @property
     def publish_year(self) -> int | None:
         return self.first_publish_date.year if self.first_publish_date else None
-    
+
     @property
     def first_subject(self):
         subjects = self.subjects.all()
@@ -119,8 +122,8 @@ class Book(models.Model):
 
 
 class Review(models.Model):
-    hashid = HashidsField(real_field_name='id', min_length=5)
-    
+    hashid = HashidsField(real_field_name="id", min_length=5)
+
     user_book = models.OneToOneField(
         "library.UserBook",
         on_delete=models.CASCADE,
