@@ -4,7 +4,6 @@ from users.models import User
 from books.models import Book
 from library.models import UserBook
 
-
 def create_user_book(user, book, **kwargs):
 
     defaults = {

@@ -8,7 +8,7 @@ def test_anonymous_redirected_from_profile(client, user):
         reverse(
             "users:profile",
             kwargs={
-                "user_id": user.id,
+                "public_id": user.public_id,
             },
         )
     )
@@ -26,7 +26,7 @@ def test_authenticated_user_can_open_profile(client, user):
         reverse(
             "users:profile",
             kwargs={
-                "user_id": user.id,
+                "public_id": user.public_id,
             },
         )
     )

@@ -16,7 +16,7 @@ class User(AbstractUser):
     first_name = models.CharField(blank=True, verbose_name="First name")
     last_name = models.CharField(blank=True, verbose_name="Last name")
 
-    profile_image = models.ImageField(null=True, blank=True, verbose_name="User image")
+    profile_image = models.ImageField(upload_to='avatars/', null=True, blank=True, verbose_name="User image")
 
     description = models.TextField(blank=True, max_length=150, default="")
     avg_rating = models.FloatField(default=0)
@@ -26,8 +26,9 @@ class User(AbstractUser):
             return self.profile_image.url
 
         initials = " ".join(
-            name[0].upper() for name in (self.first_name, self.last_name) if name
+            name[0].upper() for name in (self.first_name.strip(), self.last_name.strip()) if name
         )
+        
         return initials
     
 
