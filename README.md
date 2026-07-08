@@ -23,14 +23,13 @@ Users can browse books by genre, search by title, author or ISBN, add books to t
 
 - Book catalog with pagination and grid / list view toggle
 - Search by title, author, or ISBN with on-demand Open Library import
-- 19 genre categories
-- Personal library with reading status tracking
+- Personal library
 - Book rating
 - Book reviews
-- User profiles with reading statistics and recent activity feed
+- User profiles
 - Filter sidebar
 - Social authentication via Google and Facebook
-- Email verification and reCAPTCHA v2 on auth forms
+- Email verification and reCAPTCHA v2
 
 ---
 
@@ -38,11 +37,10 @@ Users can browse books by genre, search by title, author or ISBN, add books to t
 
 - Python 3.13 / Django 6.0
 - PostgreSQL 16
-- SASS / SCSS / JavaScript (vanilla)
+- SASS / SCSS / JavaScript
 - django-allauth, django-recaptcha
-- httpx (HTTP/2, connection pooling)
+- httpx
 - psycopg2
-
 ---
 
 ## Project Structure
