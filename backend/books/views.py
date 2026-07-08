@@ -3,46 +3,25 @@ from django.urls import reverse
 
 from django.core.cache import cache
 
-from django.views.generic import (
-    CreateView,
-    DeleteView,
-    ListView,
-    DetailView,
-    UpdateView,
-    View,
-)
+from django.views.generic import CreateView, DeleteView, ListView, DetailView, UpdateView, View
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-from utils.cache import get_cache_key
-from books.utils import get_user_book_for_review
 
 from books.forms import CreateReviewForm, UpdateReviewForm
 
 from books.models import Author, Book, Review
 
-from books.services.catalog import (
-    CatalogFilters,
-    get_catalog_queryset,
-    get_matched_authors,
-    fetch_more_books,
-    get_subject,
-    search_by_isbn,
-)
+from books.selectors.book import get_user_book_context
+from books.selectors.catalog import get_catalog_queryset, get_matched_authors, get_subject
+from books.selectors.reviews import get_review_object, get_review_queryset, get_reviews
 
-from books.services.detail import (
-    enrich_author_detail,
-    enrich_book_detail,
-    get_author_books,
-)
+from books.services.catalog import CatalogFilters, ensure_search_data_exists, process_isbn_search
+from books.services.detail import enrich_author_detail, enrich_book_detail, get_author_books
 from books.services.rating import rate_book
 
-from books.selectors import (
-    get_review_object,
-    get_review_queryset,
-    get_reviews,
-    get_user_book_context,
-)
+from books.utils import get_user_book_for_review
+
+from utils.cache import get_cache_key
 
 
 class CatalogView(ListView):
@@ -52,34 +31,25 @@ class CatalogView(ListView):
     context_object_name = "books"
 
     def get(self, request, *args, **kwargs):
-        search = request.GET.get("search")
-        search_by = request.GET.get("search_by")
-        subject = kwargs.get("subject_slug")
-        page = request.GET.get("page", 1)
+        filters = self._get_filters()
 
-        if search and "research" in request.GET:
-            fetch_more_books(search_by, search, page)
-            url = reverse("books:index", kwargs={"subject_slug": subject})
-            return redirect(f"{url}?search={search}&search_by={search_by}&page={page}")
-
-        if search and search_by == "isbn":
-            filters = self._get_filters()
-            books_queryset = search_by_isbn(filters=filters)
-
-            found_book = books_queryset.first()
+        if filters.search and filters.search_by == "isbn":
+            found_book = process_isbn_search(filters.search)
 
             if found_book:
                 return redirect(
                     reverse(
                         "books:book_detail",
                         kwargs={
-                            "opl_key": found_book.openlibrary_key,
-                            'subject_slug': 'all'
+                            "opl_key": found_book.openlibrary_key,  # Вызов сервиса
+                            "subject_slug": "all",
                         },
                     )
                 )
-            else:
-                return books_queryset.none()
+            return super().get(request, *args, **kwargs)
+
+        if filters.search and filters.search_by in ["title", "author"]:
+            ensure_search_data_exists(filters)
 
         return super().get(request, *args, **kwargs)
 
@@ -90,43 +60,51 @@ class CatalogView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         filters = self._get_filters()
-        subject_slug = self.kwargs.get("subject_slug")
 
-        cache_key = get_cache_key("catalog_context", filters)
-
-        def fetch_paginated_data():
-            return list(context["object_list"])
-
-        context["object_list"] = cache.get_or_set(
-            cache_key, fetch_paginated_data, timeout=300
+        is_search_or_personal = bool(filters.search) or (
+            filters.status and filters.status != "none"
         )
+
+        if is_search_or_personal:
+            context["object_list"] = list(context["object_list"])
+            matched_authors = list(get_matched_authors(filters))
+        else:
+            cache_key = get_cache_key("catalog_context", filters)
+            context["object_list"] = cache.get_or_set(
+                cache_key, lambda: list(context["object_list"]), timeout=300
+            )
+            authors_cache_key = get_cache_key("catalog_authors", filters)
+            matched_authors = cache.get_or_set(
+                authors_cache_key,
+                lambda: list(get_matched_authors(filters)),
+                timeout=600,
+            )
+
         context["page_obj"].object_list = context["object_list"]
         context["books"] = context["object_list"]
+        context["matched_authors"] = matched_authors
 
-        context["user_library_ids"] = (
-            set(self.request.user.library_books.values_list("book_id", flat=True))
-            if self.request.user.is_authenticated
-            else set()
-        )
-
-        page_obj = context["page_obj"]
-        if subject_slug and subject_slug != "all":
-            context["queryset_count_current"] = page_obj.paginator.count
-
+        # Оставляем легкие кэши
         context["queryset_count_total"] = cache.get_or_set(
             "catalog_total_count", lambda: Book.objects.count(), timeout=30
         )
 
         context["current_subject"] = cache.get_or_set(
-            f"subject_{subject_slug}", lambda: get_subject(subject_slug), timeout=600
-        )
-
-        authors_cache_key = get_cache_key("catalog_authors", filters)
-        context["matched_authors"] = cache.get_or_set(
-            authors_cache_key,
-            lambda: list(get_matched_authors(filters)),
+            f"subject_{filters.subject}",
+            lambda: get_subject(filters.subject),
             timeout=600,
         )
+
+        # Выполняется только при необходимости
+        if self.request.user.is_authenticated:
+            context["user_library_ids"] = set(
+                self.request.user.library_books.values_list("book_id", flat=True)
+            )
+        else:
+            context["user_library_ids"] = set()
+
+        if filters.subject and filters.subject != "all":
+            context["queryset_count_current"] = context["page_obj"].paginator.count
 
         return context
 
@@ -154,9 +132,13 @@ class BookDetailView(DetailView):
     slug_field = "openlibrary_key"
 
     def get_object(self, queryset=None):
-        book = super().get_object(queryset)
+        cache_key = f"book_detail={self.kwargs['opl_key']}"
 
-        return enrich_book_detail(book)
+        def fetch_book():
+            book = super(BookDetailView, self).get_object(queryset)
+            return enrich_book_detail(book)
+
+        return cache.get_or_set(cache_key, fetch_book, timeout=600)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

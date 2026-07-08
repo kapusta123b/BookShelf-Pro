@@ -234,7 +234,7 @@
                 <div class="activity-item__content">
                   <p class="activity-item__text">
                     {% if item.action == 'added' %}
-                      Added <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a> to your library
+                      Added <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a> to library
                     {% elif item.action == 'want_to_read' %}
                       Added <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a> to Want to Read
                     {% elif item.action == 'reading' %}

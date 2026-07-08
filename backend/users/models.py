@@ -83,7 +83,7 @@ class RecentActivity(models.Model):
             "read": "read",
             "rated": "rated",
             "reviewed": "rated",
-            "change_rate": "change-rate",
+            "change_rate": "rated",
         }.get(self.action, "added")
 
     class Meta:
