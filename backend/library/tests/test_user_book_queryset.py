@@ -21,9 +21,8 @@ def test_user_book_queryset_sorting_by_authors_contains_annotate_field(user, set
     assert result_qs[1].book.title == "A-Book"
 
 
-def test_user_book_queryset_tabs_filter_by_all_returns_all(setup_books):
+def test_user_book_queryset_tabs_filter_return_correct_querysets(setup_books):
     qs = UserBook.objects.all()
-
 
     assert qs.tabs_filter('all').count() == 2
 
@@ -31,8 +30,7 @@ def test_user_book_queryset_tabs_filter_by_all_returns_all(setup_books):
     assert reading_qs.count() == 1
     assert reading_qs.first() == setup_books["ub_reading"]
 
-
-
+    
 @pytest.mark.django_db
 def test_user_book_queryset_get_counts(user, setup_books):
     qs = UserBook.objects.filter(user=user)

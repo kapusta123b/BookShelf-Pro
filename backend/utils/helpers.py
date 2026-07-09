@@ -2,6 +2,11 @@ from django.core.paginator import Page, Paginator, InvalidPage
 from django.db.models import QuerySet
 from typing import Union
 
+from users.models import User
+
+from django.utils import timezone
+
+
 Numeric = Union[str, int]
 
 
@@ -16,8 +21,10 @@ def paginate(queryset: QuerySet, page_number: Numeric, per_page: Numeric) -> Pag
     
     try:
         return paginator.page(page_number)
-    
 
     except InvalidPage:
 
         return paginator.page(1)
+
+def update_user_library_timestamp(user) -> None:
+    User.objects.filter(id=user.id).update(library_updated_at=timezone.now())

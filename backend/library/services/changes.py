@@ -1,6 +1,7 @@
 from django.db import transaction
 
 from django.utils import timezone
+from utils.helpers import update_user_library_timestamp
 
 from library.models import UserBook
 
@@ -12,8 +13,7 @@ def change_user_book_status(book_id: int, user, status: str) -> None:
     with transaction.atomic():
         user_book = (
             UserBook.objects.select_for_update()
-            .filter(book_id=book_id, user=user)
-            .first()
+            .get(book_id=book_id, user=user)
         )
 
         if not user_book:
@@ -23,6 +23,8 @@ def change_user_book_status(book_id: int, user, status: str) -> None:
 
         if created:
             add_activity(user=user, book_id=user_book.book.id, action=status)
+
+            update_user_library_timestamp(user)
 
         return True
     

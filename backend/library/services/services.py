@@ -1,6 +1,6 @@
 from django.db import transaction
 
-from django.utils import timezone
+from utils.helpers import update_user_library_timestamp
 
 from books.services.activity import add_activity
 
@@ -14,3 +14,4 @@ def add_book_to_library(book_id, user) -> None:
 
         if created:
             add_activity(user=user, book_id=book_id, action="added")
+            update_user_library_timestamp(user)

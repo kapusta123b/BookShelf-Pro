@@ -2,9 +2,13 @@ from django.shortcuts import get_object_or_404
 
 from django.db import transaction
 
+from utils.helpers import update_user_library_timestamp
+
 from users.services import update_user_avg_rating
+
 from books.services.activity import add_activity
 from books.models import Book
+
 from library.models import UserBook
 
 
@@ -29,6 +33,9 @@ def rate_book(user, book_id: int, rating: int) -> None:
         update_user_avg_rating(user)
 
         add_activity(user=user, book_id=book_id, rating=rating, action=action)
+
+        update_user_library_timestamp(user)
+
 
 def update_book_avg_rating(book: Book, new_rating: int, old_rating: int | None = None) -> None:
         if old_rating is None:

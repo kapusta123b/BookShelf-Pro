@@ -58,7 +58,9 @@
               autocomplete="username"
             >
             {% for error in form.login.errors %}
+
               <span class="field-error">{{ error }}</span>
+            
             {% endfor %}
           </div>
 

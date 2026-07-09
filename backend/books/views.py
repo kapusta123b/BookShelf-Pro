@@ -84,9 +84,8 @@ class CatalogView(ListView):
         context["books"] = context["object_list"]
         context["matched_authors"] = matched_authors
 
-        # Оставляем легкие кэши
         context["queryset_count_total"] = cache.get_or_set(
-            "catalog_total_count", lambda: Book.objects.count(), timeout=30
+            "catalog_total_count", lambda: Book.objects.count(), timeout=10
         )
 
         context["current_subject"] = cache.get_or_set(
@@ -95,7 +94,6 @@ class CatalogView(ListView):
             timeout=600,
         )
 
-        # Выполняется только при необходимости
         if self.request.user.is_authenticated:
             context["user_library_ids"] = set(
                 self.request.user.library_books.values_list("book_id", flat=True)

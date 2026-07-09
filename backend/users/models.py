@@ -1,36 +1,44 @@
 from django.db import models
+
 from django.contrib.auth.models import AbstractUser
+
 import shortuuid
+
+from django.utils import timezone
+
 
 def generate_short_uuid():
     return shortuuid.ShortUUID().random(length=10)
 
+
 class User(AbstractUser):
     public_id = models.CharField(
-        max_length=10,
-        default=generate_short_uuid,
-        unique=True,
-        editable=False
+        max_length=10, default=generate_short_uuid, unique=True, editable=False
     )
 
     first_name = models.CharField(blank=True, verbose_name="First name")
     last_name = models.CharField(blank=True, verbose_name="Last name")
 
-    profile_image = models.ImageField(upload_to='avatars/', null=True, blank=True, verbose_name="User image")
+    profile_image = models.ImageField(
+        upload_to="avatars/", null=True, blank=True, verbose_name="User image"
+    )
 
     description = models.TextField(blank=True, max_length=150, default="")
     avg_rating = models.FloatField(default=0)
+
+    library_updated_at = models.DateTimeField(default=timezone.now)
 
     def format_avatar(self) -> str:
         if self.profile_image:
             return self.profile_image.url
 
         initials = " ".join(
-            name[0].upper() for name in (self.first_name.strip(), self.last_name.strip()) if name
+            name[0].upper()
+            for name in (self.first_name.strip(), self.last_name.strip())
+            if name
         )
-        
+
         return initials
-    
 
     def __str__(self):
         return self.username
@@ -89,9 +97,5 @@ class RecentActivity(models.Model):
     class Meta:
         db_table = "users_activities"
         ordering = ["-created_at"]
-        
-        indexes = [
-            models.Index(
-                fields=["user", "-created_at"]
-            )
-        ]
+
+        indexes = [models.Index(fields=["user", "-created_at"])]

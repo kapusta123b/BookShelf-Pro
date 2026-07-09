@@ -12,7 +12,7 @@ def test_get_by_action_returns_correct_icon(user):
     )
 
     assert activity.icon == "change-rate.svg"
-    assert activity.icon_class == "change-rate"
+    assert activity.icon_class == "rated"
 
 
 def test_unknown_action_returns_default_icon():
