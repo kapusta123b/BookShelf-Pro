@@ -1,18 +1,24 @@
 from django.urls import reverse
+
 from django.views.generic import DetailView, View
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.shortcuts import redirect
 
-from django.core.cache import cache
 
-from django.utils import timezone
 from utils.helpers import paginate
 from utils.search import q_search
-from utils.cache import get_cache_key
 
 from library.services.changes import change_user_book_status
-from library.services.library import LibraryCacheFilters, LibraryFilters, fetch_library_cache_data
+from library.services.library import (
+    LibraryCacheFilters,
+    LibraryFilters,
+    get_library_cache_data,
+)
 from library.services.services import add_book_to_library
+
+from utils.helpers import get_user_content_timestamp
 
 from users.models import User
 
@@ -29,35 +35,27 @@ class LibraryView(LoginRequiredMixin, DetailView):
 
         filters = self._get_filters()
 
-        ts = int((self.object.library_updated_at or timezone.now()).timestamp())
+        user_ts = get_user_content_timestamp(self.object)
 
-        cache_key = get_cache_key(
-            f"library:user={self.object.public_id}:ts{ts}", filters.cache_filters
-        )
+        data = get_library_cache_data(self.object, user_ts, filters.cache_filters)
 
-        cached_data = cache.get_or_set(
-            cache_key,
-            lambda: fetch_library_cache_data(self.object, filters.cache_filters),
-            timeout=600,
-        )
-
-        books = cached_data["books"]
-        
         if filters.search:
-            books = q_search(query=filters.search, queryset=books, search_type="library")
+            books = q_search(
+                query=filters.search, queryset=books, search_type="library"
+            )
 
-        paginate_books = paginate(books, filters.page, per_page=10)
+        paginate_books = paginate(data["books"], filters.page, per_page=10)
 
         context.update(
             {
                 "page_obj": paginate_books,
-                "reviews": cached_data["reviews"],
+                "reviews": data["reviews"],
                 "active_filter": filters.cache_filters.filter_value,
-                "count_total": cached_data["counts"]["total"],
-                "count_reading": cached_data["counts"]["reading"],
-                "count_want_to_read": cached_data["counts"]["want"],
-                "count_finished": cached_data["counts"]["read"],
-                "reviews_ids": cached_data["reviews_ids"],
+                "count_total": data["counts"]["total"],
+                "count_reading": data["counts"]["reading"],
+                "count_want_to_read": data["counts"]["want"],
+                "count_finished": data["counts"]["read"],
+                "reviews_ids": data["reviews_ids"],
             }
         )
 
@@ -68,9 +66,9 @@ class LibraryView(LoginRequiredMixin, DetailView):
         return LibraryFilters(
             search=get.get("search"),
             page=get.get("page", 1),
-            cache_filters=self._get_cache_filters()
+            cache_filters=self._get_cache_filters(),
         )
-    
+
     def _get_cache_filters(self) -> LibraryCacheFilters:
         get = self.request.GET
         return LibraryCacheFilters(

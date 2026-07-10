@@ -9,3 +9,5 @@ staticfiles
 mypy.ini
 
 cache
+
+launch.json

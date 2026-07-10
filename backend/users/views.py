@@ -1,11 +1,14 @@
 from django.views.generic import DetailView, UpdateView, TemplateView
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.urls import reverse
 
 from users.selectors import get_profile_data, get_user_activity
 from users.models import User
 from users.forms import EditProfileForm
 
+from utils.helpers import get_user_content_timestamp
 
 class ProfileView(LoginRequiredMixin, DetailView):
     model = User
@@ -18,9 +21,11 @@ class ProfileView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         show_more = True if "show_more" in self.request.GET else False
 
-        data = get_profile_data(self.object)
+        user_ts = get_user_content_timestamp(self.object)
 
-        activity = get_user_activity(self.object, show_more)
+        data = get_profile_data(self.object, user_ts)
+        
+        activity = get_user_activity(self.object, user_ts, show_more)
 
         context.update(
             {

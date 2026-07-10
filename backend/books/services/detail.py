@@ -34,6 +34,8 @@ def get_author_books(author: Author, page: str | int, load_from_api=False):
         )
         BookImport().save_from_search(docs=docs)
 
+    author_books_cache_key = f"author_books:{opl_key}_page={page}"
+
     queryset = Book.objects.filter(authors=author).prefetch_related(
         "authors", "subjects"
     )

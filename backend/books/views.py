@@ -3,20 +3,41 @@ from django.urls import reverse
 
 from django.core.cache import cache
 
-from django.views.generic import CreateView, DeleteView, ListView, DetailView, UpdateView, View
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    ListView,
+    DetailView,
+    UpdateView,
+    View,
+)
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from utils.helpers import update_user_library_timestamp
 from books.forms import CreateReviewForm, UpdateReviewForm
 
 from books.models import Author, Book, Review
 
 from books.selectors.book import get_user_book_context
-from books.selectors.catalog import get_catalog_queryset, get_matched_authors, get_subject
+from books.selectors.catalog import (
+    get_catalog_queryset,
+    get_matched_authors,
+    get_subject,
+)
 from books.selectors.reviews import get_review_object, get_review_queryset, get_reviews
 
-from books.services.catalog import CatalogFilters, ensure_search_data_exists, process_isbn_search
-from books.services.detail import enrich_author_detail, enrich_book_detail, get_author_books
+from books.services.activity import add_activity
+from books.services.catalog import (
+    CatalogFilters,
+    ensure_search_data_exists,
+    process_isbn_search,
+)
+from books.services.detail import (
+    enrich_author_detail,
+    enrich_book_detail,
+    get_author_books,
+)
 from books.services.rating import rate_book
 
 from books.utils import get_user_book_for_review
@@ -227,6 +248,11 @@ class CreateReviewView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         opl_key = self.kwargs.get("opl_key")
+
+        add_activity(
+            self.object.user_book.user, "create_review", self.object.user_book.book_id
+        )
+
         return reverse(
             "books:book_detail",
             kwargs={"opl_key": opl_key, "subject_slug": "all"},
@@ -270,6 +296,11 @@ class UpdateReviewView(LoginRequiredMixin, UpdateView):
         return get_review_queryset(self.request.user)
 
     def get_success_url(self):
+
+        add_activity(
+            self.object.user_book.user, "update_review", self.object.user_book.book_id
+        )
+
         return reverse(
             "books:book_detail",
             kwargs={
@@ -294,6 +325,11 @@ class DeleteReviewView(LoginRequiredMixin, DeleteView):
         return get_review_queryset(self.request.user)
 
     def get_success_url(self):
+
+        add_activity(
+            self.object.user_book.user, "delete_review", self.object.user_book.book_id
+        )
+
         return reverse(
             "books:book_detail",
             kwargs={

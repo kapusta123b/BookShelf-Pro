@@ -750,6 +750,9 @@
       background-color: $warning-bg;
       color: $warning;
     }
+    &--delete-review {
+      background-color: $deleted-bg;
+    }
   }
 
   &__content {

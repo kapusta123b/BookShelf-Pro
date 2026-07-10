@@ -26,7 +26,7 @@ class User(AbstractUser):
     description = models.TextField(blank=True, max_length=150, default="")
     avg_rating = models.FloatField(default=0)
 
-    library_updated_at = models.DateTimeField(default=timezone.now)
+    content_updated_at = models.DateTimeField(default=timezone.now)
 
     def format_avatar(self) -> str:
         if self.profile_image:
@@ -77,9 +77,13 @@ class RecentActivity(models.Model):
             "want_to_read": "bookmark.svg",
             "reading": "book-open.svg",
             "read": "check.svg",
+            
             "rated": "star-filled.svg",
-            "reviewed": "edit.svg",
-            "change_rate": "change-rate.svg",
+            "change_rate": "edit.svg",
+
+            "create_review": "plus.svg",
+            "delete_review": "close.svg",
+            "update_review": "edit.svg"
         }.get(self.action, "plus.svg")
 
     @property
@@ -89,9 +93,13 @@ class RecentActivity(models.Model):
             "want_to_read": "added",
             "reading": "read",
             "read": "read",
+
             "rated": "rated",
-            "reviewed": "rated",
             "change_rate": "rated",
+
+            "delete_review": "delete-review",
+            "update_review": "update-review"
+
         }.get(self.action, "added")
 
     class Meta:

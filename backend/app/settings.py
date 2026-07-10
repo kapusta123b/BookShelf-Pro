@@ -6,7 +6,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
 
-
 SECRET_KEY = environ["SECRET_KEY"]
 
 DEBUG = environ.get("DEBUG", "False") == "True"
@@ -21,8 +20,8 @@ USE_X_FORWARDED_HOST = True
 
 if DEBUG:
     INTERNAL_IPS = [
-        '127.0.0.1', 
-        'localhost',
+        "127.0.0.1",
+        "localhost",
     ]
 
 INSTALLED_APPS = [
@@ -62,8 +61,8 @@ MIDDLEWARE = [
     # allauth
     "allauth.account.middleware.AccountMiddleware",
     # debugtoolbar
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "app.urls"
@@ -132,8 +131,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static", BASE_DIR / "sass-cache"]
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -190,5 +189,5 @@ ACCOUNT_FORMS = {
 }
 
 
-#django-hashid
-DJANGO_HASHIDS_SALT = SECRET_KEY    
+# django-hashid
+DJANGO_HASHIDS_SALT = SECRET_KEY

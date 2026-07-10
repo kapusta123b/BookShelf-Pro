@@ -227,6 +227,7 @@
           <div class="activity-list">
 
             {% for item in activity %}
+
               <div class="activity-item">
                 <div class="activity-item__icon activity-item__icon--{{ item.icon_class }}">
                   <img src="{% static 'deps/svg/' %}{{ item.icon }}" alt="">
@@ -243,16 +244,18 @@
                       Finished reading <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a>
                     {% elif item.action == 'rated' %}
                       Rated <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a>
-                    {% elif item.action == 'reviewed' %}
-                      Reviewed <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a>
                     {% elif item.action == 'change_rate' %}
                       Сhanged the rating for the book  <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a>
+                    {% elif item.action == 'create_review' %}
+                      Reviewed <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a>
+                    {% elif item.action == 'delete_review' %}
+                      Delete review for <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a>
+                    {% elif item.action == 'update_review' %}
+                      Update review for <a href="{% url 'books:book_detail' 'all' item.book.openlibrary_key %}">{{ item.book.title }}</a>
                     {% endif %}
                   </p>
                   <p class="activity-item__time">{{ item.created_at|timesince }} ago</p>
                 </div>
-
-
               </div>
 
             {% empty %}
