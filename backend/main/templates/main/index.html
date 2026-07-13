@@ -192,14 +192,14 @@
         {% endcache %}
 
       </div>
-        {% tag_subjects as subjects %}
-        {% if subjects|length > 8 %}
-          <div class="categories__more">
-            <button type="button" class="categories__more-btn" id="categories-toggle">
-              Show more
-            </button>
-          </div>
-        {% endif %}
+      {% tag_subjects as subjects %}
+      {% if subjects|length > 8 %}
+        <div class="categories__more">
+          <button type="button" class="categories__more-btn" id="categories-toggle">
+            Show more
+          </button>
+        </div>
+      {% endif %}
 
     </div>
   </section>
@@ -209,7 +209,7 @@
       <h2>Start your reading journey today</h2>
       <p>Join thousands of readers who track their reading, discover new books, and build their personal libraries with BookShelf Pro.</p>
       <div class="cta-section__actions">
-        
+
         {% if not user.is_authenticated %}
           <a href="{% url 'users:register' %}" class="cta-section__btn cta-section__btn--primary">
             Create free account

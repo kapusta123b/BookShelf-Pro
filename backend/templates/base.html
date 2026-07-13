@@ -19,6 +19,8 @@
 
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 
+    <script src="{% static 'deps/js/messages.js' %}"></script>
+
     {% block extra_css %}{% endblock %}
   </head>
 
@@ -153,6 +155,8 @@
         </form>
       </div>
     </div>
+
+    {% include "includes/message.html" %}
 
     <main class="main-content">
       {% block content %}{% endblock %}

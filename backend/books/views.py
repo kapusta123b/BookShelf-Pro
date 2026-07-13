@@ -14,7 +14,8 @@ from django.views.generic import (
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from utils.helpers import update_user_library_timestamp
+from django.contrib import messages
+
 from books.forms import CreateReviewForm, UpdateReviewForm
 
 from books.models import Author, Book, Review
@@ -31,6 +32,7 @@ from books.services.activity import add_activity
 from books.services.catalog import (
     CatalogFilters,
     ensure_search_data_exists,
+    fetch_and_save_books,
     process_isbn_search,
 )
 from books.services.detail import (
@@ -40,7 +42,7 @@ from books.services.detail import (
 )
 from books.services.rating import rate_book
 
-from books.utils import get_user_book_for_review
+from books.utils import add_subject_page_count, get_user_book_for_review
 
 from utils.cache import get_cache_key
 
@@ -54,23 +56,50 @@ class CatalogView(ListView):
     def get(self, request, *args, **kwargs):
         filters = self._get_filters()
 
-        if filters.search and filters.search_by == "isbn":
-            found_book = process_isbn_search(filters.search)
+        if filters.search:
 
-            if found_book:
-                return redirect(
-                    reverse(
-                        "books:book_detail",
-                        kwargs={
-                            "opl_key": found_book.openlibrary_key,  # Вызов сервиса
-                            "subject_slug": "all",
-                        },
-                    )
+            if "research" in request.GET or filters.search_by == "subject":
+                cache_key = f"{filters.subject}_page_count"
+
+                def get_subject_page_count():
+                    subject = get_subject(filters.subject)
+
+                    return subject.openlibrary_page
+
+                subject_openlibrary_page = cache.get_or_set(
+                    cache_key, get_subject_page_count, timeout=86400
                 )
-            return super().get(request, *args, **kwargs)
 
-        if filters.search and filters.search_by in ["title", "author"]:
-            ensure_search_data_exists(filters)
+                saved = fetch_and_save_books(
+                    filters.search_by, filters.search, subject_openlibrary_page
+                )
+
+                if saved:
+                    add_subject_page_count(filters.subject)
+                    cache.delete(cache_key)
+
+                url = reverse("books:index", kwargs={"subject_slug": filters.subject})
+
+                return redirect(url)
+
+            if filters.search_by == "isbn":
+                found_book = process_isbn_search(filters.search)
+
+                if found_book:
+                    return redirect(
+                        reverse(
+                            "books:book_detail",
+                            kwargs={
+                                "opl_key": found_book.openlibrary_key,
+                                "subject_slug": "all",
+                            },
+                        )
+                    )
+
+                return super().get(request, *args, **kwargs)
+
+            if filters.search_by in ["title", "author"]:
+                ensure_search_data_exists(filters)
 
         return super().get(request, *args, **kwargs)
 
@@ -203,6 +232,7 @@ class AuthorDetailView(DetailView):
             )
 
             paginator_obj.object_list = list(paginator_obj.object_list)
+
             return paginator_obj
 
         context["page_obj"] = cache.get_or_set(
@@ -232,12 +262,16 @@ class RateBookView(LoginRequiredMixin, View):
         try:
             rating = int(request.POST.get("rating", 0))
         except (TypeError, ValueError):
+            messages.error(self.request, "Unable to update your rating.")
+
             return redirect(request.META.get("HTTP_REFERER", "/"))
 
         if not 1 <= rating <= 5:
+            messages.error(self.request, "Unable to update your rating.")
             return redirect(request.META.get("HTTP_REFERER", "/"))
 
         rate_book(request.user, book_id, rating)
+        messages.success(self.request, "Rating saved.")
         return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -248,6 +282,8 @@ class CreateReviewView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         opl_key = self.kwargs.get("opl_key")
+
+        messages.success(self.request, "Review published.")
 
         add_activity(
             self.object.user_book.user, "create_review", self.object.user_book.book_id
@@ -297,6 +333,8 @@ class UpdateReviewView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
 
+        messages.success(self.request, "Review updated.")
+
         add_activity(
             self.object.user_book.user, "update_review", self.object.user_book.book_id
         )
@@ -325,6 +363,8 @@ class DeleteReviewView(LoginRequiredMixin, DeleteView):
         return get_review_queryset(self.request.user)
 
     def get_success_url(self):
+
+        messages.success(self.request, "Review deleted.")
 
         add_activity(
             self.object.user_book.user, "delete_review", self.object.user_book.book_id

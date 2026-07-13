@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.shortcuts import redirect
 
+from django.contrib import messages
 
 from utils.helpers import paginate
 from utils.search import q_search
@@ -83,6 +84,9 @@ class AddToLibraryView(LoginRequiredMixin, View):
         if book_id:
             add_book_to_library(user=request.user, book_id=book_id)
 
+            messages.success(self.request, f"Book added to your library.")
+
+
         referer = request.META.get("HTTP_REFERER")
 
         if referer:
@@ -97,6 +101,8 @@ class ChangeStatus(LoginRequiredMixin, View):
 
         if status:
             change_user_book_status(user=request.user, book_id=book_id, status=status)
+            messages.success(self.request, f"Book status updated.")
+
 
         referer = request.META.get("HTTP_REFERER")
 

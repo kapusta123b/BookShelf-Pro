@@ -1,11 +1,11 @@
 from django.db import models
-from django.urls import reverse
 from django_hashids import HashidsField
-
 
 class Subject(models.Model):
     slug = models.SlugField(unique=True, null=True, blank=True)
     name = models.CharField(max_length=100)
+
+    openlibrary_page = models.PositiveIntegerField(blank=True, default=1)
 
     def __str__(self) -> str:
         return self.name

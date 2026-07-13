@@ -54,7 +54,7 @@
 
     <div class="library-tabs">
       <form action="
-      " method="get">
+                   " method="get">
 
         <button name="filter" value="all" class="library-tabs__tab {% if active_filter == 'all' %}active{% endif %}">All <span class="library-tabs__tab-count">{{ count_total }}</span></button>
         <button name="filter" value="reading" class="library-tabs__tab {% if active_filter == 'reading' %}active{% endif %}">Reading <span class="library-tabs__tab-count">{{ count_reading }}</span></button>
@@ -130,7 +130,7 @@
         <div class="library-book">
           <div class="library-book__cover book-cover-3">
             <div class="book-card-catalog__cover-placeholder">
-              <img src="{% get_cover letter='M' cover=lib_book.book.cover_i %}" alt="">
+              <img src="{% get_cover letter='L' cover=lib_book.book.cover_i %}" alt="">
             </div>
             <div class="library-book__cover-status">
               <span class="badge
@@ -206,7 +206,7 @@
 
               <div class="book-modal__header">
                 <div class="book-modal__cover">
-                  <img src="{% get_cover letter='M' cover=lib_book.book.cover_i %}" alt="{{ lib_book.book.title }}">
+                  <img src="{% get_cover letter='L' cover=lib_book.book.cover_i %}" alt="{{ lib_book.book.title }}">
                 </div>
                 <div class="book-modal__info">
                   <a href="{% url "books:book_detail" 'all' lib_book.book.id %}" class="book-modal__title">{{ lib_book.book.title }}</a>
@@ -276,7 +276,7 @@
             <div class="library-reviews__item-header">
               <div class="library-reviews__item-book">
                 <div class="library-reviews__item-cover">
-                  <img src="{% get_cover letter='M' cover=review.user_book.book.cover_i %}" alt="{{ review.user_book.book.title }}">
+                  <img src="{% get_cover letter='L' cover=review.user_book.book.cover_i %}" alt="{{ review.user_book.book.title }}">
                 </div>
                 <div class="library-reviews__item-meta">
                   <a href="{% url 'books:book_detail' 'all' review.user_book.book.id %}" class="library-reviews__item-book-title">{{ review.user_book.book.title }}</a>

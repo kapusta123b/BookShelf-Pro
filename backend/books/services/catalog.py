@@ -84,9 +84,11 @@ def search_by_isbn(filters: CatalogFilters):
     return book
 
 
-def fetch_and_save_books(search_by: str, search: str, page: str | int) -> None:
+def fetch_and_save_books(search_by: str, search: str, page: str | int) -> None | bool:
     docs = OpenLibaryClient().search(argument=search_by, query=search, page=str(page))
     BookImport().save_from_search(docs=docs)
+
+    return True if docs else False
 
 
 def fetch_and_save_authors(search_by: str, search: str, page: str | int) -> None:

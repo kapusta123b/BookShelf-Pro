@@ -34,8 +34,6 @@ class CreateReviewForm(forms.ModelForm):
     def save(self, commit=True):
         review = super().save(commit=False)
 
-        print(review)
-
         user_book = get_object_or_404(UserBook, book__openlibrary_key=self.opl_key, user=self.user)
     
         review.user_book = user_book

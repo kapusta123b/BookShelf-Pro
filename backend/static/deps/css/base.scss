@@ -527,6 +527,91 @@ textarea {
     }
   }
 }
+.messages-container {
+    position: fixed;
+    top: calc(#{$nav-height} + 1rem);
+    left: 50;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: $z-toast;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: calc(100% - 2rem);
+    max-width: 420px;
+    
+}
+
+.message-toast {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1.25rem;
+    border-radius: $radius;
+    background-color: $bg-card;
+    border: 1px solid $border;
+    box-shadow: $shadow-md;
+    animation: toastFadeIn $transition-fast;
+    transition: opacity 0.3s ease, transform 0.3s ease, margin 0.3s ease;
+    
+    .message-content {
+        font-family: $font-family;
+        font-size: $font-size-sm;
+        font-weight: 500;
+        color: $text-primary;
+        line-height: 1.5;
+        margin-right: 1.5rem;
+    }
+
+    .message-close {
+        background: none;
+        border: none;
+        color: $text-muted;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+        transition: color 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover { 
+            color: $text-primary;
+        }
+    }
+    
+    &.success {
+        border-left: 3px solid $success;
+        &:hover .message-close:hover { color: $success; }
+    }
+
+    &.error, &.danger {
+        border-left: 3px solid $error;
+        &:hover .message-close:hover { color: $error; }
+    }
+
+    &.warning {
+        border-left: 3px solid $warning;
+        &:hover .message-close:hover { color: $warning; }
+    }
+
+    &.info {
+        border-left: 3px solid $primary;
+        &:hover .message-close:hover { color: $primary; }
+    }
+}
+
+@keyframes toastFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 .footer {
   background-color: $bg-dark;

@@ -127,7 +127,7 @@
         {% for cover_id in book.cover_ids %}
           <div class="cover-collage__item {% if forloop.first %}cover-collage__item--featured{% endif %}">
             <img
-              src="{% get_cover letter='M' cover=cover_id %}"
+              src="{% get_cover letter='L' cover=cover_id %}"
               alt="{{ book.title }} cover {{ forloop.counter }}"
               loading="lazy"
             >
@@ -138,7 +138,7 @@
   {% endif %}
 
   {% if reviews %}
-  <section class="detail-page__section">
+    <section class="detail-page__section">
       <h2 class="detail-page__section-title">
         Reviews
         <span class="detail-page__section-count"></span>
@@ -223,6 +223,12 @@
         <span class="detail-page__sidebar-label">Open Library key</span>
         <span class="detail-page__sidebar-value">{{ book.openlibrary_key }}</span>
       </li>
+      {% if book.isbns %}
+        <li class="detail-page__sidebar-item">
+          <span class="detail-page__sidebar-label">ISBN</span>
+          <span class="detail-page__sidebar-value">{% for isbn in book.isbns %}{{ isbn }}{% if not forloop.last %},<br>{% endif %}{% endfor %}</span>
+        </li>
+      {% endif %}
       <li class="detail-page__sidebar-item">
         <span class="detail-page__sidebar-label">Avg rating</span>
         <span class="detail-page__sidebar-value">{{ book.avg_rating }} / 5</span>

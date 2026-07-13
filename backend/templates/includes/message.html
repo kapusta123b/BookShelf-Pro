@@ -1,0 +1,14 @@
+{% if messages %}
+    <div id="messages-container" class="messages-container">
+        {% for message in messages %}
+            <div class="message-toast {{ message.tags }}" role="alert">
+                <div class="message-content">
+                    {{ message }}
+                </div>
+                <button type="button" class="message-close" onclick="this.parentElement.remove()">
+                    &times;
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

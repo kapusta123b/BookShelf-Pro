@@ -340,7 +340,7 @@
           <div class="book-card-catalog">
 
             <div class="book-card-catalog__cover book-cover">
-              <img class="book-card-catalog__cover-img" src="{% get_cover letter='M' cover=book.cover_i %}" alt="{{ book.title }}">
+              <img class="book-card-catalog__cover-img" src="{% get_cover letter='L' cover=book.cover_i %}" alt="{{ book.title }}">
               <div class="book-card-catalog__cover-quick-add">
 
                 {% if book.id in user_library_ids %}
@@ -453,7 +453,6 @@
                 <form method="get" action="{{ request.path }}">
                   <input type="hidden" name="search_by" value="subject">
                   <input type="hidden" name="search" value="{{ current_subject.name }}">
-                  <input type="hidden" name="page" value="{{ page_obj.number }}">
                   <input type="hidden" name="research">
                   <button type="submit" class="load-more__btn">Load more {% if current_subject %}{{ current_subject.name }}{% else %}books{% endif %}</button>
                 </form>

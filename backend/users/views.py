@@ -2,6 +2,8 @@ from django.views.generic import DetailView, UpdateView, TemplateView
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from django.contrib import messages
+
 from django.urls import reverse
 
 from users.selectors import get_profile_data, get_user_activity
@@ -57,4 +59,6 @@ class EditProfileView(LoginRequiredMixin, UpdateView):
         return self.request.user
 
     def get_success_url(self):
-        return reverse("users:profile", kwargs={"user_id": self.request.user.id})
+        messages.success(self.request, f"{self.request.user.get_username()}, your profile updated.")
+
+        return reverse("users:profile", kwargs={"public_id": self.object.public_id})

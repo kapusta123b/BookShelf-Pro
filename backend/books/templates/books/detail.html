@@ -27,7 +27,7 @@
       <div class="book-detail__hero-inner">
 
         <div class="book-detail__cover">
-          <img src="{% get_cover letter='M' cover=book.cover_i %}" alt="{{ book.title }}">
+          <img src="{% get_cover letter='L' cover=book.cover_i %}" alt="{{ book.title }}">
         </div>
 
         <div class="book-detail__info">
@@ -159,7 +159,7 @@
                 {% for cover_id in book.cover_ids %}
                   <div class="cover-collage__item {% if forloop.first %}cover-collage__item--featured{% endif %}">
                     <img
-                      src="{% get_cover letter='M' cover=cover_id %}"
+                      src="{% get_cover letter='L' cover=cover_id %}"
                       alt="{{ book.title }} cover {{ forloop.counter }}"
                       loading="lazy"
                     >
