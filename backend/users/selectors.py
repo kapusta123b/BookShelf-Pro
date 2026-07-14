@@ -9,16 +9,18 @@ def get_user_activity(user: User, ts: float, show_more: bool = False):
     """
     Return user activities, limited to 10 items unless show_more is True.
     """
-    cache_key = f"activity:user={user.public_id}:ts{ts}:more{show_more}"
+    cache_key = f"activity:user={user.public_id}:ts{ts}"
 
-    def fetch_activity():
-        user_activity = RecentActivity.objects.filter(user=user).select_related("book")
-        if not show_more:
-            return list(user_activity[:10])
+    def fetch_full_activity():
+        qs = RecentActivity.objects.filter(user=user).select_related("book")
+        return list(qs)
 
-        return list(user_activity)
+    all_activity = cache.get_or_set(cache_key, fetch_full_activity, timeout=86400)
 
-    return cache.get_or_set(cache_key, fetch_activity, timeout=86400)
+    if not show_more:
+        return all_activity[:10]
+
+    return all_activity
 
 
 def get_profile_data(user: User, ts: float) -> dict:

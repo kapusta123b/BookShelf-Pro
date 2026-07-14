@@ -1,5 +1,8 @@
 from django.db.models import QuerySet
+
+
 from ..models import Book, Author, Subject
+
 from books.services.catalog import CatalogFilters
 
 
@@ -56,14 +59,14 @@ def get_catalog_queryset(filters: CatalogFilters, user=None) -> QuerySet[Book]:
 def get_matched_authors(filters: CatalogFilters) -> QuerySet[Author]:
     if filters.search and filters.search_by == "author":
         return Author.objects.filter(name__icontains=filters.search)
-    
+
     return Author.objects.none()
 
 
 def get_subject(slug: str | None) -> Subject | None:
     if slug and slug != "all":
         return Subject.objects.filter(slug=slug).first()
-    
+
     return None
 
 

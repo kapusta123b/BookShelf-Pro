@@ -12,6 +12,7 @@ from users.forms import EditProfileForm
 
 from utils.helpers import get_user_content_timestamp
 
+
 class ProfileView(LoginRequiredMixin, DetailView):
     model = User
     template_name = "users/profile.html"
@@ -21,12 +22,12 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        show_more = True if "show_more" in self.request.GET else False
+        show_more = self.request.GET.get("show_more", "").lower() == "true"
 
         user_ts = get_user_content_timestamp(self.object)
 
         data = get_profile_data(self.object, user_ts)
-        
+
         activity = get_user_activity(self.object, user_ts, show_more)
 
         context.update(
@@ -59,6 +60,8 @@ class EditProfileView(LoginRequiredMixin, UpdateView):
         return self.request.user
 
     def get_success_url(self):
-        messages.success(self.request, f"{self.request.user.get_username()}, your profile updated.")
+        messages.success(
+            self.request, f"{self.request.user.get_username()}, your profile updated."
+        )
 
         return reverse("users:profile", kwargs={"public_id": self.object.public_id})

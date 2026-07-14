@@ -8,13 +8,13 @@ from tests.factory import create_book, create_user_book
 
 
 @pytest.mark.django_db
-def test_profile_data_groups_books_by_status(user):
+def test_profile_data_groups_books_by_status(user, ts):
 
     create_user_book(user=user, book=create_book(), status=UserBook.Status.WANT_TO_READ)
     create_user_book(user=user, book=create_book(), status=UserBook.Status.READ)
     create_user_book(user=user, book=create_book(), status=UserBook.Status.READING)
 
-    data = get_profile_data(user)
+    data = get_profile_data(user, ts)
 
     assert len(data["reading"]) == 1
     assert len(data["read"]) == 1
@@ -22,7 +22,7 @@ def test_profile_data_groups_books_by_status(user):
 
 
 @pytest.mark.django_db
-def test_profile_data_contains_user_reviews(user):
+def test_profile_data_contains_user_reviews(user, ts):
 
     user_book = create_user_book(user=user, book=create_book())
 
@@ -30,14 +30,14 @@ def test_profile_data_contains_user_reviews(user):
         user_book=user_book,
     )
 
-    data = get_profile_data(user)
+    data = get_profile_data(user, ts)
 
     assert review in data["reviews"]
     assert len(data["reviews"]) == 1
 
 
 @pytest.mark.django_db
-def test_profile_data_excludes_other_users_reviews(user):
+def test_profile_data_excludes_other_users_reviews(user, ts):
 
     other_user = create_user(username="other")
 
@@ -49,14 +49,14 @@ def test_profile_data_excludes_other_users_reviews(user):
         user_book=create_user_book(user=other_user, book=create_book())
     )
 
-    data = get_profile_data(user)
+    data = get_profile_data(user, ts)
 
     assert user_review in data["reviews"]
     assert other_review not in data["reviews"]
     assert len(data["reviews"]) == 1
 
 
-def test_profile_data_limits_reviews_to_five(user):
+def test_profile_data_limits_reviews_to_five(user, ts):
 
     for _ in range(7):
         Review.objects.create(
@@ -66,6 +66,6 @@ def test_profile_data_limits_reviews_to_five(user):
             )
         )
 
-    data = get_profile_data(user)
+    data = get_profile_data(user, ts)
 
     assert len(data["reviews"]) == 5

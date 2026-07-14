@@ -1,8 +1,11 @@
 import pytest
 
-from library.models import UserBook
 from tests.factory import create_book, create_user_book
+
 from users.models import User
+
+from django.utils import timezone
+
 
 
 @pytest.fixture
@@ -31,3 +34,9 @@ def setup_books(user):
         "ub_reading": ub_reading,
         "ub_want": ub_want
     }
+
+@pytest.fixture
+def ts(user):
+    ts = int((user.content_updated_at or timezone.now()).timestamp())
+    
+    return ts

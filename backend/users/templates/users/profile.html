@@ -214,7 +214,7 @@
 
           {% empty %}
 
-            No recent reviews
+            <p class="profile-empty-state">No recent reviews</p>
 
           {% endfor %}
 
@@ -227,7 +227,6 @@
           <div class="activity-list">
 
             {% for item in activity %}
-
               <div class="activity-item">
                 <div class="activity-item__icon activity-item__icon--{{ item.icon_class }}">
                   <img src="{% static 'deps/svg/' %}{{ item.icon }}" alt="">
@@ -263,18 +262,31 @@
               <p class="profile-empty-state__text">No recent activity yet.</p>
 
             {% endfor %}
-            <form method="get" action="{{ request.path }}" class="activity-load-more">
-              <input type="hidden" name="show_more">
-              {% if activity %}
-                <button type="submit" class="activity-load-more__btn">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"/>
-                  </svg>
-                  Show more
-                </button>
-              {% endif %}
 
-            </form>
+            {% if activity %}
+              {% if request.GET.show_more == 'true' %}
+              <div class='activity-load-more'>
+
+                <a href="{{ request.path }}" class="activity-load-more__btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="18 15 12 9 6 15"/>
+                  </svg>
+                  Show less
+                </a>
+
+              </div>
+              {% else %}
+                <form method="get" action="{{ request.path }}" class="activity-load-more">
+                  <input type="hidden" name="show_more" value="true">
+                  <button type="submit" class="activity-load-more__btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                    Show more
+                  </button>
+                </form>
+              {% endif %}
+            {% endif %}
 
           </div>
         </div>

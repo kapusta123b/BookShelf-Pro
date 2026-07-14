@@ -5,14 +5,29 @@ from users.models import RecentActivity
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 @pytest.mark.django_db
-def test_get_by_action_returns_correct_icon(user):
+@pytest.mark.parametrize(
+    "action, expected_icon, expected_class",
+    [
+        (RecentActivity.Action.ADDED, "plus.svg", "added"),
+        (RecentActivity.Action.WANT_TO_READ, "bookmark.svg", "added"),
+        (RecentActivity.Action.READING, "book-open.svg", "read"),
+        (RecentActivity.Action.READ, "check.svg", "read"),
+        (RecentActivity.Action.RATED, "star-filled.svg", "rated"),
+        (RecentActivity.Action.CHANGE_RATE, "edit.svg", "rated"),
+        
+        ("create_review", "plus.svg", "added"),
+        ("delete_review", "close.svg", "delete-review"),
+        ("update_review", "edit.svg", "update-review"),
+    ]
+)
+def test_get_by_action_returns_correct_icon(user, action, expected_icon, expected_class):
 
     activity = RecentActivity.objects.create(
-        user=user, action=RecentActivity.Action.CHANGE_RATE
+        user=user, action=action
     )
 
-    assert activity.icon == "change-rate.svg"
-    assert activity.icon_class == "rated"
+    assert activity.icon == expected_icon
+    assert activity.icon_class == expected_class
 
 
 def test_unknown_action_returns_default_icon():

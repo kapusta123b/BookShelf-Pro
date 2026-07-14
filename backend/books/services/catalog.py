@@ -1,9 +1,14 @@
 from dataclasses import dataclass
+import time
 
-from books.utils import clean_isbn
+from django.urls import reverse
+
+from books.utils import add_subject_page_count, clean_isbn
 from books.models import Author, Book
 from books.services.client import OpenLibaryClient
 from books.services.importers import AuthorImport, BookImport
+
+from django.core.cache import cache
 
 
 @dataclass
@@ -20,6 +25,46 @@ class CatalogFilters:
     reverse_sort: bool
 
 
+def handle_catalog_search(request, filters) -> str | None:
+
+    if not filters.search:
+        return None
+
+    if "research" in request.GET or filters.search_by == "subject":
+        cache_key = f"{filters.subject}_page_count"
+
+        from books.selectors.catalog import get_subject
+
+        subject_page = cache.get_or_set(
+            cache_key,
+            lambda: get_subject(filters.subject).openlibrary_page,
+            timeout=86400,
+        )
+
+        if fetch_and_save_books(filters.search_by, filters.search, subject_page):
+            add_subject_page_count(filters.subject)
+            cache.delete(cache_key)
+            cache.set("books_cache_version", time.time(), timeout=None)
+
+        return reverse("books:index", kwargs={"subject_slug": filters.subject})
+
+    if filters.search_by == "isbn":
+        found_book = process_isbn_search(filters.search)
+        if found_book:
+            return reverse(
+                "books:book_detail",
+                kwargs={
+                    "opl_key": found_book.openlibrary_key,
+                    "subject_slug": "all",
+                },
+            )
+
+    if filters.search_by in ["title", "author"]:
+        ensure_search_data_exists(filters)
+
+    return None
+
+
 def ensure_search_data_exists(filters: CatalogFilters) -> None:
 
     if filters.search_by == "title":
@@ -28,7 +73,7 @@ def ensure_search_data_exists(filters: CatalogFilters) -> None:
             fetch_and_save_books(filters.search_by, filters.search, filters.page)
 
     elif filters.search_by == "author":
-        
+
         if Author.objects.filter(name__icontains=filters.search).count() < 8:
             fetch_and_save_authors(filters.search_by, filters.search, filters.page)
 
