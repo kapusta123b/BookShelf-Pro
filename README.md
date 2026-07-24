@@ -95,11 +95,13 @@ Apply migrations and run:
 ```bash
 cd backend
 python manage.py migrate
-python manage.py createsuperuser
+python manage.py createsuperuser ( if you want admin panel )
+python manage.py loaddata backend/fixtures/books/subjects.json
 python manage.py runserver
 ```
 
 Site is available at `http://localhost:8000`
+Admin panel available at `http://localhost:8000/admin/`
 
 ---
 
